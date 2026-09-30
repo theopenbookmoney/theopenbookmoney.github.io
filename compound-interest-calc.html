@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Compound Interest Calculator</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap');
+
+    :root {
+      color-scheme: light dark;
+      --paper: #f4f3ee;
+      --surface: #ffffff;
+      --surface-2: #eae9e2;
+      --ink: #17231d;
+      --muted: #526057;
+      --line: #cfd4cd;
+      --green: #176b49;
+      --green-soft: #d9ede2;
+      --orange: #b65326;
+      --orange-soft: #f4e2d7;
+      --track: #d8dcd6;
+      --shadow: 0 18px 45px rgba(29, 39, 33, .09);
+      --radius-lg: 28px;
+      --radius-md: 16px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101612;
+        --surface: #18211c;
+        --surface-2: #222d27;
+        --ink: #edf5ef;
+        --muted: #b5c1b9;
+        --line: #35443b;
+        --green: #62ca91;
+        --green-soft: #173b29;
+        --orange: #ee946c;
+        --orange-soft: #47291e;
+        --track: #39453e;
+        --shadow: 0 22px 60px rgba(0, 0, 0, .28);
+      }
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-width: 280px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(270px, .75fr);
+      gap: 40px;
+      align-items: end;
+      padding: 72px 0 38px;
+      border-bottom: 1px solid var(--line);
+    }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 {
+      max-width: 760px;
+      margin-bottom: 18px;
+      font-family: "Literata", serif;
+      font-size: clamp(2.7rem, 7vw, 5.75rem);
+      line-height: .98;
+      letter-spacing: -.055em;
+    }
+    .intro p { max-width: 670px; margin: 0; font-size: 1.1rem; color: var(--muted); }
+    .lesson {
+      padding: 20px 0 4px 24px;
+      border-left: 3px solid var(--green);
+    }
+    .lesson strong { display: block; margin-bottom: 6px; font-size: .92rem; }
+    .lesson p { font-size: .93rem; }
+
+    .calculator { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; padding: 28px 0 64px; }
+    .panel, .results { background: var(--surface); box-shadow: var(--shadow); }
+    .panel { align-self: start; padding: 24px; border-radius: 4px var(--radius-lg) var(--radius-lg) 4px; }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .panel h2, .results h2 { margin: 0; font-family: "Literata", serif; font-size: 1.45rem; letter-spacing: -.025em; }
+    .sample-label { margin-top: 5px; font-size: .76rem; color: var(--muted); }
+    .reset {
+      border: 0; border-bottom: 1px solid var(--line); padding: 2px 0; background: none; color: var(--muted); cursor: pointer; font-size: .82rem;
+    }
+    .reset:hover, .reset:focus-visible { color: var(--ink); border-color: var(--ink); }
+
+    .field { margin-bottom: 22px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 9px; }
+    label { font-weight: 600; font-size: .91rem; }
+    .number-wrap { position: relative; width: 144px; }
+    .number-wrap .prefix, .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: .9rem; }
+    .number-wrap .prefix { left: 12px; }
+    .number-wrap .suffix { right: 12px; }
+    input[type="number"], select {
+      width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); color: var(--ink); outline: none;
+    }
+    input[type="number"] { padding: 8px 36px 8px 26px; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .no-prefix input[type="number"] { padding-left: 12px; }
+    input[type="number"]:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+    input[type="range"] { width: 100%; height: 5px; margin: 4px 0 0; appearance: none; background: var(--track); border-radius: 999px; accent-color: var(--green); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--green); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--green); }
+    select { padding: 8px 34px 8px 11px; cursor: pointer; }
+    .select-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .select-row label { display: block; margin-bottom: 7px; font-size: .8rem; color: var(--muted); }
+
+    .compare-control { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
+    .compare-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 0; padding: 0; background: none; cursor: pointer; text-align: left; font-weight: 700; }
+    .switch { position: relative; width: 42px; height: 24px; flex: 0 0 auto; border-radius: 20px; background: var(--track); transition: .2s ease; }
+    .switch::after { content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px; border-radius: 50%; background: var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,.22); transition: .2s ease; }
+    .compare-toggle[aria-expanded="true"] .switch { background: var(--orange); }
+    .compare-toggle[aria-expanded="true"] .switch::after { transform: translateX(18px); }
+    .compare-fields { display: none; margin-top: 20px; padding: 17px; background: var(--orange-soft); border-radius: 13px; }
+    .compare-fields.open { display: block; }
+    .compare-fields .field { margin-bottom: 17px; }
+    .compare-fields .field:last-child { margin-bottom: 0; }
+    .compare-fields input[type="range"] { accent-color: var(--orange); }
+    .compare-fields input[type="range"]::-webkit-slider-thumb { background: var(--orange); }
+
+    .results { min-width: 0; border-radius: var(--radius-lg) 4px 4px var(--radius-lg); overflow: hidden; }
+    .result-top { padding: 28px 30px 22px; }
+    .result-title-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .horizon { color: var(--muted); font-size: .88rem; }
+    .totals { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 1px; margin-top: 24px; background: var(--line); border: 1px solid var(--line); }
+    .metric { min-width: 0; padding: 18px; background: var(--surface); }
+    .metric .label { display: block; min-height: 40px; color: var(--muted); font-size: .82rem; }
+    .metric strong { display: block; font-family: "Literata", serif; font-size: clamp(1.25rem, 3vw, 2.05rem); line-height: 1.15; letter-spacing: -.035em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .metric.growth strong { color: var(--green); }
+
+    .composition { margin-top: 20px; }
+    .bar { display: flex; height: 12px; border-radius: 2px; overflow: hidden; background: var(--surface-2); }
+    .bar-principal { background: var(--ink); }
+    .bar-contributions { background: var(--muted); }
+    .bar-growth { background: var(--green); }
+    .legend { display: flex; flex-wrap: wrap; gap: 9px 18px; margin-top: 10px; color: var(--muted); font-size: .76rem; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink); }
+    .dot.contributions { background: var(--muted); }
+    .dot.growth { background: var(--green); }
+    .dot.compare { background: var(--orange); }
+
+    .chart-section { padding: 24px 30px 28px; background: var(--surface-2); }
+    .chart-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
+    .chart-head h3, .milestones h3 { margin: 0; font-size: .95rem; }
+    .chart-head p { margin: 0; color: var(--muted); font-size: .78rem; }
+    .chart-wrap { width: 100%; aspect-ratio: 16 / 7; min-height: 220px; }
+    #growthChart { width: 100%; height: 100%; display: block; overflow: visible; }
+    .axis-label { fill: var(--muted); font: 11px "DM Sans", sans-serif; }
+    .grid-line { stroke: var(--line); stroke-width: 1; }
+    .area-fill { fill: var(--green-soft); opacity: .75; }
+    .line-main { fill: none; stroke: var(--green); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .line-compare { fill: none; stroke: var(--orange); stroke-width: 2.5; stroke-dasharray: 7 6; stroke-linecap: round; stroke-linejoin: round; }
+
+    .compare-callout { display: none; margin-top: 18px; padding: 14px 16px; background: var(--surface); border-radius: 11px; font-size: .9rem; }
+    .compare-callout.show { display: block; }
+    .compare-callout strong { color: var(--orange); }
+
+    .milestones { padding: 26px 30px 30px; }
+    .milestone-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 15px; }
+    .year-card { padding: 14px; background: var(--paper); border-radius: 11px; }
+    .year-card span { display: block; margin-bottom: 3px; color: var(--muted); font-size: .75rem; }
+    .year-card strong { font-size: 1rem; font-variant-numeric: tabular-nums; }
+
+    .explain { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; padding: 16px 0 80px; }
+    .explain h2 { font-family: "Literata", serif; font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.08; letter-spacing: -.04em; }
+    .explain p { color: var(--muted); }
+    .formula { align-self: start; padding: 24px 26px; background: var(--green-soft); border-radius: 3px 22px 3px 22px; }
+    .formula code { display: block; margin: 8px 0 12px; color: var(--green); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 700; }
+    .formula p { margin: 0; font-size: .84rem; }
+    .note { font-size: .78rem; color: var(--muted); }
+
+    @media (max-width: 850px) {
+      .intro { grid-template-columns: 1fr; gap: 24px; padding-top: 52px; }
+      .lesson { max-width: 590px; }
+      .calculator { grid-template-columns: 1fr; }
+      .panel, .results { border-radius: 22px; }
+      .panel { position: static; }
+      .explain { gap: 28px; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      .intro { padding: 36px 0 28px; }
+      h1 { font-size: clamp(2.55rem, 15vw, 4.2rem); }
+      .intro p { font-size: 1rem; }
+      .calculator { gap: 14px; padding-top: 18px; }
+      .panel { padding: 20px 16px; }
+      .field-top { align-items: center; }
+      .number-wrap { width: 132px; }
+      .select-row { grid-template-columns: 1fr; }
+      .result-top, .chart-section, .milestones { padding-left: 18px; padding-right: 18px; }
+      .result-title-row { align-items: flex-start; flex-direction: column; gap: 4px; }
+      .totals { grid-template-columns: 1fr; }
+      .metric { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      .metric .label { min-height: 0; max-width: 46%; }
+      .metric strong { text-align: right; }
+      .chart-wrap { min-height: 230px; aspect-ratio: auto; }
+      .milestone-grid { grid-template-columns: 1fr 1fr; }
+      .explain { grid-template-columns: 1fr; padding-bottom: 50px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="intro" aria-labelledby="page-heading">
+      <div>
+        <h1 id="page-heading">See what time can do to your money.</h1>
+        <p>Change the starting amount, monthly habit, return and time horizon. The chart separates what you put in from what compounding adds.</p>
+      </div>
+      <aside class="lesson">
+        <strong>The useful question</strong>
+        <p>Not “What will I earn?” but “How much of the final balance comes from time?” Expected returns are assumptions, never guarantees.</p>
+      </aside>
+    </section>
+
+    <section class="calculator" aria-label="Compound interest calculator">
+      <form class="panel" id="calculatorForm">
+        <div class="panel-head">
+          <div>
+            <h2>Your numbers</h2>
+            <div class="sample-label">Starter example — change anything</div>
+          </div>
+          <button type="button" class="reset" id="resetButton">Reset</button>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="initial">Starting amount</label>
+            <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="initial" type="number" min="0" max="100000000" step="100" value="5000" inputmode="decimal" /></div>
+          </div>
+          <input id="initialRange" type="range" min="0" max="100000" step="500" value="5000" aria-label="Starting amount slider" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="monthly">Monthly contribution</label>
+            <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="monthly" type="number" min="0" max="1000000" step="25" value="300" inputmode="decimal" /></div>
+          </div>
+          <input id="monthlyRange" type="range" min="0" max="5000" step="25" value="300" aria-label="Monthly contribution slider" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="rate">Annual return</label>
+            <div class="number-wrap no-prefix"><input id="rate" type="number" min="-20" max="50" step="0.1" value="7" inputmode="decimal" /><span class="suffix">%</span></div>
+          </div>
+          <input id="rateRange" type="range" min="0" max="15" step="0.1" value="7" aria-label="Annual return slider" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="years">Time to grow</label>
+            <div class="number-wrap no-prefix"><input id="years" type="number" min="1" max="80" step="1" value="25" inputmode="numeric" /><span class="suffix">yr</span></div>
+          </div>
+          <input id="yearsRange" type="range" min="1" max="60" step="1" value="25" aria-label="Years slider" />
+        </div>
+
+        <div class="select-row">
+          <div>
+            <label for="frequency">Compounded</label>
+            <select id="frequency">
+              <option value="1">Yearly</option>
+              <option value="12" selected>Monthly</option>
+              <option value="365">Daily</option>
+            </select>
+          </div>
+          <div>
+            <label for="currency">Currency display</label>
+            <select id="currency">
+              <option value="USD" selected>USD ($)</option>
+              <option value="CAD">CAD ($)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="AUD">AUD ($)</option>
+              <option value="INR">INR (₹)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="compare-control">
+          <button type="button" class="compare-toggle" id="compareToggle" aria-expanded="true" aria-controls="compareFields">
+            <span>Compare starting later</span><span class="switch" aria-hidden="true"></span>
+          </button>
+          <div class="compare-fields open" id="compareFields">
+            <div class="field">
+              <div class="field-top">
+                <label for="delay">Wait before starting</label>
+                <div class="number-wrap no-prefix"><input id="delay" type="number" min="0" max="50" step="1" value="5" inputmode="numeric" /><span class="suffix">yr</span></div>
+              </div>
+              <input id="delayRange" type="range" min="0" max="30" step="1" value="5" aria-label="Years to wait slider" />
+            </div>
+            <div class="field">
+              <div class="field-top">
+                <label for="compareMonthly">Monthly contribution</label>
+                <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="compareMonthly" type="number" min="0" max="1000000" step="25" value="300" inputmode="decimal" /></div>
+              </div>
+              <input id="compareMonthlyRange" type="range" min="0" max="5000" step="25" value="300" aria-label="Comparison monthly contribution slider" />
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <section class="results" aria-live="polite" aria-labelledby="results-heading">
+        <div class="result-top">
+          <div class="result-title-row">
+            <h2 id="results-heading">After <span id="yearsLabel">25</span> years</h2>
+            <span class="horizon" id="monthlyCount">300 monthly contributions</span>
+          </div>
+          <div class="totals">
+            <div class="metric"><span class="label">Ending balance</span><strong id="endingBalance">$0</strong></div>
+            <div class="metric"><span class="label">Money you put in</span><strong id="totalInvested">$0</strong></div>
+            <div class="metric growth"><span class="label">Growth from compounding</span><strong id="totalGrowth">$0</strong></div>
+          </div>
+          <div class="composition">
+            <div class="bar" aria-hidden="true">
+              <span class="bar-principal" id="principalBar"></span>
+              <span class="bar-contributions" id="contributionBar"></span>
+              <span class="bar-growth" id="growthBar"></span>
+            </div>
+            <div class="legend">
+              <span><i class="dot"></i>Starting amount</span>
+              <span><i class="dot contributions"></i>Contributions</span>
+              <span><i class="dot growth"></i>Growth</span>
+              <span id="compareLegend" hidden><i class="dot compare"></i>Comparison</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-section">
+          <div class="chart-head"><h3>Balance over time</h3><p>Nominal value, before fees and taxes</p></div>
+          <div class="chart-wrap"><svg id="growthChart" viewBox="0 0 720 320" role="img" aria-labelledby="chartTitle chartDesc"><title id="chartTitle">Projected investment growth chart</title><desc id="chartDesc">A line chart showing projected account value over time.</desc></svg></div>
+          <div class="compare-callout" id="compareCallout"></div>
+        </div>
+
+        <div class="milestones">
+          <h3>Milestones along the way</h3>
+          <div class="milestone-grid" id="milestoneGrid"></div>
+        </div>
+      </section>
+    </section>
+
+    <section class="explain">
+      <div>
+        <h2>Compounding earns a return on earlier returns.</h2>
+        <p>Your starting money can grow, and then its growth can also grow. Regular contributions add more money for the same process to work on. That is why time can matter as much as the rate.</p>
+        <p class="note">This is an educational estimate. It assumes a steady rate and contributions made at the end of each month. Real returns vary, and inflation reduces future purchasing power.</p>
+      </div>
+      <div class="formula">
+        <strong>The core idea</strong>
+        <code>future value = principal × (1 + rate)<sup>time</sup></code>
+        <p>The calculator also adds the future value of every monthly contribution and adjusts the effective monthly rate to match the selected compounding frequency.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+      var defaults = { initial: 5000, monthly: 300, rate: 7, years: 25, frequency: '12', currency: 'USD', delay: 5, compareMonthly: 300 };
+      var ids = ['initial','monthly','rate','years','frequency','currency','delay','compareMonthly'];
+      var compareOn = true;
+
+      function el(id) { return document.getElementById(id); }
+      function number(id) {
+        var n = parseFloat(el(id).value);
+        return isFinite(n) ? n : 0;
+      }
+      function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+      function compactMoney(value) {
+        var currency = el('currency').value;
+        var abs = Math.abs(value);
+        var digits = abs >= 1000000 ? 1 : 0;
+        try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency, notation: abs >= 1000000 ? 'compact' : 'standard', maximumFractionDigits: digits }).format(value); }
+        catch (e) { return '$' + Math.round(value).toLocaleString(); }
+      }
+      function fullMoney(value) {
+        var currency = el('currency').value;
+        try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency, maximumFractionDigits: 0 }).format(value); }
+        catch (e) { return '$' + Math.round(value).toLocaleString(); }
+      }
+      function currencySymbol() {
+        try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: el('currency').value, currencyDisplay: 'narrowSymbol', maximumFractionDigits: 0 }).formatToParts(0).filter(function(p){return p.type === 'currency';})[0].value; }
+        catch (e) { return '$'; }
+      }
+      function monthlyRate(annualPercent, frequency) {
+        var nominal = annualPercent / 100;
+        if (nominal === 0) return 0;
+        var effectiveAnnual = Math.pow(1 + nominal / frequency, frequency) - 1;
+        return Math.pow(1 + effectiveAnnual, 1 / 12) - 1;
+      }
+      function series(initial, monthly, rate, years, frequency, delayYears) {
+        var months = Math.round(years * 12);
+        var delayMonths = Math.round(delayYears * 12);
+        var r = monthlyRate(rate, frequency);
+        var balance = initial;
+        var values = [balance];
+        for (var i = 1; i <= months; i++) {
+          if (i > delayMonths) balance = balance * (1 + r) + monthly;
+          values.push(balance);
+        }
+        var activeMonths = Math.max(0, months - delayMonths);
+        return { values: values, ending: balance, invested: initial + (monthly * activeMonths), activeMonths: activeMonths };
+      }
+      function syncPair(inputId, rangeId) {
+        var input = el(inputId), range = el(rangeId);
+        input.addEventListener('input', function () { range.value = clamp(number(inputId), parseFloat(range.min), parseFloat(range.max)); calculate(); });
+        range.addEventListener('input', function () { input.value = range.value; calculate(); });
+      }
+      function svgNode(name, attrs) {
+        var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+        Object.keys(attrs || {}).forEach(function(k){ node.setAttribute(k, attrs[k]); });
+        return node;
+      }
+      function drawChart(main, comparison, years) {
+        var svg = el('growthChart');
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        var title = svgNode('title', {id:'chartTitle'}); title.textContent = 'Projected investment growth chart'; svg.appendChild(title);
+        var desc = svgNode('desc', {id:'chartDesc'}); desc.textContent = 'Main path reaches ' + fullMoney(main.ending) + ' after ' + years + ' years' + (comparison ? ', compared with ' + fullMoney(comparison.ending) + '.' : '.'); svg.appendChild(desc);
+        var W = 720, H = 320, left = 70, right = 15, top = 15, bottom = 42;
+        var max = Math.max(main.ending, comparison ? comparison.ending : 0, 1) * 1.08;
+        var innerW = W-left-right, innerH = H-top-bottom;
+        function x(i){ return left + (i/(main.values.length-1))*innerW; }
+        function y(v){ return top + innerH - (v/max)*innerH; }
+        for(var g=0; g<=4; g++) {
+          var gy = top + (g/4)*innerH;
+          svg.appendChild(svgNode('line',{x1:left,y1:gy,x2:W-right,y2:gy,'class':'grid-line'}));
+          var val = max * (1-g/4);
+          var label = svgNode('text',{x:left-10,y:gy+4,'text-anchor':'end','class':'axis-label'}); label.textContent = compactMoney(val); svg.appendChild(label);
+        }
+        var yearTicks = years <= 10 ? Math.min(years,5) : 5;
+        for(var t=0;t<=yearTicks;t++) {
+          var yr = Math.round((years/yearTicks)*t);
+          var tx = left + (yr/years)*innerW;
+          var tl = svgNode('text',{x:tx,y:H-13,'text-anchor':t===0?'start':(t===yearTicks?'end':'middle'),'class':'axis-label'}); tl.textContent = yr === 0 ? 'Now' : 'Year '+yr; svg.appendChild(tl);
+        }
+        function pathFor(values) {
+          return values.map(function(v,i){ return (i===0?'M':'L') + x(i).toFixed(2) + ' ' + y(v).toFixed(2); }).join(' ');
+        }
+        var linePath = pathFor(main.values);
+        var area = linePath + ' L ' + x(main.values.length-1) + ' ' + (top+innerH) + ' L ' + left + ' ' + (top+innerH) + ' Z';
+        svg.appendChild(svgNode('path',{d:area,'class':'area-fill'}));
+        svg.appendChild(svgNode('path',{d:linePath,'class':'line-main'}));
+        if(comparison) svg.appendChild(svgNode('path',{d:pathFor(comparison.values),'class':'line-compare'}));
+      }
+      function renderMilestones(main, years) {
+        var grid = el('milestoneGrid'); grid.innerHTML = '';
+        var points = [Math.max(1,Math.round(years*.25)), Math.max(1,Math.round(years*.5)), Math.max(1,Math.round(years*.75)), years];
+        points = points.filter(function(v,i,a){ return a.indexOf(v) === i; });
+        points.forEach(function(year){
+          var card = document.createElement('div'); card.className='year-card';
+          var s = document.createElement('span'); s.textContent='Year '+year;
+          var strong = document.createElement('strong'); strong.textContent=fullMoney(main.values[Math.min(main.values.length-1, year*12)]);
+          card.appendChild(s); card.appendChild(strong); grid.appendChild(card);
+        });
+      }
+      function calculate() {
+        var initial = clamp(number('initial'),0,100000000);
+        var monthly = clamp(number('monthly'),0,1000000);
+        var rate = clamp(number('rate'),-20,50);
+        var years = Math.round(clamp(number('years'),1,80));
+        var frequency = parseInt(el('frequency').value,10);
+        var main = series(initial,monthly,rate,years,frequency,0);
+        var growth = main.ending-main.invested;
+        el('yearsLabel').textContent=years;
+        el('monthlyCount').textContent=(years*12).toLocaleString()+' monthly contributions';
+        el('endingBalance').textContent=fullMoney(main.ending);
+        el('totalInvested').textContent=fullMoney(main.invested);
+        el('totalGrowth').textContent=fullMoney(growth);
+        var denom = Math.max(main.ending,1);
+        el('principalBar').style.width=(initial/denom*100)+'%';
+        el('contributionBar').style.width=(Math.max(0,main.invested-initial)/denom*100)+'%';
+        el('growthBar').style.width=(Math.max(0,growth)/denom*100)+'%';
+        document.querySelectorAll('.currency-symbol').forEach(function(node){node.textContent=currencySymbol();});
+        var comparison = null;
+        if(compareOn) {
+          var delay=Math.round(clamp(number('delay'),0,Math.max(0,years-1)));
+          var cm=clamp(number('compareMonthly'),0,1000000);
+          comparison=series(initial,cm,rate,years,frequency,delay);
+          var diff=main.ending-comparison.ending;
+          var wording=diff>=0 ? '<strong>'+fullMoney(diff)+' more</strong> by starting now.' : '<strong>'+fullMoney(Math.abs(diff))+' more</strong> on the comparison path.';
+          el('compareCallout').innerHTML='Waiting '+delay+' '+(delay===1?'year':'years')+' and then contributing '+fullMoney(cm)+' a month ends at '+fullMoney(comparison.ending)+' — '+wording;
+        }
+        el('compareCallout').classList.toggle('show',compareOn);
+        el('compareLegend').hidden=!compareOn;
+        drawChart(main,comparison,years);
+        renderMilestones(main,years);
+      }
+      syncPair('initial','initialRange');
+      syncPair('monthly','monthlyRange');
+      syncPair('rate','rateRange');
+      syncPair('years','yearsRange');
+      syncPair('delay','delayRange');
+      syncPair('compareMonthly','compareMonthlyRange');
+      ['frequency','currency'].forEach(function(id){el(id).addEventListener('change',calculate);});
+      el('compareToggle').addEventListener('click',function(){
+        compareOn=!compareOn;
+        this.setAttribute('aria-expanded',String(compareOn));
+        el('compareFields').classList.toggle('open',compareOn);
+        calculate();
+      });
+      el('resetButton').addEventListener('click',function(){
+        ids.forEach(function(id){el(id).value=defaults[id];});
+        ['initial','monthly','rate','years','delay','compareMonthly'].forEach(function(id){el(id+'Range').value=defaults[id];});
+        compareOn=false; el('compareToggle').setAttribute('aria-expanded','false'); el('compareFields').classList.remove('open'); calculate();
+      });
+      el('calculatorForm').addEventListener('submit',function(e){e.preventDefault();});
+      calculate();
+    }());
+  </script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>

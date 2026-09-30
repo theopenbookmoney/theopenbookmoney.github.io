@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>TFSA vs RRSP Calculator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: #f5f7f4;
+      --surface: #ffffff;
+      --surface-2: #e9eeea;
+      --ink: #17231d;
+      --muted: #506158;
+      --line: #c8d2cb;
+      --tfsa: #19704e;
+      --tfsa-soft: #dceee5;
+      --rrsp: #b33b32;
+      --rrsp-soft: #f4e2df;
+      --gold: #a66d15;
+      --shadow: 0 16px 50px rgba(24, 46, 35, 0.09);
+      --focus: #0b6fdb;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101713;
+        --surface: #17201b;
+        --surface-2: #202c25;
+        --ink: #edf5ef;
+        --muted: #b5c3ba;
+        --line: #3a4a40;
+        --tfsa: #6ed2a1;
+        --tfsa-soft: #173a2b;
+        --rrsp: #f18c80;
+        --rrsp-soft: #472522;
+        --gold: #e3b25e;
+        --shadow: 0 18px 54px rgba(0,0,0,.28);
+        --focus: #69b5ff;
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.58 "IBM Plex Sans", sans-serif;
+      text-rendering: optimizeLegibility;
+    }
+    a { color: inherit; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    a:hover { color: var(--tfsa); }
+    button, input { font: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 3px;
+    }
+    .page { max-width: 1180px; margin: 0 auto; padding: 28px 22px 72px; }
+    .mast {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(260px, .65fr);
+      gap: clamp(28px, 6vw, 86px);
+      align-items: end;
+      padding: clamp(44px, 8vw, 96px) 0 48px;
+      border-bottom: 1px solid var(--line);
+    }
+    .edition { color: var(--muted); font-size: .82rem; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; margin: 0 0 18px; }
+    h1, h2, h3 { font-family: "Source Serif 4", Georgia, serif; line-height: 1.08; margin: 0; }
+    h1 { font-size: clamp(3.1rem, 8.4vw, 7.3rem); letter-spacing: -.055em; max-width: 840px; }
+    h1 .vs { color: var(--muted); font-style: italic; font-weight: 500; }
+    .standfirst { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(1.3rem, 2.4vw, 1.75rem); line-height: 1.4; margin: 22px 0 0; max-width: 780px; }
+    .mast-note { border-top: 4px solid var(--ink); padding-top: 18px; }
+    .mast-note strong { display: block; font-size: 1.05rem; margin-bottom: 7px; }
+    .mast-note p { margin: 0; color: var(--muted); }
+
+    .article-layout { display: grid; grid-template-columns: 190px minmax(0, 760px); gap: clamp(34px, 7vw, 88px); justify-content: center; padding-top: 54px; }
+    .toc { position: sticky; top: 20px; align-self: start; }
+    .toc b { display: block; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; margin-bottom: 12px; }
+    .toc a { display: block; padding: 7px 0; color: var(--muted); font-size: .92rem; text-decoration: none; border-bottom: 1px solid var(--line); }
+    .toc a:hover { color: var(--ink); }
+    article section { scroll-margin-top: 20px; margin-bottom: 72px; }
+    h2 { font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: -.035em; margin-bottom: 20px; }
+    h3 { font-size: 1.45rem; margin-bottom: 8px; }
+    p { margin: 0 0 18px; }
+    .lede { font-size: 1.13rem; }
+    .rule { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: center; margin: 28px 0; }
+    .rule .pane { padding: 22px; min-height: 152px; }
+    .pane.tfsa { background: var(--tfsa-soft); }
+    .pane.rrsp { background: var(--rrsp-soft); }
+    .pane small { display: block; color: var(--muted); margin-top: 10px; }
+    .or { font-family: "Source Serif 4", serif; font-style: italic; color: var(--muted); }
+    .verdict {
+      border: 1px solid var(--line);
+      border-left: 7px solid var(--gold);
+      padding: 20px 22px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+    .verdict strong { font-size: 1.08rem; }
+    .formula {
+      margin: 26px 0;
+      padding: 22px;
+      background: var(--ink);
+      color: var(--paper);
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: clamp(1.1rem, 2.2vw, 1.35rem);
+      line-height: 1.5;
+    }
+    .formula code { font-family: "IBM Plex Sans", sans-serif; color: inherit; font-weight: 600; }
+    .table-wrap { border-top: 4px solid var(--ink); }
+    .compare-row { display: grid; grid-template-columns: 1.05fr 1fr 1fr; border-bottom: 1px solid var(--line); }
+    .compare-row > div { padding: 16px 14px; }
+    .compare-row > div:first-child { font-weight: 600; padding-left: 0; }
+    .compare-row.head { font-weight: 700; color: var(--muted); font-size: .83rem; letter-spacing: .08em; text-transform: uppercase; }
+    .tag-tfsa { color: var(--tfsa); }
+    .tag-rrsp { color: var(--rrsp); }
+    .limits { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 26px; }
+    .limit { padding: 22px; border: 1px solid var(--line); background: var(--surface); }
+    .limit b { display: block; font-size: clamp(2rem, 5vw, 3rem); font-family: "Source Serif 4", serif; line-height: 1; margin: 8px 0; }
+    .limit small { color: var(--muted); }
+    .decision-list { list-style: none; padding: 0; margin: 28px 0 0; }
+    .decision-list li { display: grid; grid-template-columns: 46px 1fr; gap: 16px; border-top: 1px solid var(--line); padding: 20px 0; }
+    .decision-list .num { font: 700 1.2rem/1 "Source Serif 4", serif; color: var(--muted); }
+
+    .calculator-shell { margin-top: 74px; border-top: 8px solid var(--ink); padding-top: 36px; }
+    .calc-intro { max-width: 760px; }
+    .calc-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: 26px; align-items: start; margin-top: 30px; }
+    .controls, .results { background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow); }
+    .controls { padding: 24px; }
+    .control { margin-bottom: 20px; }
+    .control:last-child { margin-bottom: 0; }
+    label { display: flex; justify-content: space-between; gap: 14px; font-weight: 600; margin-bottom: 7px; }
+    label span { color: var(--muted); font-weight: 400; }
+    input[type="number"] { width: 100%; background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 4px; padding: 11px 12px; }
+    .mode-label { font-weight: 700; margin-bottom: 9px; }
+    .mode { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); padding: 4px; gap: 4px; margin-bottom: 24px; }
+    .mode button { border: 0; background: transparent; color: var(--muted); min-height: 44px; padding: 8px 10px; cursor: pointer; border-radius: 3px; font-weight: 600; }
+    .mode button.active { background: var(--surface); color: var(--ink); box-shadow: 0 2px 10px rgba(0,0,0,.1); }
+    .results { overflow: hidden; }
+    .result-head { padding: 24px 26px; background: var(--surface-2); border-bottom: 1px solid var(--line); }
+    .result-head .eyebrow { color: var(--muted); font-size: .82rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .result-head h3 { font-size: clamp(1.7rem, 4vw, 2.5rem); margin: 6px 0 0; }
+    .result-head p { margin: 8px 0 0; color: var(--muted); }
+    .bars { padding: 28px 26px 22px; }
+    .bar-block { margin-bottom: 25px; }
+    .bar-meta { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 8px; }
+    .bar-meta strong { font-size: 1.05rem; }
+    .bar-meta output { font: 700 clamp(1.3rem, 3vw, 1.8rem)/1 "Source Serif 4", serif; }
+    .track { height: 12px; background: var(--surface-2); overflow: hidden; }
+    .fill { height: 100%; width: 0; transition: width .35s ease; }
+    .fill.tfsa { background: var(--tfsa); }
+    .fill.rrsp { background: var(--rrsp); }
+    .details { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+    .details div { padding: 18px; border-right: 1px solid var(--line); }
+    .details div:last-child { border-right: 0; }
+    .details small { display: block; color: var(--muted); line-height: 1.3; min-height: 34px; }
+    .details b { display: block; margin-top: 7px; font-size: 1.08rem; }
+    .assumption-note { padding: 18px 26px; border-top: 1px solid var(--line); color: var(--muted); font-size: .9rem; }
+    .sources { margin-top: 70px; padding-top: 28px; border-top: 1px solid var(--line); }
+    .sources h2 { font-size: 1.8rem; }
+    .sources ol { padding-left: 22px; }
+    .sources li { margin: 10px 0; color: var(--muted); }
+    .disclaimer { margin-top: 28px; padding: 18px 0 0; border-top: 1px solid var(--line); color: var(--muted); font-size: .88rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+    @media (max-width: 820px) {
+      .mast { grid-template-columns: 1fr; }
+      .mast-note { max-width: 520px; }
+      .article-layout { display: block; }
+      .toc { position: static; display: grid; grid-template-columns: 1fr 1fr; gap: 0 16px; margin-bottom: 52px; }
+      .toc b { grid-column: 1 / -1; }
+      .calc-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .page { padding: 18px 16px 48px; }
+      .mast { padding: 40px 0 34px; }
+      h1 { font-size: clamp(3rem, 18vw, 5rem); }
+      .rule { grid-template-columns: 1fr; }
+      .or { text-align: center; }
+      .compare-row { grid-template-columns: 1fr 1fr; padding: 14px 0; }
+      .compare-row > div { padding: 5px 8px; }
+      .compare-row > div:first-child { grid-column: 1 / -1; padding: 0 8px 8px 0; }
+      .compare-row.head > div:first-child { display: none; }
+      .limits { grid-template-columns: 1fr; }
+      .mode { grid-template-columns: 1fr; }
+      .details { grid-template-columns: 1fr; }
+      .details div { border-right: 0; border-bottom: 1px solid var(--line); }
+      .details div:last-child { border-bottom: 0; }
+      article section { margin-bottom: 56px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .fill { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="mast">
+      <div>
+        <p class="edition">Canadian money guide · 2026 rules</p>
+        <h1>TFSA <span class="vs">vs</span> RRSP</h1>
+        <p class="standfirst">The real contest is not “tax-free” versus “tax-deferred.” It is your tax rate now versus your tax rate when the money comes out.</p>
+      </div>
+      <aside class="mast-note" aria-label="Quick answer">
+        <strong>The one-line answer</strong>
+        <p>If your tax rate is higher today than in retirement, the RRSP can pull ahead—provided you invest the full tax benefit. If the rates are equal, a properly grossed-up RRSP and TFSA are mathematically tied.</p>
+      </aside>
+    </header>
+
+    <div class="article-layout">
+      <nav class="toc" aria-label="On this page">
+        <b>On this page</b>
+        <a href="#mechanism">The mechanism</a>
+        <a href="#comparison">Side by side</a>
+        <a href="#decision">How to decide</a>
+        <a href="#calculator">Run your numbers</a>
+      </nav>
+
+      <article>
+        <section id="mechanism">
+          <h2>Start with the mechanism</h2>
+          <p class="lede">A TFSA taxes the money before it goes in, then generally leaves the contribution, growth and withdrawal tax-free. An RRSP can reduce tax today, shelters growth inside the plan, and generally taxes withdrawals later.</p>
+          <div class="rule" aria-label="TFSA and RRSP tax timing">
+            <div class="pane tfsa">
+              <h3 class="tag-tfsa">TFSA</h3>
+              <p>Pay tax now → invest after-tax dollars → withdraw tax-free.</p>
+              <small>No deduction for the contribution.</small>
+            </div>
+            <div class="or">versus</div>
+            <div class="pane rrsp">
+              <h3 class="tag-rrsp">RRSP</h3>
+              <p>Deduct now → invest pre-tax dollars → pay tax on withdrawal.</p>
+              <small>The deduction’s value depends on your marginal tax rate.</small>
+            </div>
+          </div>
+          <p>The familiar mistake is to compare the same dollar contribution in each account and ignore the RRSP deduction. That gives the TFSA less money to work with. A fair comparison holds your <em>after-tax cost</em> constant.</p>
+          <div class="formula">
+            <div><code>TFSA future value</code> = after-tax savings × growth</div>
+            <div><code>RRSP after-tax value</code> = grossed-up savings × growth × (1 − withdrawal tax rate)</div>
+          </div>
+          <div class="verdict">
+            <strong>Tax rates equal? It is a tie.</strong>
+            <p style="margin:6px 0 0">With the same investments and fees, and the full RRSP tax benefit invested, the two structures deliver the same after-tax result when the contribution and withdrawal tax rates match.</p>
+          </div>
+        </section>
+
+        <section id="comparison">
+          <h2>What changes the choice</h2>
+          <div class="table-wrap" role="table" aria-label="TFSA and RRSP comparison">
+            <div class="compare-row head" role="row">
+              <div role="columnheader">Feature</div><div role="columnheader" class="tag-tfsa">TFSA</div><div role="columnheader" class="tag-rrsp">RRSP</div>
+            </div>
+            <div class="compare-row" role="row">
+              <div role="rowheader">Contribution</div><div role="cell">Not deductible</div><div role="cell">Deductible, within your limit</div>
+            </div>
+            <div class="compare-row" role="row">
+              <div role="rowheader">Growth</div><div role="cell">Generally tax-free</div><div role="cell">Generally tax-sheltered while inside</div>
+            </div>
+            <div class="compare-row" role="row">
+              <div role="rowheader">Withdrawal</div><div role="cell">Generally tax-free</div><div role="cell">Generally taxable income</div>
+            </div>
+            <div class="compare-row" role="row">
+              <div role="rowheader">Federal income-tested benefits</div><div role="cell">Income and withdrawals do not affect them</div><div role="cell">Taxable withdrawals can raise reported income</div>
+            </div>
+            <div class="compare-row" role="row">
+              <div role="rowheader">Access</div><div role="cell">Withdraw anytime; room returns next calendar year</div><div role="cell">Ordinary withdrawals are taxable; locked-in plans have restrictions</div>
+            </div>
+          </div>
+
+          <div class="limits" aria-label="2026 contribution limits">
+            <div class="limit">
+              <span class="tag-tfsa">2026 TFSA dollar limit</span>
+              <b>$7,000</b>
+              <small>Unused room carries forward. Your actual room may be higher or lower depending on your history.</small>
+            </div>
+            <div class="limit">
+              <span class="tag-rrsp">2026 RRSP dollar limit</span>
+              <b>$33,810</b>
+              <small>This is the annual dollar ceiling, not everyone’s personal limit. Earned income, pension adjustments and unused room matter.</small>
+            </div>
+          </div>
+        </section>
+
+        <section id="decision">
+          <h2>A decision order that survives the slogans</h2>
+          <ol class="decision-list">
+            <li><span class="num">01</span><div><h3>Compare marginal rates</h3><p>If today’s rate is above your expected withdrawal rate, the RRSP gets a structural advantage. If it is below, the TFSA gets it. Equal rates point to a tie before other considerations.</p></div></li>
+            <li><span class="num">02</span><div><h3>Be honest about the refund</h3><p>The RRSP advantage depends on investing the tax benefit. Spending the refund breaks the equal-cost comparison and leaves less money compounding.</p></div></li>
+            <li><span class="num">03</span><div><h3>Price flexibility</h3><p>TFSA withdrawals are generally tax-free, and the amount withdrawn is added back to contribution room the next calendar year. That flexibility can be valuable well before retirement.</p></div></li>
+            <li><span class="num">04</span><div><h3>Consider benefit interactions</h3><p>TFSA income and withdrawals do not affect federal income-tested benefits or credits. RRSP withdrawals are generally taxable, so they can increase the income used in benefit calculations.</p></div></li>
+            <li><span class="num">05</span><div><h3>Use your actual room</h3><p>Contribution limits are personal. Check your records and CRA information before depositing; this page does not calculate available contribution room.</p></div></li>
+          </ol>
+        </section>
+      </article>
+    </div>
+
+    <section id="calculator" class="calculator-shell" aria-labelledby="calc-title">
+      <div class="calc-intro">
+        <p class="edition">Interactive calculator</p>
+        <h2 id="calc-title">Run the tax-rate trade</h2>
+        <p class="lede">Choose “equal after-tax cost” for the cleanest comparison. The calculator treats each amount as an end-of-year contribution and assumes the same return and fees in both accounts.</p>
+      </div>
+
+      <div class="calc-grid">
+        <form class="controls" id="calcForm" onsubmit="return false">
+          <div class="mode-label">Comparison basis</div>
+          <div class="mode" role="group" aria-label="Comparison basis">
+            <button type="button" id="equalCost" class="active" aria-pressed="true">Equal after-tax cost</button>
+            <button type="button" id="equalContribution" aria-pressed="false">Equal contribution</button>
+          </div>
+          <div class="control">
+            <label for="annual">Annual savings <span>CAD</span></label>
+            <input id="annual" type="number" min="0" max="1000000" step="100" value="7000" inputmode="decimal" />
+          </div>
+          <div class="control">
+            <label for="years">Years invested <span>1–60</span></label>
+            <input id="years" type="number" min="1" max="60" step="1" value="25" inputmode="numeric" />
+          </div>
+          <div class="control">
+            <label for="returnRate">Annual return <span>%</span></label>
+            <input id="returnRate" type="number" min="0" max="20" step="0.1" value="5" inputmode="decimal" />
+          </div>
+          <div class="control">
+            <label for="taxNow">Marginal tax rate today <span>%</span></label>
+            <input id="taxNow" type="number" min="0" max="60" step="0.5" value="35" inputmode="decimal" />
+          </div>
+          <div class="control">
+            <label for="taxLater">Tax rate on RRSP withdrawal <span>%</span></label>
+            <input id="taxLater" type="number" min="0" max="60" step="0.5" value="25" inputmode="decimal" />
+          </div>
+        </form>
+
+        <div class="results" aria-live="polite">
+          <div class="result-head">
+            <div class="eyebrow">Estimated outcome</div>
+            <h3 id="winner">RRSP finishes ahead</h3>
+            <p id="difference">After estimated withdrawal tax, the RRSP is ahead by $0.</p>
+          </div>
+          <div class="bars">
+            <div class="bar-block">
+              <div class="bar-meta"><strong class="tag-tfsa">TFSA</strong><output id="tfsaValue">$0</output></div>
+              <div class="track"><div class="fill tfsa" id="tfsaBar"></div></div>
+            </div>
+            <div class="bar-block">
+              <div class="bar-meta"><strong class="tag-rrsp">RRSP after tax</strong><output id="rrspValue">$0</output></div>
+              <div class="track"><div class="fill rrsp" id="rrspBar"></div></div>
+            </div>
+          </div>
+          <div class="details">
+            <div><small>Annual TFSA deposit</small><b id="tfsaDeposit">$0</b></div>
+            <div><small>Annual RRSP deposit</small><b id="rrspDeposit">$0</b></div>
+            <div><small id="refundLabel">Tax benefit reinvested</small><b id="refundValue">$0</b></div>
+          </div>
+          <div class="assumption-note" id="modeNote">The RRSP contribution is grossed up so its after-tax cost matches the TFSA deposit. This assumes the deduction has full value at the entered marginal rate.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="sources" aria-labelledby="sources-title">
+      <h2 id="sources-title">Sources & assumptions</h2>
+      <ol>
+        <li><a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account/what.html" target="_blank" rel="noopener noreferrer">Canada Revenue Agency — What is a TFSA</a>: tax treatment, withdrawal rules, eligible holdings and benefit interactions.</li>
+        <li><a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/about-your-tax-return/tax-return/completing-a-tax-return/deductions-credits-expenses/line-20800-rrsp-deduction.html" target="_blank" rel="noopener noreferrer">Canada Revenue Agency — RRSP deduction</a>: deduction and tax deferral.</li>
+        <li><a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/rrsps-related-plans/making-withdrawals.html" target="_blank" rel="noopener noreferrer">Canada Revenue Agency — Making RRSP withdrawals</a>: withdrawals and taxation.</li>
+        <li><a href="https://www.canada.ca/en/revenue-agency/services/tax/registered-plans-administrators/pspa/mp-rrsp-dpsp-tfsa-limits-ympe.html" target="_blank" rel="noopener noreferrer">Canada Revenue Agency — Registered plan limits</a>: 2026 TFSA and RRSP dollar limits.</li>
+        <li><a href="https://www.canada.ca/en/revenue-agency/services/tax/individuals/topics/tax-free-savings-account/contributing/calculate-room.html" target="_blank" rel="noopener noreferrer">Canada Revenue Agency — Calculate TFSA contribution room</a>: annual room and re-contribution timing.</li>
+      </ol>
+      <p class="disclaimer">Illustration only, not tax or investment advice. Results are nominal, assume a constant annual return net of fees, end-of-year deposits, constant tax rates, full deductibility of RRSP contributions and a single tax rate on all RRSP withdrawals. The calculator does not model inflation, changing tax brackets, withholding tax, pension adjustments, contribution-room limits, OAS/GIS clawbacks, or special programs such as the HBP and LLP. Tax rules and personal circumstances can change.</p>
+    </section>
+  </main>
+
+  <script>
+    (function () {
+      var mode = 'cost';
+      var ids = ['annual', 'years', 'returnRate', 'taxNow', 'taxLater'];
+      var form = document.getElementById('calcForm');
+      var money = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 });
+
+      function num(id, min, max) {
+        var el = document.getElementById(id);
+        var value = parseFloat(el.value);
+        if (!isFinite(value)) value = min;
+        return Math.min(max, Math.max(min, value));
+      }
+
+      function futureValue(payment, rate, years) {
+        if (rate === 0) return payment * years;
+        return payment * ((Math.pow(1 + rate, years) - 1) / rate);
+      }
+
+      function update() {
+        var annual = num('annual', 0, 1000000);
+        var years = Math.round(num('years', 1, 60));
+        var rate = num('returnRate', 0, 20) / 100;
+        var now = num('taxNow', 0, 60) / 100;
+        var later = num('taxLater', 0, 60) / 100;
+        var rrspAnnual = mode === 'cost' ? annual / (1 - now) : annual;
+        var taxBenefit = rrspAnnual * now;
+        var tfsa = futureValue(annual, rate, years);
+        var rrspPreTax = futureValue(rrspAnnual, rate, years);
+        var rrsp = rrspPreTax * (1 - later);
+        var diff = rrsp - tfsa;
+        var tolerance = Math.max(1, Math.max(tfsa, rrsp) * 0.0001);
+        var maxVal = Math.max(tfsa, rrsp, 1);
+
+        document.getElementById('tfsaValue').textContent = money.format(tfsa);
+        document.getElementById('rrspValue').textContent = money.format(rrsp);
+        document.getElementById('tfsaDeposit').textContent = money.format(annual);
+        document.getElementById('rrspDeposit').textContent = money.format(rrspAnnual);
+        document.getElementById('refundValue').textContent = money.format(taxBenefit);
+        document.getElementById('tfsaBar').style.width = (tfsa / maxVal * 100).toFixed(1) + '%';
+        document.getElementById('rrspBar').style.width = (rrsp / maxVal * 100).toFixed(1) + '%';
+
+        var winner = document.getElementById('winner');
+        var difference = document.getElementById('difference');
+        if (Math.abs(diff) <= tolerance) {
+          winner.textContent = 'A mathematical tie';
+          difference.textContent = 'Under these assumptions, both accounts finish at essentially the same after-tax value.';
+        } else if (diff > 0) {
+          winner.textContent = 'RRSP finishes ahead';
+          difference.textContent = 'After estimated withdrawal tax, the RRSP is ahead by ' + money.format(Math.abs(diff)) + '.';
+        } else {
+          winner.textContent = 'TFSA finishes ahead';
+          difference.textContent = 'After estimated withdrawal tax, the TFSA is ahead by ' + money.format(Math.abs(diff)) + '.';
+        }
+      }
+
+      function setMode(next) {
+        mode = next;
+        var equalCost = document.getElementById('equalCost');
+        var equalContribution = document.getElementById('equalContribution');
+        equalCost.classList.toggle('active', mode === 'cost');
+        equalContribution.classList.toggle('active', mode === 'contribution');
+        equalCost.setAttribute('aria-pressed', String(mode === 'cost'));
+        equalContribution.setAttribute('aria-pressed', String(mode === 'contribution'));
+        document.getElementById('refundLabel').textContent = mode === 'cost' ? 'Tax benefit reinvested' : 'Tax benefit not invested';
+        document.getElementById('modeNote').textContent = mode === 'cost'
+          ? 'The RRSP contribution is grossed up so its after-tax cost matches the TFSA deposit. This assumes the deduction has full value at the entered marginal rate.'
+          : 'Both accounts receive the same contribution. The estimated RRSP tax benefit is shown but excluded from the future value, so this is not an equal after-tax-cost comparison.';
+        update();
+      }
+
+      ids.forEach(function (id) { document.getElementById(id).addEventListener('input', update); });
+      document.getElementById('equalCost').addEventListener('click', function () { setMode('cost'); });
+      document.getElementById('equalContribution').addEventListener('click', function () { setMode('contribution'); });
+      update();
+    })();
+  </script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>
