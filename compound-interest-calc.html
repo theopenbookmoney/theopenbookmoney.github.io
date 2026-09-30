@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="color-scheme" content="light dark" />
   <link rel="icon" href="data:," />
-  <title>Compound Interest Calculator</title>
+  <title>Compound Interest Calculator · The Open Book</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap');
 
@@ -25,6 +25,7 @@
       --shadow: 0 18px 45px rgba(29, 39, 33, .09);
       --radius-lg: 28px;
       --radius-md: 16px;
+      --focus: #0b6fdb;
     }
 
     @media (prefers-color-scheme: dark) {
@@ -41,11 +42,11 @@
         --orange-soft: #47291e;
         --track: #39453e;
         --shadow: 0 22px 60px rgba(0, 0, 0, .28);
+        --focus: #69b5ff;
       }
     }
 
     * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
     body {
       margin: 0;
       min-width: 280px;
@@ -57,34 +58,27 @@
     }
     button, input, select { font: inherit; }
     button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 2px;
+    }
     .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
 
-    .intro {
-      display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(270px, .75fr);
-      gap: 40px;
-      align-items: end;
-      padding: 72px 0 38px;
-      border-bottom: 1px solid var(--line);
-    }
-    h1, h2, h3, p { margin-top: 0; }
-    h1 {
-      max-width: 760px;
-      margin-bottom: 18px;
-      font-family: "Literata", serif;
-      font-size: clamp(2.7rem, 7vw, 5.75rem);
-      line-height: .98;
-      letter-spacing: -.055em;
-    }
-    .intro p { max-width: 670px; margin: 0; font-size: 1.1rem; color: var(--muted); }
-    .lesson {
-      padding: 20px 0 4px 24px;
-      border-left: 3px solid var(--green);
-    }
-    .lesson strong { display: block; margin-bottom: 6px; font-size: .92rem; }
-    .lesson p { font-size: .93rem; }
+    .topbar { border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar-inner { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 14px 0; display: flex; align-items: center; gap: 10px; }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
 
-    .calculator { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; padding: 28px 0 64px; }
+    .tool-head { max-width: 720px; padding: 30px 0 6px; }
+    .tool-head h1 {
+      margin: 0 0 10px;
+      font-family: "Literata", serif;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .tool-head p { margin: 0; font-size: 1.05rem; color: var(--muted); }
+
+    .calculator { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; padding: 24px 0 40px; }
     .panel, .results { background: var(--surface); box-shadow: var(--shadow); }
     .panel { align-self: start; padding: 24px; border-radius: 4px var(--radius-lg) var(--radius-lg) 4px; }
     .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
@@ -97,9 +91,10 @@
 
     .field { margin-bottom: 22px; }
     .field:last-child { margin-bottom: 0; }
-    .field-top { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 9px; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 9px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
     label { font-weight: 600; font-size: .91rem; }
-    .number-wrap { position: relative; width: 144px; }
+    .number-wrap { position: relative; width: 144px; flex: 0 0 auto; }
     .number-wrap .prefix, .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: .9rem; }
     .number-wrap .prefix { left: 12px; }
     .number-wrap .suffix { right: 12px; }
@@ -114,6 +109,19 @@
     select { padding: 8px 34px 8px 11px; cursor: pointer; }
     .select-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .select-row label { display: block; margin-bottom: 7px; font-size: .8rem; color: var(--muted); }
+
+    .info-btn {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--line); background: none; color: var(--muted);
+      font-family: Georgia, serif; font-style: italic; font-size: .78rem; line-height: 1;
+      cursor: pointer; padding: 0; flex: 0 0 auto;
+    }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text {
+      margin: 10px 0 0; padding: 10px 12px; border-radius: 8px;
+      background: var(--surface-2); color: var(--muted); font-size: .85rem;
+    }
 
     .compare-control { margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--line); }
     .compare-toggle { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 0; padding: 0; background: none; cursor: pointer; text-align: left; font-weight: 700; }
@@ -172,28 +180,27 @@
     .year-card span { display: block; margin-bottom: 3px; color: var(--muted); font-size: .75rem; }
     .year-card strong { font-size: 1rem; font-variant-numeric: tabular-nums; }
 
-    .explain { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; padding: 16px 0 80px; }
-    .explain h2 { font-family: "Literata", serif; font-size: clamp(1.8rem, 4vw, 2.8rem); line-height: 1.08; letter-spacing: -.04em; }
-    .explain p { color: var(--muted); }
-    .formula { align-self: start; padding: 24px 26px; background: var(--green-soft); border-radius: 3px 22px 3px 22px; }
-    .formula code { display: block; margin: 8px 0 12px; color: var(--green); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: clamp(1rem, 3vw, 1.25rem); font-weight: 700; }
-    .formula p { margin: 0; font-size: .84rem; }
-    .note { font-size: .78rem; color: var(--muted); }
+    .assumptions { margin: 6px 0 0; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+    .assumptions summary { padding: 16px 20px; cursor: pointer; font-weight: 600; font-size: .95rem; list-style: none; }
+    .assumptions summary::-webkit-details-marker { display: none; }
+    .assumptions summary::before { content: "+ "; color: var(--muted); }
+    .assumptions[open] summary::before { content: "− "; }
+    .assumptions .body { padding: 0 20px 18px; color: var(--muted); font-size: .88rem; }
+    .assumptions .body p { margin: 0 0 10px; }
+    .assumptions code { display: block; margin: 8px 0 12px; color: var(--green); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 1rem; font-weight: 700; }
+
+    .fineprint { margin: 22px 0 60px; color: var(--muted); font-size: .85rem; }
+    .fineprint a { color: inherit; }
 
     @media (max-width: 850px) {
-      .intro { grid-template-columns: 1fr; gap: 24px; padding-top: 52px; }
-      .lesson { max-width: 590px; }
       .calculator { grid-template-columns: 1fr; }
       .panel, .results { border-radius: 22px; }
       .panel { position: static; }
-      .explain { gap: 28px; }
     }
     @media (max-width: 600px) {
       .wrap { width: min(100% - 24px, 1180px); }
-      .intro { padding: 36px 0 28px; }
-      h1 { font-size: clamp(2.55rem, 15vw, 4.2rem); }
-      .intro p { font-size: 1rem; }
-      .calculator { gap: 14px; padding-top: 18px; }
+      .tool-head { padding-top: 22px; }
+      .calculator { gap: 14px; padding-top: 16px; }
       .panel { padding: 20px 16px; }
       .field-top { align-items: center; }
       .number-wrap { width: 132px; }
@@ -206,23 +213,24 @@
       .metric strong { text-align: right; }
       .chart-wrap { min-height: 230px; aspect-ratio: auto; }
       .milestone-grid { grid-template-columns: 1fr 1fr; }
-      .explain { grid-template-columns: 1fr; padding-bottom: 50px; }
     }
     @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
   </style>
 </head>
 <body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html" target="_top">The Open Book</a>
+      <span class="sep">·</span>
+      <span>Compound interest calculator</span>
+    </div>
+  </header>
+
   <main class="wrap">
-    <section class="intro" aria-labelledby="page-heading">
-      <div>
-        <h1 id="page-heading">See what time can do to your money.</h1>
-        <p>Change the starting amount, monthly habit, return and time horizon. The chart separates what you put in from what compounding adds.</p>
-      </div>
-      <aside class="lesson">
-        <strong>The useful question</strong>
-        <p>Not “What will I earn?” but “How much of the final balance comes from time?” Expected returns are assumptions, never guarantees.</p>
-      </aside>
-    </section>
+    <div class="tool-head">
+      <h1>Compound interest calculator</h1>
+      <p>See what time does to your money — change anything, watch the chart move.</p>
+    </div>
 
     <section class="calculator" aria-label="Compound interest calculator">
       <form class="panel" id="calculatorForm">
@@ -252,10 +260,12 @@
 
         <div class="field">
           <div class="field-top">
-            <label for="rate">Annual return</label>
+            <span class="label-line"><label for="rate">Annual return</label>
+              <button type="button" class="info-btn" data-info="info-rate" aria-expanded="false" aria-label="About the annual return assumption">i</button></span>
             <div class="number-wrap no-prefix"><input id="rate" type="number" min="-20" max="50" step="0.1" value="7" inputmode="decimal" /><span class="suffix">%</span></div>
           </div>
           <input id="rateRange" type="range" min="0" max="15" step="0.1" value="7" aria-label="Annual return slider" />
+          <p class="info-text" id="info-rate" hidden>Assumed steady every year — reality bounces around. The lesson survives at 5% or 9%: time still does most of the work.</p>
         </div>
 
         <div class="field">
@@ -350,18 +360,17 @@
       </section>
     </section>
 
-    <section class="explain">
-      <div>
-        <h2>Compounding earns a return on earlier returns.</h2>
-        <p>Your starting money can grow, and then its growth can also grow. Regular contributions add more money for the same process to work on. That is why time can matter as much as the rate.</p>
-        <p class="note">This is an educational estimate. It assumes a steady rate and contributions made at the end of each month. Real returns vary, and inflation reduces future purchasing power.</p>
-      </div>
-      <div class="formula">
-        <strong>The core idea</strong>
+    <details class="assumptions">
+      <summary>How this works</summary>
+      <div class="body">
+        <p><strong>The core idea:</strong></p>
         <code>future value = principal × (1 + rate)<sup>time</sup></code>
         <p>The calculator also adds the future value of every monthly contribution and adjusts the effective monthly rate to match the selected compounding frequency.</p>
+        <p>Educational estimate: assumes a steady rate with contributions at the end of each month, shown as nominal value before fees, taxes and inflation. Real returns vary.</p>
       </div>
-    </section>
+    </details>
+
+    <p class="fineprint">The Open Book · Educational estimate — not investment advice. <a href="compound-interest.html" target="_top">Read the full guide</a></p>
   </main>
 
   <script>
@@ -515,6 +524,14 @@
         compareOn=false; el('compareToggle').setAttribute('aria-expanded','false'); el('compareFields').classList.remove('open'); calculate();
       });
       el('calculatorForm').addEventListener('submit',function(e){e.preventDefault();});
+      document.querySelectorAll('.info-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var target = document.getElementById(btn.getAttribute('data-info'));
+          var opening = target.hidden;
+          target.hidden = !opening;
+          btn.setAttribute('aria-expanded', String(opening));
+        });
+      });
       calculate();
     }());
   </script>
