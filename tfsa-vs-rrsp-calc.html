@@ -22,6 +22,8 @@
       --rrsp: #b33b32;
       --shadow: 0 14px 40px rgba(24, 46, 35, 0.08);
       --focus: #0b6fdb;
+      --accent: #14532d;
+      --on-accent: #ffffff;
       --radius: 14px;
     }
     @media (prefers-color-scheme: dark) {
@@ -36,6 +38,8 @@
         --rrsp: #f18c80;
         --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
         --focus: #69b5ff;
+        --accent: #6ed2a1;
+        --on-accent: #0c1f14;
       }
     }
     * { box-sizing: border-box; }
@@ -79,7 +83,7 @@
       min-height: 42px; padding: 8px 10px; cursor: pointer;
       border-radius: 6px; font-weight: 600; font-size: 0.9rem;
     }
-    .mode button.active { background: var(--surface); color: var(--ink); box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .mode button.active { background: var(--accent); color: var(--on-accent); box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
 
     .field { margin-bottom: 20px; }
     .field:last-child { margin-bottom: 0; }
@@ -129,7 +133,7 @@
     .fill { height: 100%; width: 0; transition: width 0.3s ease; border-radius: 999px; }
     .fill.tfsa { background: var(--tfsa); }
     .fill.rrsp { background: var(--rrsp); }
-    .details { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--line); }
+    .details { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--line); }
     .details div { padding: 16px 18px; border-right: 1px solid var(--line); }
     .details div:last-child { border-right: 0; }
     .details small { display: block; color: var(--muted); font-size: 0.8rem; line-height: 1.35; }
@@ -185,7 +189,7 @@
         <div class="mode-label">Comparison basis
           <button type="button" class="info-btn" data-info="info-mode" aria-expanded="false" aria-label="About the comparison basis">i</button>
         </div>
-        <p class="info-text" id="info-mode" hidden>“Equal after-tax cost” puts the same out-of-pocket dollars in each account — the RRSP deposit is grossed up by the tax refund, which is the fair comparison. “Equal contribution” puts the same headline dollars in each, which understates the RRSP.</p>
+        <p class="info-text" id="info-mode" hidden>“Equal after-tax cost” means the same dollars leave your pocket either way — the RRSP contribution is larger because your tax refund goes straight back into it. That's the fair, apples-to-apples comparison. “Equal contribution” puts the same headline dollars in each, which understates the RRSP.</p>
         <div class="mode" role="group" aria-label="Comparison basis">
           <button type="button" id="equalCost" class="active" aria-pressed="true">Equal after-tax cost</button>
           <button type="button" id="equalContribution" aria-pressed="false">Equal contribution</button>
@@ -254,11 +258,12 @@
           </div>
         </div>
         <div class="details">
+          <div><small id="oopLabel">Out of pocket — both</small><b id="oopValue">$0</b></div>
           <div><small>Annual TFSA deposit</small><b id="tfsaDeposit">$0</b></div>
           <div><small>Annual RRSP deposit</small><b id="rrspDeposit">$0</b></div>
-          <div><small id="refundLabel">Tax benefit reinvested</small><b id="refundValue">$0</b></div>
+          <div><small id="refundLabel">Tax refund reinvested</small><b id="refundValue">$0</b></div>
         </div>
-        <p class="mode-note" id="modeNote">The RRSP contribution is grossed up so its after-tax cost matches the TFSA deposit. This assumes the deduction has full value at the entered marginal rate.</p>
+        <p class="mode-note" id="modeNote">Both options cost the same out of pocket.</p>
       </section>
     </div>
 
@@ -313,6 +318,16 @@
         document.getElementById('tfsaDeposit').textContent = money.format(annual);
         document.getElementById('rrspDeposit').textContent = money.format(rrspAnnual);
         document.getElementById('refundValue').textContent = money.format(taxBenefit);
+        if (mode === 'cost') {
+          document.getElementById('oopLabel').textContent = 'Out of pocket — both';
+          document.getElementById('oopValue').textContent = money.format(annual);
+        } else {
+          document.getElementById('oopLabel').textContent = 'Out of pocket';
+          document.getElementById('oopValue').textContent = money.format(annual) + ' TFSA · ' + money.format(annual - taxBenefit) + ' RRSP';
+        }
+        document.getElementById('modeNote').textContent = mode === 'cost'
+          ? 'Both options cost you ' + money.format(annual) + ' out of pocket. The RRSP invests ' + money.format(rrspAnnual) + ' because the ' + money.format(taxBenefit) + ' tax refund is reinvested — more money working for the same out-of-pocket cost.'
+          : 'Both accounts receive ' + money.format(annual) + '. The estimated ' + money.format(taxBenefit) + ' RRSP tax refund is shown but not included in the result.';
         document.getElementById('tfsaBar').style.width = (tfsa / maxVal * 100).toFixed(1) + '%';
         document.getElementById('rrspBar').style.width = (rrsp / maxVal * 100).toFixed(1) + '%';
 
@@ -341,10 +356,7 @@
         equalContribution.classList.toggle('active', mode === 'contribution');
         equalCost.setAttribute('aria-pressed', String(mode === 'cost'));
         equalContribution.setAttribute('aria-pressed', String(mode === 'contribution'));
-        document.getElementById('refundLabel').textContent = mode === 'cost' ? 'Tax benefit reinvested' : 'Tax benefit not invested';
-        document.getElementById('modeNote').textContent = mode === 'cost'
-          ? 'The RRSP contribution is grossed up so its after-tax cost matches the TFSA deposit. This assumes the deduction has full value at the entered marginal rate.'
-          : 'Both accounts receive the same contribution. The estimated RRSP tax benefit is shown but excluded from the future value, so this is not an equal after-tax-cost comparison.';
+        document.getElementById('refundLabel').textContent = mode === 'cost' ? 'Tax refund reinvested' : 'Tax refund not reinvested';
         update();
       }
 
