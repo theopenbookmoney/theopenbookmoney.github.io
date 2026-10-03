@@ -189,11 +189,7 @@
         <div class="mode-label">Comparison basis
           <button type="button" class="info-btn" data-info="info-mode" aria-expanded="false" aria-label="About the comparison basis">i</button>
         </div>
-        <p class="info-text" id="info-mode" hidden>“Equal after-tax cost” means the same dollars leave your pocket either way — the RRSP contribution is larger because your tax refund goes straight back into it. That's the fair, apples-to-apples comparison. “Equal contribution” puts the same headline dollars in each, which understates the RRSP.</p>
-        <div class="mode" role="group" aria-label="Comparison basis">
-          <button type="button" id="equalCost" class="active" aria-pressed="true">Equal after-tax cost</button>
-          <button type="button" id="equalContribution" aria-pressed="false">Equal contribution</button>
-        </div>
+        <p class="info-text" id="info-mode" hidden>Both options are compared at the same out-of-pocket cost — the same dollars leave your pocket either way. The RRSP deposit is larger, but the tax refund comes back to you and covers the difference. That's the fair, apples-to-apples comparison.</p>
 
         <div class="field">
           <div class="field-top">
@@ -261,7 +257,7 @@
           <div><small id="oopLabel">Out of pocket — both</small><b id="oopValue">$0</b></div>
           <div><small>Annual TFSA deposit</small><b id="tfsaDeposit">$0</b></div>
           <div><small>Annual RRSP deposit</small><b id="rrspDeposit">$0</b></div>
-          <div><small id="refundLabel">Tax refund reinvested</small><b id="refundValue">$0</b></div>
+          <div><small id="refundLabel">Tax refund you keep</small><b id="refundValue">$0</b></div>
         </div>
         <p class="mode-note" id="modeNote">Both options cost the same out of pocket.</p>
       </section>
@@ -283,7 +279,6 @@
 
   <script>
     (function () {
-      var mode = 'cost';
       var money = new Intl.NumberFormat('en-CA', { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 });
 
       function num(id, min, max) {
@@ -304,7 +299,7 @@
         var rate = num('returnRate', 0, 20) / 100;
         var now = num('taxNow', 0, 60) / 100;
         var later = num('taxLater', 0, 60) / 100;
-        var rrspAnnual = mode === 'cost' ? annual / (1 - now) : annual;
+        var rrspAnnual = annual / (1 - now);
         var taxBenefit = rrspAnnual * now;
         var tfsa = futureValue(annual, rate, years);
         var rrspPreTax = futureValue(rrspAnnual, rate, years);
@@ -317,17 +312,10 @@
         document.getElementById('rrspValue').textContent = money.format(rrsp);
         document.getElementById('tfsaDeposit').textContent = money.format(annual);
         document.getElementById('rrspDeposit').textContent = money.format(rrspAnnual);
-        document.getElementById('refundValue').textContent = money.format(taxBenefit);
-        if (mode === 'cost') {
-          document.getElementById('oopLabel').textContent = 'Out of pocket — both';
-          document.getElementById('oopValue').textContent = money.format(annual);
-        } else {
-          document.getElementById('oopLabel').textContent = 'Out of pocket';
-          document.getElementById('oopValue').textContent = money.format(annual) + ' TFSA · ' + money.format(annual - taxBenefit) + ' RRSP';
-        }
-        document.getElementById('modeNote').textContent = mode === 'cost'
-          ? 'Both options cost you ' + money.format(annual) + ' out of pocket. The RRSP invests ' + money.format(rrspAnnual) + ' because the ' + money.format(taxBenefit) + ' tax refund is reinvested — more money working for the same out-of-pocket cost.'
-          : 'Both accounts receive ' + money.format(annual) + '. The estimated ' + money.format(taxBenefit) + ' RRSP tax refund is shown but not included in the result.';
+        document.getElementById('refundValue').textContent = '−' + money.format(taxBenefit);
+        document.getElementById('oopLabel').textContent = 'Out of pocket — both';
+        document.getElementById('oopValue').textContent = money.format(annual);
+        document.getElementById('modeNote').textContent = 'Both options cost you ' + money.format(annual) + ' out of pocket. The RRSP deposit is ' + money.format(rrspAnnual) + ', and the ' + money.format(taxBenefit) + ' tax refund comes back to you — so the same net cost puts more money to work.';
         document.getElementById('tfsaBar').style.width = (tfsa / maxVal * 100).toFixed(1) + '%';
         document.getElementById('rrspBar').style.width = (rrsp / maxVal * 100).toFixed(1) + '%';
 
@@ -348,18 +336,6 @@
         }
       }
 
-      function setMode(next) {
-        mode = next;
-        var equalCost = document.getElementById('equalCost');
-        var equalContribution = document.getElementById('equalContribution');
-        equalCost.classList.toggle('active', mode === 'cost');
-        equalContribution.classList.toggle('active', mode === 'contribution');
-        equalCost.setAttribute('aria-pressed', String(mode === 'cost'));
-        equalContribution.setAttribute('aria-pressed', String(mode === 'contribution'));
-        document.getElementById('refundLabel').textContent = mode === 'cost' ? 'Tax refund reinvested' : 'Tax refund not reinvested';
-        update();
-      }
-
       function syncPair(inputId, rangeId) {
         var input = document.getElementById(inputId);
         var range = document.getElementById(rangeId);
@@ -376,8 +352,6 @@
       syncPair('returnRate', 'returnRateRange');
       syncPair('taxNow', 'taxNowRange');
       syncPair('taxLater', 'taxLaterRange');
-      document.getElementById('equalCost').addEventListener('click', function () { setMode('cost'); });
-      document.getElementById('equalContribution').addEventListener('click', function () { setMode('contribution'); });
 
       document.querySelectorAll('.info-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
