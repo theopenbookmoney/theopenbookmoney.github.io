@@ -110,7 +110,8 @@
   var SR = 44100;
   var ctx = null, master = null, sources = [];
   var currentSound = null, timerId = null, countdownId = null, timerEnd = 0, timerMin = 0;
-  var bgAudio = null, mediaDest = null;
+  var bgAudio = null, mediaDest = null, lastSound = null;
+  var SOUND_ORDER = ['white','pink','brown','rain','ocean','thunder','fan','crickets','womb','shush','lullaby'];
 
   var statusEl = document.getElementById('status');
   var stopBtn = document.getElementById('stopbtn');
@@ -358,6 +359,10 @@
       setStatus('Your browser blocked the audio &mdash; tap the sound once more to start it.');
       return;
     }
+    // Make sure the media element is playing too (covers lock-screen-initiated plays).
+    if (bgAudio) {
+      try { var bpr = bgAudio.play(); if (bpr && bpr.catch) { bpr.catch(function () {}); } } catch (e2) {}
+    }
     if (!SOUNDS) SOUNDS = buildBuffers();
     stopSources(); clearTimer();
 
@@ -375,6 +380,7 @@
       idx += 2;
     }
     currentSound = name;
+    lastSound = name;
     document.querySelectorAll('.sound-btn').forEach(function (b) {
       b.classList.toggle('active', b.getAttribute('data-sound') === name);
     });
@@ -388,8 +394,10 @@
           title: SOUND_NAMES[name], artist: 'The Open Book', album: 'Sleep Sounds'
         });
         navigator.mediaSession.playbackState = 'playing';
-        navigator.mediaSession.setActionHandler('play', function () { if (currentSound) { play(currentSound); } });
+        navigator.mediaSession.setActionHandler('play', function () { play(lastSound || 'white'); });
         navigator.mediaSession.setActionHandler('pause', function () { stopAll(); });
+        navigator.mediaSession.setActionHandler('previoustrack', function () { stepSound(-1); });
+        navigator.mediaSession.setActionHandler('nexttrack', function () { stepSound(1); });
       } catch (e) {}
     }
 
@@ -411,6 +419,12 @@
     }
   }
 
+  function stepSound(dir) {
+    var i = SOUND_ORDER.indexOf(currentSound || lastSound);
+    if (i < 0) i = (dir > 0 ? -1 : 0);
+    play(SOUND_ORDER[(i + dir + SOUND_ORDER.length) % SOUND_ORDER.length]);
+  }
+
   function updateCountdown() {
     var left = timerEnd - Date.now();
     if (left <= 0) { setStatus('Fading out&hellip;'); return; }
@@ -422,7 +436,7 @@
     currentSound = null;
     if (bgAudio) { try { bgAudio.pause(); } catch (e) {} }
     if ('mediaSession' in navigator) {
-      try { navigator.mediaSession.playbackState = 'none'; } catch (e) {}
+      try { navigator.mediaSession.playbackState = 'paused'; } catch (e) {}
     }
     document.querySelectorAll('.sound-btn').forEach(function (b) { b.classList.remove('active'); });
     stopBtn.disabled = true;
