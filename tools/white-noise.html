@@ -110,6 +110,7 @@
   var SR = 44100;
   var ctx = null, master = null, sources = [];
   var currentSound = null, timerId = null, countdownId = null, timerEnd = 0, timerMin = 0;
+  var bgAudio = null, mediaDest = null;
 
   var statusEl = document.getElementById('status');
   var stopBtn = document.getElementById('stopbtn');
@@ -121,7 +122,17 @@
       ctx = new AC();
       master = ctx.createGain();
       master.gain.value = volumeEl.value / 100 * 0.9;
-      master.connect(ctx.destination);
+      // Route audio through a real <audio> element: iOS only keeps
+      // "media player" audio alive when the screen locks — raw Web Audio
+      // output is treated as page sound and suspended.
+      mediaDest = ctx.createMediaStreamDestination();
+      master.connect(mediaDest);
+      bgAudio = document.createElement('audio');
+      bgAudio.setAttribute('playsinline', '');
+      bgAudio.preload = 'auto';
+      bgAudio.style.display = 'none';
+      bgAudio.srcObject = mediaDest.stream;
+      document.body.appendChild(bgAudio);
     }
     if (ctx.state === 'suspended') { ctx.resume(); }
   }
@@ -409,6 +420,7 @@
   function stopAll() {
     stopSources(); clearTimer();
     currentSound = null;
+    if (bgAudio) { try { bgAudio.pause(); } catch (e) {} }
     if ('mediaSession' in navigator) {
       try { navigator.mediaSession.playbackState = 'none'; } catch (e) {}
     }
@@ -428,6 +440,11 @@
     wrap.addEventListener('click', function (e) {
       var btn = e.target.closest('.sound-btn');
       if (!btn) return;
+      ensureCtx();
+      // Start the media element inside the tap gesture so iOS allows playback.
+      if (bgAudio) {
+        try { var pr = bgAudio.play(); if (pr && pr.catch) { pr.catch(function () {}); } } catch (err) {}
+      }
       play(btn.getAttribute('data-sound'));
     });
   });
