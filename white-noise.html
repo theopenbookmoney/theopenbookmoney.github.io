@@ -88,7 +88,7 @@
     </div>
   </div>
 
-  <p class="tip">Tip: keep the volume low &mdash; about as loud as a quiet conversation. Pair it with your phone&rsquo;s Sleep Focus or Downtime so nothing pulls you back in.</p>
+  <p class="tip">Tip: keep the volume low &mdash; about as loud as a quiet conversation. If you hear nothing, check your phone&rsquo;s volume, make sure the silent switch is off, and try opening the page in Safari rather than an in-app browser. Pair it with your phone&rsquo;s Sleep Focus or Downtime so nothing pulls you back in.</p>
 </div>
 <footer>The Open Book &middot; Sleep sounds are synthesized live in your browser.<br><a href="index.html">theopenbookmoney.github.io</a></footer>
 </div>
@@ -240,7 +240,7 @@
       brown:   [makeBuf(pinkCopy(brownD)) , 1.0],
       rain:    [makeBuf(pinkCopy(rainD))  , 0.85],
       ocean:   [makeBuf(pinkCopy(oceanD)) , 1.0],
-      thunder: [makeBuf(pinkCopy(rainD)), makeBuf(pinkCopy(thunderD)), 0.75, 0.9],
+      thunder: [makeBuf(pinkCopy(rainD)), 0.75, makeBuf(pinkCopy(thunderD)), 0.9],
       fan:     [makeBuf(pinkCopy(fanD))   , 1.0],
       crickets:[makeBuf(pinkCopy(cricketD)), 1.0]
     };
@@ -273,8 +273,13 @@
 
   function setStatus(txt) { statusEl.innerHTML = txt; }
 
-  function play(name) {
+  async function play(name) {
     ensureCtx();
+    try { await ctx.resume(); } catch (e) {}
+    if (ctx.state !== 'running') {
+      setStatus('Your browser blocked the audio &mdash; tap the sound once more to start it.');
+      return;
+    }
     if (!SOUNDS) SOUNDS = buildBuffers();
     stopSources(); clearTimer();
 
