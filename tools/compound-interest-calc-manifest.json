@@ -1,0 +1,22 @@
+{
+  "name": "Compound Interest Calculator",
+  "short_name": "Compound Interest",
+  "start_url": "/tools/compound-interest-calc.html",
+  "scope": "/tools/",
+  "display": "standalone",
+  "background_color": "#faf9f7",
+  "theme_color": "#faf9f7",
+  "icons": [
+    {
+      "src": "/tools/compound-interest-calc-icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools/compound-interest-calc-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
