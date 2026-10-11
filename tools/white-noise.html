@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sleep Sounds — White Noise &amp; Nature Sounds | The Open Book</title>
-<meta name="description" content="Free sleep sounds: white noise, pink noise, brown noise, rain, ocean, thunderstorm, fan and crickets. Plays in your browser with a sleep timer and gentle fade-out.">
+<meta name="description" content="Free sleep sounds: white noise, pink noise, brown noise, rain, ocean, thunderstorm, fan, night crickets — plus womb, shushing and lullaby sounds for babies. Plays in your browser with a sleep timer and gentle fade-out.">
 <style>
   :root { --bg: #0a0e14; --card: #141b27; --card2: #1a2333; --ink: #e9e6df; --muted: #8b94a5; --accent: #5fc9a8; --accent-dim: #2a6f58; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,7 +18,8 @@
   .wrap { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
   .kicker { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.6rem; }
   h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 2rem; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
-  .sub { color: var(--muted); margin-bottom: 2rem; font-size: 1rem; }
+  .sub { color: var(--muted); margin-bottom: 1.75rem; font-size: 1rem; }
+  .group { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 0.9rem; font-weight: 600; }
   .sounds { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
   .sound-btn { background: var(--card); border: 1px solid #232d42; border-radius: 14px; padding: 1.1rem 0.5rem; color: var(--ink); cursor: pointer; font-size: 0.95rem; display: flex; flex-direction: column; align-items: center; gap: 0.45rem; transition: border-color .15s, background .15s, transform .1s; }
   .sound-btn:hover { border-color: var(--accent-dim); background: var(--card2); }
@@ -57,6 +58,7 @@
   <h1>Sleep Sounds</h1>
   <p class="sub">Pick a sound, set a timer, put the phone down. Everything is generated in your browser &mdash; no downloads, no ads, no account.</p>
 
+  <h2 class="group">All sounds</h2>
   <div class="sounds" id="sounds">
     <button class="sound-btn" data-sound="white"><span class="emoji">&#x1F30A;</span>White Noise</button>
     <button class="sound-btn" data-sound="pink"><span class="emoji">&#x1F32B;</span>Pink Noise</button>
@@ -66,6 +68,13 @@
     <button class="sound-btn" data-sound="thunder"><span class="emoji">&#x26C8;</span>Thunderstorm</button>
     <button class="sound-btn" data-sound="fan"><span class="emoji">&#x1F4A8;</span>Fan</button>
     <button class="sound-btn" data-sound="crickets"><span class="emoji">&#x1F33E;</span>Night Crickets</button>
+  </div>
+
+  <h2 class="group">For babies</h2>
+  <div class="sounds" id="baby-sounds">
+    <button class="sound-btn" data-sound="womb"><span class="emoji">&#x1F49C;</span>Womb</button>
+    <button class="sound-btn" data-sound="shush"><span class="emoji">&#x1F4A4;</span>Shushing</button>
+    <button class="sound-btn" data-sound="lullaby"><span class="emoji">&#x1F3B5;</span>Lullaby</button>
   </div>
 
   <div id="status">Tap a sound to play it.</div>
@@ -90,7 +99,7 @@
     </div>
   </div>
 
-  <p class="tip">Tip: keep the volume low &mdash; about as loud as a quiet conversation. You can lock your phone &mdash; the sound keeps playing, with pause controls on the lock screen. If you hear nothing, check your phone&rsquo;s volume, make sure the silent switch is off, and try opening the page in Safari rather than an in-app browser.</p>
+  <p class="tip">Tip: keep the volume low &mdash; about as loud as a quiet conversation. You can lock your phone &mdash; the sound keeps playing, with pause controls on the lock screen. For the most reliable background play, use Safari rather than an in-app browser. If you hear nothing, check your phone&rsquo;s volume and make sure the silent switch is off.</p>
 </div>
 <footer>The Open Book &middot; Sleep sounds are synthesized live in your browser.<br><a href="../index.html">theopenbookmoney.github.io</a></footer>
 </div>
@@ -98,7 +107,7 @@
 <script>
 (function () {
   "use strict";
-  var SR = 44100, SECS = 4, LEN = SR * SECS;
+  var SR = 44100;
   var ctx = null, master = null, sources = [];
   var currentSound = null, timerId = null, countdownId = null, timerEnd = 0, timerMin = 0;
 
@@ -117,144 +126,200 @@
     if (ctx.state === 'suspended') { ctx.resume(); }
   }
 
-  function makeBuffer(fill) {
-    var buf = ctx.createBuffer(1, LEN, SR);
-    var d = buf.getChannelData(0);
-    fill(d);
+  function makeBufferSecs(secs, fill) {
+    var n = Math.floor(SR * secs);
+    var buf = ctx.createBuffer(1, n, SR);
+    fill(buf.getChannelData(0), n);
     return buf;
   }
 
-  function lowpassInto(src, out, alpha) {
-    var y = 0;
-    for (var i = 0; i < LEN; i++) { y += alpha * (src[i] - y); out[i] = y; }
+  function whiteArr(n) {
+    var a = new Float32Array(n);
+    for (var i = 0; i < n; i++) a[i] = Math.random() * 2 - 1;
+    return a;
   }
 
   function buildBuffers() {
-    var white = new Float32Array(LEN);
-    for (var i = 0; i < LEN; i++) white[i] = Math.random() * 2 - 1;
+    var out = {};
 
-    // Pink noise (Paul Kellet filter)
-    var pinkD = new Float32Array(LEN);
-    (function () {
+    // White noise — 4s
+    out.white = [makeBufferSecs(4, function (d, n) {
+      var w = whiteArr(n);
+      for (var i = 0; i < n; i++) d[i] = w[i];
+    }), 0.9];
+
+    // Pink noise (Paul Kellet filter) — 4s
+    out.pink = [makeBufferSecs(4, function (d, n) {
       var b0=0,b1=0,b2=0,b3=0,b4=0,b5=0,b6=0, w, p;
-      for (var i = 0; i < LEN; i++) {
+      for (var i = 0; i < n; i++) {
         w = Math.random() * 2 - 1;
         b0 = 0.99886*b0 + w*0.0555179; b1 = 0.99332*b1 + w*0.0750759;
         b2 = 0.96900*b2 + w*0.1538520; b3 = 0.86650*b3 + w*0.3104856;
         b4 = 0.55000*b4 + w*0.5329522; b5 = -0.76160*b5 - w*0.0168980;
         p = b0+b1+b2+b3+b4+b5+b6+w*0.5362; b6 = w*0.115926;
-        pinkD[i] = p * 0.11;
+        d[i] = p * 0.11;
       }
-    })();
+    }), 1.0];
 
-    // Brown noise (leaky integrator)
-    var brownD = new Float32Array(LEN);
-    (function () {
+    // Brown noise (leaky integrator) — 4s
+    out.brown = [makeBufferSecs(4, function (d, n) {
       var last = 0;
-      for (var i = 0; i < LEN; i++) {
+      for (var i = 0; i < n; i++) {
         last = (last + 0.02 * (Math.random()*2-1)) / 1.02;
-        brownD[i] = last * 3.5;
+        d[i] = last * 3.5;
       }
-    })();
+    }), 1.0];
 
-    // Rain: low body + high hiss + random droplet impulses
-    var rainD = new Float32Array(LEN);
-    (function () {
-      var body = new Float32Array(LEN), tmp = new Float32Array(LEN), y = 0, j;
-      for (j = 0; j < LEN; j++) { y += 0.18 * (white[j] - y); body[j] = y; }
+    // Rain: low body + high hiss + random droplet impulses — 4s
+    var rainBuf = makeBufferSecs(4, function (d, n) {
+      var w = whiteArr(n), body = new Float32Array(n), tmp = new Float32Array(n), y = 0, j;
+      for (j = 0; j < n; j++) { y += 0.18 * (w[j] - y); body[j] = y; }
       y = 0;
-      for (j = 0; j < LEN; j++) { y += 0.55 * (white[j] - y); tmp[j] = white[j] - y; }
+      for (j = 0; j < n; j++) { y += 0.55 * (w[j] - y); tmp[j] = w[j] - y; }
       var imp = 0;
-      for (j = 0; j < LEN; j++) {
+      for (j = 0; j < n; j++) {
         if (Math.random() < 0.0016) imp = (Math.random()*2-1) * 0.5;
         imp *= 0.985;
-        rainD[j] = body[j] * 0.9 + tmp[j] * 0.35 + imp;
+        d[j] = body[j] * 0.9 + tmp[j] * 0.35 + imp;
       }
-    })();
+    });
+    out.rain = [rainBuf, 0.85];
 
-    // Ocean: deep surf with slow swell
-    var oceanD = new Float32Array(LEN);
-    (function () {
-      var deep = new Float32Array(LEN), y = 0, j;
-      for (j = 0; j < LEN; j++) { y += 0.06 * (white[j] - y); deep[j] = y; }
+    // Ocean: deep surf with a full 12s swell cycle so the loop has no seam — 12s
+    out.ocean = [makeBufferSecs(12, function (d, n) {
+      var w = whiteArr(n), deep = new Float32Array(n), surf = new Float32Array(n), y = 0, j;
+      for (j = 0; j < n; j++) { y += 0.06 * (w[j] - y); deep[j] = y; }
       y = 0;
-      var surf = new Float32Array(LEN);
-      for (j = 0; j < LEN; j++) { y += 0.35 * (white[j] - y); surf[j] = white[j] - y; }
-      for (j = 0; j < LEN; j++) {
+      for (j = 0; j < n; j++) { y += 0.35 * (w[j] - y); surf[j] = w[j] - y; }
+      var T = n / SR;
+      for (j = 0; j < n; j++) {
         var t = j / SR;
-        var swell = 0.55 + 0.45 * Math.sin(2 * Math.PI * 0.09 * t + 1.2 * Math.sin(2 * Math.PI * 0.031 * t));
-        swell = Math.pow(Math.max(swell, 0), 1.6);
-        oceanD[j] = deep[j] * 2.4 * swell + surf[j] * 0.5 * swell;
+        var swell = 0.55 + 0.45 * Math.sin(2 * Math.PI * t / T - Math.PI / 2);
+        swell = Math.pow(Math.max(swell, 0.02), 1.6);
+        var chop = 0.85 + 0.15 * Math.sin(2 * Math.PI * 0.9 * t + 1.7 * Math.sin(2 * Math.PI * 0.23 * t));
+        d[j] = (deep[j] * 2.4 + surf[j] * 0.5) * swell * chop;
       }
-    })();
+    }), 1.0];
 
-    // Thunder rumble: heavy low brown noise with slow swells
-    var thunderD = new Float32Array(LEN);
-    (function () {
-      var r = new Float32Array(LEN), y = 0, j;
-      for (j = 0; j < LEN; j++) { y += 0.03 * (brownD[j] - y); r[j] = y; }
+    // Thunderstorm: rain + deep rolling thunder — 6s
+    var thunderBuf = makeBufferSecs(6, function (d, n) {
+      var r = new Float32Array(n), y = 0, j, last = 0;
+      for (j = 0; j < n; j++) { last = (last + 0.02 * (Math.random()*2-1)) / 1.02; y += 0.03 * (last * 3.5 - y); r[j] = y; }
       var e = 0.6;
-      for (j = 0; j < LEN; j++) {
+      for (j = 0; j < n; j++) {
         e += (Math.random() - 0.5) * 0.004;
         if (e < 0.25) e = 0.25; if (e > 1) e = 1;
-        thunderD[j] = r[j] * e * 6;
+        d[j] = r[j] * e * 6;
       }
-    })();
+    });
+    out.thunder = [rainBuf, 0.75, thunderBuf, 0.9];
 
-    // Fan: bandpassed white noise with a slow blade pulse
-    var fanD = new Float32Array(LEN);
-    (function () {
-      var lo = new Float32Array(LEN), hi = new Float32Array(LEN), y1 = 0, y2 = 0, j;
-      for (j = 0; j < LEN; j++) {
-        y1 += 0.09 * (white[j] - y1); lo[j] = y1;
-        y2 += 0.008 * (white[j] - y2); hi[j] = y2;
+    // Fan: bandpassed noise with a slow blade pulse — 4s
+    out.fan = [makeBufferSecs(4, function (d, n) {
+      var w = whiteArr(n), lo = new Float32Array(n), hi = new Float32Array(n), y1 = 0, y2 = 0, j;
+      for (j = 0; j < n; j++) {
+        y1 += 0.09 * (w[j] - y1); lo[j] = y1;
+        y2 += 0.008 * (w[j] - y2); hi[j] = y2;
       }
-      for (j = 0; j < LEN; j++) {
+      for (j = 0; j < n; j++) {
         var t = j / SR;
-        fanD[j] = (lo[j] - hi[j]) * 1.5 * (1 + 0.16 * Math.sin(2 * Math.PI * 0.7 * t));
+        d[j] = (lo[j] - hi[j]) * 1.5 * (1 + 0.16 * Math.sin(2 * Math.PI * 0.7 * t));
       }
-    })();
+    }), 1.0];
 
-    // Night crickets: groups of high chirp pulses
-    var cricketD = new Float32Array(LEN);
-    (function () {
-      var j = 0;
-      while (j < LEN) {
-        var gap = Math.floor(SR * (0.35 + Math.random() * 0.45));
-        j += gap;
-        if (j >= LEN) break;
-        var f = 4100 + Math.random() * 500;
-        var pulses = 3 + Math.floor(Math.random() * 3);
-        for (var p = 0; p < pulses && j < LEN; p++) {
-          var on = Math.floor(SR * 0.028), off = Math.floor(SR * 0.032);
-          for (var k = 0; k < on && j < LEN; k++, j++) {
-            var env = Math.sin(Math.PI * k / on);
-            cricketD[j] += Math.sin(2 * Math.PI * f * (j / SR)) * 0.32 * env;
+    // Night crickets: trilled chirps in natural groups, two detuned voices over soft night air — 8s
+    out.crickets = [makeBufferSecs(8, function (d, n) {
+      var T = n / SR, last = 0, i;
+      for (i = 0; i < n; i++) {
+        last = (last + 0.02 * (Math.random()*2-1)) / 1.02;
+        d[i] = last * 0.22;
+      }
+      function voice(f0, offset) {
+        var t = offset;
+        while (t < T) {
+          var chirps = 2 + Math.floor(Math.random() * 3);
+          for (var c = 0; c < chirps; c++) {
+            var dur = 0.14 + Math.random() * 0.1;
+            var start = Math.floor(t * SR), len = Math.floor(dur * SR);
+            var f = f0 * (0.98 + Math.random() * 0.04);
+            for (var k = 0; k < len && start + k < n; k++) {
+              var tt = k / SR;
+              var trill = Math.pow(0.5 + 0.5 * Math.sin(2 * Math.PI * 23 * tt), 2);
+              var env = Math.min(1, k / (0.02 * SR)) * Math.pow(Math.max(0, 1 - k / len), 1.5);
+              d[start + k] += Math.sin(2 * Math.PI * f * tt) * trill * env * 0.26;
+            }
+            t += dur + 0.25 + Math.random() * 0.45;
           }
-          j += off;
+          t += 0.8 + Math.random() * 1.2;
         }
       }
-    })();
+      voice(4200, 0);
+      voice(4470, 0.4);
+    }), 1.0];
 
-    return {
-      white:   [makeBuf(pinkCopy(white)) , 0.9],
-      pink:    [makeBuf(pinkCopy(pinkD))  , 1.0],
-      brown:   [makeBuf(pinkCopy(brownD)) , 1.0],
-      rain:    [makeBuf(pinkCopy(rainD))  , 0.85],
-      ocean:   [makeBuf(pinkCopy(oceanD)) , 1.0],
-      thunder: [makeBuf(pinkCopy(rainD)), 0.75, makeBuf(pinkCopy(thunderD)), 0.9],
-      fan:     [makeBuf(pinkCopy(fanD))   , 1.0],
-      crickets:[makeBuf(pinkCopy(cricketD)), 1.0]
-    };
+    // Womb: muffled warmth with a slow whoosh and a lub-dub heartbeat at 72bpm — 8.333s (exactly 10 beats)
+    out.womb = [makeBufferSecs(8.3334, function (d, n) {
+      var T = n / SR, w = whiteArr(n), base = new Float32Array(n), y = 0, j;
+      for (j = 0; j < n; j++) { y += 0.025 * (w[j] - y); base[j] = y; }
+      for (j = 0; j < n; j++) {
+        var t = j / SR;
+        d[j] = base[j] * 3.2 * (0.7 + 0.3 * Math.sin(2 * Math.PI * 0.14 * t));
+      }
+      function thump(t0, vol) {
+        var start = Math.floor(t0 * SR), len = Math.floor(0.35 * SR);
+        for (var k = 0; k < len && start + k < n; k++) {
+          var tt = k / SR;
+          d[start + k] += Math.sin(2 * Math.PI * 55 * tt) * Math.exp(-tt / 0.09) * 0.9 * vol;
+        }
+      }
+      var beat = 60 / 72;
+      for (var bt = 0; bt < T - 0.4; bt += beat) { thump(bt, 1); thump(bt + 0.28, 0.65); }
+    }), 1.0];
 
-    function pinkCopy(a) { return a; } // passthrough; buffers built from these arrays
-    function makeBuf(arr) {
-      return makeBuffer(function (d) { for (var i = 0; i < LEN; i++) d[i] = arr[i]; });
-    }
+    // Shushing: soft rhythmic "shhh" for soothing a baby — 8.4s (exactly 8 cycles)
+    out.shush = [makeBufferSecs(8.4, function (d, n) {
+      var w = whiteArr(n), lp1 = new Float32Array(n), lp2 = new Float32Array(n), y1 = 0, y2 = 0, j;
+      for (j = 0; j < n; j++) {
+        y1 += 0.3 * (w[j] - y1); lp1[j] = y1;
+        y2 += 0.03 * (w[j] - y2); lp2[j] = y2;
+      }
+      var cycle = 1.05, onFrac = 0.68 / 1.05;
+      for (j = 0; j < n; j++) {
+        var t = j / SR, ph = (t % cycle) / cycle, e = 0;
+        if (ph < onFrac) {
+          e = Math.min(1, ph / 0.06) * Math.min(1, (onFrac - ph) / 0.08);
+          e = e * e * (3 - 2 * e);
+        }
+        d[j] = (lp1[j] - lp2[j]) * 2.2 * e * (1 + 0.08 * Math.sin(2 * Math.PI * 7 * t));
+      }
+    }), 0.9];
+
+    // Lullaby: music-box Twinkle Twinkle — 8s loop
+    out.lullaby = [makeBufferSecs(8, function (d, n) {
+      var F = { C: 261.63, D: 293.66, E: 329.63, F: 349.23, G: 392.00, A: 440.00 };
+      var seq = ['C','C','G','G','A','A','G', null, 'F','F','E','E','D','D','C', null];
+      var slot = 0.5;
+      seq.forEach(function (note, idx) {
+        if (!note) return;
+        var f = F[note], start = Math.floor(idx * slot * SR), len = Math.floor(1.6 * SR);
+        for (var k = 0; k < len && start + k < n; k++) {
+          var tt = k / SR, atk = Math.min(1, k / (0.008 * SR));
+          d[start + k] += (Math.sin(2 * Math.PI * f * tt) * Math.exp(-tt / 1.1)
+            + 0.35 * Math.sin(2 * Math.PI * 2 * f * tt) * Math.exp(-tt / 0.6)
+            + 0.12 * Math.sin(2 * Math.PI * 3.01 * f * tt) * Math.exp(-tt / 0.35)) * 0.38 * atk;
+        }
+      });
+    }), 0.9];
+
+    return out;
   }
 
   var SOUNDS = null; // built lazily on first play
-  var SOUND_NAMES = { white:'White Noise', pink:'Pink Noise', brown:'Brown Noise', rain:'Rain', ocean:'Ocean Waves', thunder:'Thunderstorm', fan:'Fan', crickets:'Night Crickets' };
+  var SOUND_NAMES = {
+    white: 'White Noise', pink: 'Pink Noise', brown: 'Brown Noise', rain: 'Rain',
+    ocean: 'Ocean Waves', thunder: 'Thunderstorm', fan: 'Fan', crickets: 'Night Crickets',
+    womb: 'Womb Sounds', shush: 'Shushing', lullaby: 'Lullaby'
+  };
 
   function fmtTime(ms) {
     var s = Math.max(0, Math.round(ms / 1000));
@@ -359,10 +424,12 @@
     setStatus('Tap a sound to play it.');
   }
 
-  document.getElementById('sounds').addEventListener('click', function (e) {
-    var btn = e.target.closest('.sound-btn');
-    if (!btn) return;
-    play(btn.getAttribute('data-sound'));
+  document.querySelectorAll('.sounds').forEach(function (wrap) {
+    wrap.addEventListener('click', function (e) {
+      var btn = e.target.closest('.sound-btn');
+      if (!btn) return;
+      play(btn.getAttribute('data-sound'));
+    });
   });
 
   stopBtn.addEventListener('click', stopAll);
