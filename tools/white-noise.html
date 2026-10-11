@@ -90,7 +90,7 @@
     </div>
   </div>
 
-  <p class="tip">Tip: keep the volume low &mdash; about as loud as a quiet conversation. If you hear nothing, check your phone&rsquo;s volume, make sure the silent switch is off, and try opening the page in Safari rather than an in-app browser. Pair it with your phone&rsquo;s Sleep Focus or Downtime so nothing pulls you back in.</p>
+  <p class="tip">Tip: keep the volume low &mdash; about as loud as a quiet conversation. You can lock your phone &mdash; the sound keeps playing, with pause controls on the lock screen. If you hear nothing, check your phone&rsquo;s volume, make sure the silent switch is off, and try opening the page in Safari rather than an in-app browser.</p>
 </div>
 <footer>The Open Book &middot; Sleep sounds are synthesized live in your browser.<br><a href="../index.html">theopenbookmoney.github.io</a></footer>
 </div>
@@ -304,6 +304,19 @@
     });
     stopBtn.disabled = false;
 
+    // Tell the OS this is media playback: keeps audio alive when the
+    // screen locks and puts controls on the lock screen.
+    if ('mediaSession' in navigator) {
+      try {
+        navigator.mediaSession.metadata = new MediaMetadata({
+          title: SOUND_NAMES[name], artist: 'The Open Book', album: 'Sleep Sounds'
+        });
+        navigator.mediaSession.playbackState = 'playing';
+        navigator.mediaSession.setActionHandler('play', function () { if (currentSound) { play(currentSound); } });
+        navigator.mediaSession.setActionHandler('pause', function () { stopAll(); });
+      } catch (e) {}
+    }
+
     if (timerMin > 0) {
       timerEnd = Date.now() + timerMin * 60000;
       // fade out over the last 60 seconds
@@ -331,6 +344,9 @@
   function stopAll() {
     stopSources(); clearTimer();
     currentSound = null;
+    if ('mediaSession' in navigator) {
+      try { navigator.mediaSession.playbackState = 'none'; } catch (e) {}
+    }
     document.querySelectorAll('.sound-btn').forEach(function (b) { b.classList.remove('active'); });
     stopBtn.disabled = true;
     ensureCtx();
