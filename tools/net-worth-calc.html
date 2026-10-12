@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Net Worth Tracker · The Open Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: #f5f7f4; --surface: #ffffff; --surface-2: #e9eeea;
+      --ink: #17231d; --muted: #506158; --line: #c8d2cb;
+      --acc: #19704e; --neg: #b33b32;
+      --shadow: 0 14px 40px rgba(24, 46, 35, 0.08);
+      --focus: #0b6fdb; --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101713; --surface: #17201b; --surface-2: #202c25;
+        --ink: #edf5ef; --muted: #b5c3ba; --line: #3a4a40;
+        --acc: #6ed2a1; --neg: #f18c80;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.28); --focus: #69b5ff;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 "IBM Plex Sans", sans-serif; }
+    button, input { font: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .topbar { display: flex; align-items: center; gap: 10px; max-width: 1060px; margin: 0 auto; padding: 14px 22px; border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+    .tool-page { max-width: 1060px; margin: 0 auto; padding: 30px 22px 60px; }
+    .tool-head { max-width: 720px; margin-bottom: 26px; }
+    .tool-head h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 10px; }
+    .tool-head .lede { color: var(--muted); font-size: 1.05rem; margin: 0; }
+    .tool-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 22px; align-items: start; }
+    @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .inputs { padding: 22px; }
+    .section-title { font-weight: 700; font-size: 0.92rem; margin: 0 0 12px; }
+    .section-title.a { color: var(--acc); } .section-title.l { color: var(--neg); }
+    .section + .section { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .field { margin-bottom: 14px; } .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; }
+    label { font-weight: 600; font-size: 0.9rem; }
+    .number-wrap { position: relative; width: 130px; flex: 0 0 auto; }
+    .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); right: 11px; color: var(--muted); pointer-events: none; font-size: 0.88rem; }
+    input[type="number"], input[type="text"] { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); padding: 8px 30px 8px 12px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+    input[type="number"]:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(25,112,78,0.15); outline: none; }
+    .save-btn { width: 100%; min-height: 48px; border: 0; border-radius: 10px; background: var(--acc); color: #fff; font-weight: 700; cursor: pointer; margin-top: 18px; }
+    @media (prefers-color-scheme: dark) { .save-btn { color: #0c1f14; } }
+    .save-btn:hover { filter: brightness(1.08); }
+    .saved-note { text-align: center; color: var(--acc); font-size: 0.88rem; font-weight: 600; margin-top: 10px; min-height: 1.4em; }
+    .results { overflow: hidden; }
+    .result-head { padding: 24px 26px 20px; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px; }
+    .bignum { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: -0.02em; margin: 0; font-variant-numeric: tabular-nums; }
+    .bignum.pos { color: var(--acc); } .bignum.neg { color: var(--neg); }
+    .split { display: flex; gap: 14px; margin-top: 14px; flex-wrap: wrap; }
+    .split .cell { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; flex: 1 1 120px; }
+    .split .k { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .split .v { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .viz { padding: 22px 26px; border-bottom: 1px solid var(--line); }
+    .viz h3 { font-size: 1rem; margin: 0 0 4px; }
+    .viz p.hint { color: var(--muted); font-size: 0.88rem; margin: 0 0 14px; }
+    #chart { width: 100%; height: 200px; display: block; }
+    .empty-chart { text-align: center; color: var(--muted); padding: 40px 0; font-size: 0.95rem; }
+    .hist { padding: 22px 26px; }
+    .hist h3 { font-size: 1rem; margin: 0 0 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { text-align: right; padding: 7px 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .del { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 4px 8px; }
+    .del:hover { color: var(--neg); }
+    .privacy { padding: 0 26px 22px; color: var(--muted); font-size: 0.85rem; }
+    .fineprint { max-width: 1060px; margin: 0 auto; padding: 0 22px 40px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+<link rel="apple-touch-icon" href="/tools/net-worth-calc-icon-180.png">
+<link rel="manifest" href="/tools/net-worth-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Net Worth Tracker">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <div class="topbar">
+    <a class="brand" href="../index.html">📖 The Open Book</a>
+    <span class="sep">·</span>
+    <a href="index.html" style="color: var(--muted);">All tools</a>
+  </div>
+  <div class="tool-page">
+    <div class="tool-head">
+      <h1>Net Worth Tracker</h1>
+      <p class="lede">The one number that tells the truth about your finances. Update it monthly and watch the line move — saved privately in your browser.</p>
+    </div>
+    <div class="tool-grid">
+      <div class="card inputs">
+        <div class="section">
+          <p class="section-title a">✓ Assets — what you own</p>
+          <div class="field"><div class="field-top"><label for="a-cash">Cash &amp; savings</label><span class="number-wrap"><input type="number" id="a-cash" value="0" min="0" step="100"><span class="suffix">$</span></span></div></div>
+          <div class="field"><div class="field-top"><label for="a-inv">Investments (TFSA/RRSP/etc.)</label><span class="number-wrap"><input type="number" id="a-inv" value="0" min="0" step="100"><span class="suffix">$</span></span></div></div>
+          <div class="field"><div class="field-top"><label for="a-home">Home value</label><span class="number-wrap"><input type="number" id="a-home" value="0" min="0" step="1000"><span class="suffix">$</span></span></div></div>
+          <div class="field"><div class="field-top"><label for="a-other">Other assets</label><span class="number-wrap"><input type="number" id="a-other" value="0" min="0" step="100"><span class="suffix">$</span></span></div></div>
+        </div>
+        <div class="section">
+          <p class="section-title l">✕ Liabilities — what you owe</p>
+          <div class="field"><div class="field-top"><label for="l-mort">Mortgage balance</label><span class="number-wrap"><input type="number" id="l-mort" value="0" min="0" step="100"><span class="suffix">$</span></span></div></div>
+          <div class="field"><div class="field-top"><label for="l-student">Student loans</label><span class="number-wrap"><input type="number" id="l-student" value="0" min="0" step="100"><span class="suffix">$</span></span></div></div>
+          <div class="field"><div class="field-top"><label for="l-car">Car loan</label><span class="number-wrap"><input type="number" id="l-car" value="0" min="0" step="100"><span class="suffix">$</span></span></div></div>
+          <div class="field"><div class="field-top"><label for="l-cc">Credit cards</label><span class="number-wrap"><input type="number" id="l-cc" value="0" min="0" step="50"><span class="suffix">$</span></span></div></div>
+          <div class="field"><div class="field-top"><label for="l-other">Other debts</label><span class="number-wrap"><input type="number" id="l-other" value="0" min="0" step="100"><span class="suffix">$</span></span></div></div>
+        </div>
+        <button class="save-btn" id="btn-save">Save this month's snapshot</button>
+        <p class="saved-note" id="saved-note"></p>
+      </div>
+      <div class="card results">
+        <div class="result-head">
+          <p class="eyebrow">Your net worth today</p>
+          <p class="bignum pos" id="r-nw">$0</p>
+          <div class="split">
+            <div class="cell"><div class="k">Assets</div><div class="v" id="r-a">$0</div></div>
+            <div class="cell"><div class="k">Liabilities</div><div class="v" id="r-l">$0</div></div>
+            <div class="cell"><div class="k">Change since first</div><div class="v" id="r-chg">—</div></div>
+          </div>
+        </div>
+        <div class="viz">
+          <h3>Your trajectory</h3>
+          <p class="hint">One snapshot a month. The line going up and to the right is the entire game.</p>
+          <div id="chart-wrap"><canvas id="chart" width="600" height="200"></canvas></div>
+        </div>
+        <div class="hist">
+          <h3>Snapshots</h3>
+          <table><thead><tr><th>Date</th><th>Net worth</th><th>Change</th><th></th></tr></thead><tbody id="r-hist"></tbody></table>
+        </div>
+        <p class="privacy">🔒 Private by design: snapshots live only in this browser's local storage. Nothing is sent anywhere — we couldn't see your numbers if we wanted to.</p>
+      </div>
+    </div>
+  </div>
+  <p class="fineprint">Educational tool only, not financial advice.</p>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var KEY = 'obm-networth-v1';
+  var A = ['a-cash','a-inv','a-home','a-other'], L = ['l-mort','l-student','l-car','l-cc','l-other'];
+
+  function num(id) { var v = parseFloat($(id).value); return isNaN(v) || v < 0 ? 0 : v; }
+  function fmt(n) { var neg=n<0, s=Math.abs(Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g,','); return (neg?'−$':'$')+s; }
+  function load() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } }
+  function store(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+
+  function current() {
+    var a = 0, l = 0;
+    A.forEach(function (id) { a += num(id); });
+    L.forEach(function (id) { l += num(id); });
+    return { a: a, l: l, nw: a - l };
+  }
+
+  function draw(snaps) {
+    var wrap = $('chart-wrap');
+    if (snaps.length < 2) {
+      wrap.innerHTML = '<div class="empty-chart">Save two or more monthly snapshots and your trajectory appears here.</div>';
+      return;
+    }
+    wrap.innerHTML = '<canvas id="chart" width="600" height="200"></canvas>';
+    var c = $('chart'), ctx = c.getContext('2d');
+    var W = c.width, H = c.height, padL = 8, padB = 18, padT = 14;
+    var vals = snaps.map(function (s) { return s.nw; });
+    var mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
+    if (mx === mn) { mx += 1; mn -= 1; }
+    var acc = getComputedStyle(document.documentElement).getPropertyValue('--acc').trim() || '#19704e';
+    var mut = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim() || '#506158';
+    // zero line
+    var zy = padT + (mx / (mx - mn)) * (H - padT - padB);
+    // area + line
+    ctx.beginPath();
+    snaps.forEach(function (s, i) {
+      var x = padL + (i / (snaps.length - 1)) * (W - padL * 2);
+      var y = padT + ((mx - s.nw) / (mx - mn)) * (H - padT - padB);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = acc; ctx.lineWidth = 3; ctx.stroke();
+    // dots + labels
+    ctx.fillStyle = mut; ctx.font = '11px sans-serif'; ctx.textAlign = 'center';
+    snaps.forEach(function (s, i) {
+      var x = padL + (i / (snaps.length - 1)) * (W - padL * 2);
+      var y = padT + ((mx - s.nw) / (mx - mn)) * (H - padT - padB);
+      ctx.beginPath(); ctx.arc(x, y, 4, 0, 7); ctx.fillStyle = acc; ctx.fill();
+      ctx.fillStyle = mut;
+      ctx.fillText(s.d.slice(2), x, H - 4);
+    });
+  }
+
+  function render() {
+    var c = current(), snaps = load();
+    var nw = $('r-nw');
+    nw.textContent = fmt(c.nw);
+    nw.className = 'bignum ' + (c.nw < 0 ? 'neg' : 'pos');
+    $('r-a').textContent = fmt(c.a);
+    $('r-l').textContent = fmt(c.l);
+    if (snaps.length > 0) {
+      var chg = c.nw - snaps[0].nw;
+      var el = $('r-chg');
+      var digits = Math.abs(Math.round(chg)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+      el.textContent = (chg < 0 ? '−$' : '+$') + digits;
+      el.style.color = chg < 0 ? 'var(--neg)' : '';
+    }
+    var th = '';
+    snaps.slice().reverse().forEach(function (s, ri) {
+      var i = snaps.length - 1 - ri;
+      var prev = i > 0 ? snaps[i-1].nw : null;
+      var d = prev === null ? '—' : ((s.nw >= prev ? '+' : '−') + fmt(Math.abs(s.nw - prev)).replace('$','$'));
+      th += '<tr><td>' + s.d + '</td><td>' + fmt(s.nw) + '</td><td>' + d + '</td>' +
+            '<td><button class="del" data-i="' + i + '" aria-label="Delete snapshot">×</button></td></tr>';
+    });
+    $('r-hist').innerHTML = th || '<tr><td colspan="4" style="text-align:center;color:var(--muted)">No snapshots yet.</td></tr>';
+    document.querySelectorAll('.del').forEach(function (b) {
+      b.addEventListener('click', function () {
+        var s2 = load(); s2.splice(parseInt(b.getAttribute('data-i'), 10), 1); store(s2); render();
+      });
+    });
+    draw(snaps);
+  }
+
+  A.concat(L).forEach(function (id) { $(id).addEventListener('input', render); });
+  $('btn-save').addEventListener('click', function () {
+    var c = current(), snaps = load();
+    var d = new Date();
+    var label = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    snaps.push({ d: label, nw: Math.round(c.nw), a: Math.round(c.a), l: Math.round(c.l) });
+    store(snaps); render();
+    var n = $('saved-note'); n.textContent = '✓ Saved ' + label;
+    setTimeout(function () { n.textContent = ''; }, 2500);
+  });
+  render();
+})();
+</script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>

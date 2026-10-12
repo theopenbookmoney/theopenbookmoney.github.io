@@ -1,6 +1,6 @@
 // Open Book tools service worker: cache-first so tools work offline
 // (e.g. Sleep Sounds from the home screen in airplane mode).
-var CACHE = 'openbook-tools-v3';
+var CACHE = 'openbook-tools-v4';
 var ASSETS = [
   '/tools/',
   '/tools/index.html',
@@ -20,6 +20,26 @@ var ASSETS = [
   '/tools/tfsa-vs-rrsp-calc-manifest.json',
   '/tools/compound-interest-calc-manifest.json',
   '/tools/rent-vs-buy-calc-manifest.json'
+  '/tools/take-home-pay-calc.html',
+  '/tools/take-home-pay-calc-icon-180.png',
+  '/tools/take-home-pay-calc-icon-512.png',
+  '/tools/take-home-pay-calc-manifest.json',
+  '/tools/mortgage-calc.html',
+  '/tools/mortgage-calc-icon-180.png',
+  '/tools/mortgage-calc-icon-512.png',
+  '/tools/mortgage-calc-manifest.json',
+  '/tools/net-worth-calc.html',
+  '/tools/net-worth-calc-icon-180.png',
+  '/tools/net-worth-calc-icon-512.png',
+  '/tools/net-worth-calc-manifest.json',
+  '/tools/fhsa-calc.html',
+  '/tools/fhsa-calc-icon-180.png',
+  '/tools/fhsa-calc-icon-512.png',
+  '/tools/fhsa-calc-manifest.json',
+  '/tools/debt-payoff-calc.html',
+  '/tools/debt-payoff-calc-icon-180.png',
+  '/tools/debt-payoff-calc-icon-512.png',
+  '/tools/debt-payoff-calc-manifest.json',
 ];
 self.addEventListener('install', function (e) {
   e.waitUntil(

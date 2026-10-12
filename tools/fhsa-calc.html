@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>FHSA Calculator · The Open Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: #f5f7f4; --surface: #ffffff; --surface-2: #e9eeea;
+      --ink: #17231d; --muted: #506158; --line: #c8d2cb;
+      --acc: #19704e;
+      --shadow: 0 14px 40px rgba(24, 46, 35, 0.08);
+      --focus: #0b6fdb; --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101713; --surface: #17201b; --surface-2: #202c25;
+        --ink: #edf5ef; --muted: #b5c3ba; --line: #3a4a40;
+        --acc: #6ed2a1;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.28); --focus: #69b5ff;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 "IBM Plex Sans", sans-serif; }
+    button, input { font: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .topbar { display: flex; align-items: center; gap: 10px; max-width: 1060px; margin: 0 auto; padding: 14px 22px; border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+    .tool-page { max-width: 1060px; margin: 0 auto; padding: 30px 22px 60px; }
+    .tool-head { max-width: 720px; margin-bottom: 26px; }
+    .tool-head h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 10px; }
+    .tool-head .lede { color: var(--muted); font-size: 1.05rem; margin: 0; }
+    .tool-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 22px; align-items: start; }
+    @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .inputs { padding: 22px; }
+    .field { margin-bottom: 20px; } .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
+    label { font-weight: 600; font-size: 0.93rem; }
+    .number-wrap { position: relative; width: 118px; flex: 0 0 auto; }
+    .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); right: 11px; color: var(--muted); pointer-events: none; font-size: 0.88rem; }
+    input[type="number"] { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); padding: 8px 30px 8px 12px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+    input[type="number"]:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(25,112,78,0.15); outline: none; }
+    input[type="range"] { width: 100%; height: 5px; margin: 2px 0 0; appearance: none; background: var(--surface-2); border-radius: 999px; accent-color: var(--acc); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--acc); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--acc); }
+    .info-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--muted); font-family: Georgia, serif; font-style: italic; font-size: 0.78rem; line-height: 1; cursor: pointer; padding: 0; flex: 0 0 auto; }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--surface-2); color: var(--muted); font-size: 0.87rem; font-weight: 400; }
+    .results { overflow: hidden; }
+    .result-head { padding: 24px 26px 20px; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px; }
+    .bignum { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: -0.02em; margin: 0; color: var(--acc); font-variant-numeric: tabular-nums; }
+    .sub { color: var(--muted); margin: 6px 0 0; font-size: 0.95rem; }
+    .stat-row { display: flex; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+    .stat { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; flex: 1 1 140px; }
+    .stat .k { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .stat .v { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .rules { padding: 22px 26px; }
+    .rules h3 { font-size: 1rem; margin: 0 0 12px; }
+    .rules ul { margin: 0 0 0 1.2rem; padding: 0; color: var(--muted); font-size: 0.93rem; }
+    .rules li { margin-bottom: 8px; }
+    .rules li strong { color: var(--ink); }
+    details.assumptions { border-top: 1px solid var(--line); padding: 18px 26px 22px; color: var(--muted); font-size: 0.9rem; }
+    details.assumptions summary { cursor: pointer; font-weight: 700; color: var(--ink); font-size: 0.95rem; }
+    details.assumptions ul { margin: 10px 0 0 1.2rem; padding: 0; } details.assumptions li { margin-bottom: 6px; }
+    .fineprint { max-width: 1060px; margin: 0 auto; padding: 0 22px 40px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+<link rel="apple-touch-icon" href="/tools/fhsa-calc-icon-180.png">
+<link rel="manifest" href="/tools/fhsa-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="FHSA Calculator">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <div class="topbar">
+    <a class="brand" href="../index.html">📖 The Open Book</a>
+    <span class="sep">·</span>
+    <a href="index.html" style="color: var(--muted);">All tools</a>
+  </div>
+  <div class="tool-page">
+    <div class="tool-head">
+      <h1>FHSA Calculator</h1>
+      <p class="lede">The First Home Savings Account is the best deal in Canadian tax law: deductible like an RRSP, tax-free like a TFSA. See what yours could become.</p>
+    </div>
+    <div class="tool-grid">
+      <div class="card inputs">
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-contrib">Annual contribution</label>
+            <button class="info-btn" aria-expanded="false" data-info="info-c">i</button></span>
+            <span class="number-wrap"><input type="number" id="in-contrib" value="8000" min="0" max="8000" step="100"><span class="suffix">$/yr</span></span></div>
+          <p class="info-text" id="info-c" hidden>$8,000 per year is the legal maximum. Unused room carries forward — contribute $5,000 this year and you can do $11,000 next year (up to the $40,000 lifetime cap).</p>
+          <input type="range" id="rg-contrib" min="1000" max="8000" step="100" value="8000" aria-label="Annual contribution slider">
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-years">Years contributing</label></span>
+            <span class="number-wrap"><input type="number" id="in-years" value="5" min="1" max="15" step="1"><span class="suffix">yrs</span></span></div>
+          <input type="range" id="rg-years" min="1" max="15" step="1" value="5" aria-label="Years slider">
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-ret">Expected return</label></span>
+            <span class="number-wrap"><input type="number" id="in-ret" value="6" min="0" max="12" step="0.1"><span class="suffix">%/yr</span></span></div>
+          <input type="range" id="rg-ret" min="0" max="10" step="0.1" value="6" aria-label="Return slider">
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-marg">Your marginal tax rate</label>
+            <button class="info-btn" aria-expanded="false" data-info="info-m">i</button></span>
+            <span class="number-wrap"><input type="number" id="in-marg" value="30" min="0" max="55" step="0.5"><span class="suffix">%</span></span></div>
+          <p class="info-text" id="info-m" hidden>The rate on your last dollar earned (federal + provincial combined). Contributions save you tax at this rate — a $8,000 contribution at 30% puts $2,400 back in your pocket.</p>
+        </div>
+      </div>
+      <div class="card results">
+        <div class="result-head">
+          <p class="eyebrow">Your FHSA at withdrawal</p>
+          <p class="bignum" id="r-value">$…</p>
+          <p class="sub" id="r-sub">…</p>
+          <div class="stat-row">
+            <div class="stat"><div class="k">You put in</div><div class="v" id="r-in">$…</div></div>
+            <div class="stat"><div class="k">Growth</div><div class="v" id="r-growth">$…</div></div>
+            <div class="stat"><div class="k">Tax saved</div><div class="v" id="r-taxsaved">$…</div></div>
+          </div>
+        </div>
+        <div class="rules">
+          <h3>The rules that matter</h3>
+          <ul>
+            <li><strong>$8,000/year, $40,000 lifetime.</strong> Unused room carries forward. The account must close after 15 years or at age 71.</li>
+            <li><strong>Qualifying withdrawal = tax-free.</strong> Buy your first home and the whole amount — contributions <em>and</em> growth — comes out with zero tax. That's the magic no RRSP or TFSA can match alone.</li>
+            <li><strong>Not a first home?</strong> You can transfer the balance into your RRSP/RRIF tax-free (it doesn't use RRSP room). Only a non-qualifying cash withdrawal gets taxed.</li>
+            <li><strong>You must be a first-time buyer</strong> — meaning you didn't own a home you lived in during this year or the previous four.</li>
+          </ul>
+        </div>
+        <details class="assumptions">
+          <summary>Assumptions</summary>
+          <ul>
+            <li>Contributions made at the start of each year; returns compound annually and are smooth (real markets wobble).</li>
+            <li>Lifetime contributions capped at $40,000 — the calculator stops counting there and tells you.</li>
+            <li>Tax saved = deductible contributions × your marginal rate. Assumes you have the income to deduct against.</li>
+            <li>Qualifying first-home withdrawal assumed — hence tax-free at exit.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+  <p class="fineprint">Educational tool only, not financial advice. Verify current FHSA rules with CRA before contributing.</p>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  function fmt(n) { var s=Math.abs(Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g,','); return (n<0?'−$':'$')+s; }
+  function compute() {
+    var c = Math.min(parseFloat($('in-contrib').value) || 0, 8000),
+        yrs = Math.min(Math.round(parseFloat($('in-years').value) || 0), 15),
+        r = (parseFloat($('in-ret').value) || 0) / 100,
+        marg = (parseFloat($('in-marg').value) || 0) / 100;
+    // lifetime cap: contributions stop being deductible/counted past $40k
+    var totalIn = 0, value = 0, capped = false;
+    for (var y = 0; y < yrs; y++) {
+      var room = 40000 - totalIn;
+      if (room <= 0) { capped = true; value *= (1 + r); continue; }
+      var thisC = Math.min(c, room);
+      if (thisC < c) capped = true;
+      totalIn += thisC;
+      value = (value + thisC) * (1 + r);
+    }
+    var growth = value - totalIn, taxSaved = totalIn * marg;
+    $('r-value').textContent = fmt(value);
+    $('r-sub').textContent = 'Tax-free toward your first home — contributions plus all growth, zero tax on a qualifying withdrawal.' +
+      (capped ? ' (Lifetime $40,000 cap reached: later contributions shown as growth only.)' : '');
+    $('r-in').textContent = fmt(totalIn);
+    $('r-growth').textContent = fmt(growth);
+    $('r-taxsaved').textContent = fmt(taxSaved);
+  }
+  [['in-contrib','rg-contrib'],['in-years','rg-years'],['in-ret','rg-ret']].forEach(function (p) {
+    $(p[0]).addEventListener('input', function () { $(p[1]).value = $(p[0]).value; compute(); });
+    $(p[1]).addEventListener('input', function () { $(p[0]).value = $(p[1]).value; compute(); });
+  });
+  $('in-marg').addEventListener('input', compute);
+  document.querySelectorAll('.info-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var t = document.getElementById(btn.getAttribute('data-info'));
+      var open = t.hidden; t.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+  compute();
+})();
+</script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Take-Home Pay Calculator (Canada, 2026) · The Open Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: #f5f7f4; --surface: #ffffff; --surface-2: #e9eeea;
+      --ink: #17231d; --muted: #506158; --line: #c8d2cb;
+      --acc: #19704e; --acc2: #0b6fdb; --acc3: #b36a1f; --acc4: #7a4fa3;
+      --shadow: 0 14px 40px rgba(24, 46, 35, 0.08);
+      --focus: #0b6fdb; --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101713; --surface: #17201b; --surface-2: #202c25;
+        --ink: #edf5ef; --muted: #b5c3ba; --line: #3a4a40;
+        --acc: #6ed2a1; --acc2: #69b5ff; --acc3: #f0b46a; --acc4: #c9a6f2;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.28); --focus: #69b5ff;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 "IBM Plex Sans", sans-serif; }
+    button, input, select { font: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .topbar { display: flex; align-items: center; gap: 10px; max-width: 1060px; margin: 0 auto; padding: 14px 22px; border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+    .tool-page { max-width: 1060px; margin: 0 auto; padding: 30px 22px 60px; }
+    .tool-head { max-width: 720px; margin-bottom: 26px; }
+    .tool-head h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 10px; }
+    .tool-head .lede { color: var(--muted); font-size: 1.05rem; margin: 0; }
+    .tool-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 22px; align-items: start; }
+    @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .inputs { padding: 22px; }
+    .field { margin-bottom: 20px; } .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
+    label { font-weight: 600; font-size: 0.93rem; }
+    .number-wrap { position: relative; width: 150px; flex: 0 0 auto; }
+    .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); right: 11px; color: var(--muted); pointer-events: none; font-size: 0.88rem; }
+    input[type="number"], select { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); padding: 8px 30px 8px 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    select { padding-right: 12px; }
+    input[type="number"]:focus, select:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(25,112,78,0.15); outline: none; }
+    input[type="range"] { width: 100%; height: 5px; margin: 2px 0 0; appearance: none; background: var(--surface-2); border-radius: 999px; accent-color: var(--acc); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--acc); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--acc); }
+    .info-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--muted); font-family: Georgia, serif; font-style: italic; font-size: 0.78rem; line-height: 1; cursor: pointer; padding: 0; flex: 0 0 auto; }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--surface-2); color: var(--muted); font-size: 0.87rem; font-weight: 400; }
+    .results { overflow: hidden; }
+    .result-head { padding: 24px 26px 20px; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px; }
+    .takehome { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: -0.02em; margin: 0; color: var(--acc); font-variant-numeric: tabular-nums; }
+    .takehome-sub { color: var(--muted); margin: 6px 0 0; font-size: 0.95rem; }
+    .rates { display: flex; gap: 18px; margin-top: 14px; flex-wrap: wrap; }
+    .rate-chip { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; }
+    .rate-chip .k { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .rate-chip .v { font-size: 1.25rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .bars { padding: 22px 26px; border-bottom: 1px solid var(--line); }
+    .bar-row { margin-bottom: 14px; } .bar-row:last-child { margin-bottom: 0; }
+    .bar-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+    .bar-name { font-weight: 600; font-size: 0.93rem; } .bar-name .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+    .bar-val { font-weight: 700; font-variant-numeric: tabular-nums; }
+    .bar-track { height: 12px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; transition: width .3s; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    td.num, th.num { text-align: right; }
+    .breakdown { padding: 22px 26px; }
+    .breakdown h3 { font-size: 1rem; margin: 0 0 12px; }
+    details.assumptions { border-top: 1px solid var(--line); padding: 18px 26px 22px; color: var(--muted); font-size: 0.9rem; }
+    details.assumptions summary { cursor: pointer; font-weight: 700; color: var(--ink); font-size: 0.95rem; }
+    details.assumptions ul { margin: 10px 0 0 1.2rem; padding: 0; } details.assumptions li { margin-bottom: 6px; }
+    .fineprint { max-width: 1060px; margin: 0 auto; padding: 0 22px 40px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+<link rel="apple-touch-icon" href="/tools/take-home-pay-calc-icon-180.png">
+<link rel="manifest" href="/tools/take-home-pay-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Take-Home Pay">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <div class="topbar">
+    <a class="brand" href="../index.html">📖 The Open Book</a>
+    <span class="sep">·</span>
+    <a href="index.html" style="color: var(--muted);">All tools</a>
+  </div>
+  <div class="tool-page">
+    <div class="tool-head">
+      <h1>Take-Home Pay Calculator</h1>
+      <p class="lede">2026 Canadian taxes, CPP and EI — every province and territory. See what a salary is actually worth in your pocket.</p>
+    </div>
+    <div class="tool-grid">
+      <div class="card inputs">
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-salary">Gross annual salary</label></span>
+            <span class="number-wrap"><input type="number" id="in-salary" value="75000" min="0" max="2000000" step="1000"><span class="suffix">$</span></span></div>
+          <input type="range" id="rg-salary" min="20000" max="250000" step="1000" value="75000" aria-label="Salary slider">
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-prov">Province / territory</label>
+            <button class="info-btn" aria-expanded="false" data-info="info-prov">i</button></span></div>
+          <p class="info-text" id="info-prov" hidden>Where you live on December 31 determines your provincial tax. Quebec runs a separate system (QPP instead of CPP, and a 16.5% federal abatement) — both are handled here.</p>
+          <select id="in-prov">
+            <option value="on">Ontario</option><option value="qc">Quebec</option>
+            <option value="bc">British Columbia</option><option value="ab">Alberta</option>
+            <option value="mb">Manitoba</option><option value="sk" selected>Saskatchewan</option>
+            <option value="nb">New Brunswick</option><option value="ns">Nova Scotia</option>
+            <option value="pe">Prince Edward Island</option><option value="nl">Newfoundland and Labrador</option>
+            <option value="yt">Yukon</option><option value="nt">Northwest Territories</option>
+            <option value="nu">Nunavut</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-rrsp">RRSP deduction</label>
+            <button class="info-btn" aria-expanded="false" data-info="info-rrsp">i</button></span>
+            <span class="number-wrap"><input type="number" id="in-rrsp" value="0" min="0" max="500000" step="500"><span class="suffix">$</span></span></div>
+          <p class="info-text" id="info-rrsp" hidden>Optional: your annual RRSP contribution reduces taxable income. Watch your take-home and your tax bill move — that's the deduction doing its work.</p>
+        </div>
+      </div>
+      <div class="card results">
+        <div class="result-head">
+          <p class="eyebrow">Your take-home pay · <span id="r-prov">Saskatchewan</span> · 2026</p>
+          <p class="takehome" id="r-takehome">$…</p>
+          <p class="takehome-sub" id="r-sub">…</p>
+          <div class="rates">
+            <div class="rate-chip"><div class="k">Marginal rate</div><div class="v" id="r-marg">…</div></div>
+            <div class="rate-chip"><div class="k">Average rate</div><div class="v" id="r-avg">…</div></div>
+          </div>
+        </div>
+        <div class="bars" id="r-bars"></div>
+        <div class="breakdown">
+          <h3>Deduction breakdown</h3>
+          <table>
+            <tr><th>Deduction</th><th class="num">Annual</th><th class="num">Per paycheque*</th></tr>
+            <tbody id="r-table"></tbody>
+          </table>
+          <p style="color:var(--muted);font-size:0.82rem;margin:10px 0 0;">*Biweekly (26 pay periods).</p>
+        </div>
+        <details class="assumptions">
+          <summary>What's included — and what isn't</summary>
+          <ul>
+            <li><strong>Included:</strong> 2026 federal + provincial/territorial income tax brackets and basic personal amounts; CPP/QPP (5.95% / 6.40%) and CPP2/QPP2 (4%) to the 2026 ceilings; EI premiums (1.63%); federal tax credits for CPP/EI contributions; Quebec's 16.5% federal abatement.</li>
+            <li><strong>Not included:</strong> Ontario surtax and health premium; Quebec QPIP premiums; the Canada employment amount and other credits (medical, tuition, donations…); employer deductions (pension, union dues, benefits). Real paycheques will differ slightly — usually in your favour.</li>
+            <li>Figures are estimates for education, not tax advice. Verify with CRA payroll tables or certified tax software before filing.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+  <p class="fineprint">Educational tool only, not tax advice. 2026 figures per CRA announcements and published provincial tables.</p>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+
+  // 2026 figures. Brackets as [upperThreshold, rate].
+  var FED = { b: [[58523,.14],[117045,.205],[181440,.26],[258482,.29],[Infinity,.33]],
+              bpa: 16452, bpaBase: 14829, bpaStart: 181440, bpaEnd: 258482 };
+  var PROV = {
+    on: { n:'Ontario', b:[[51446,.0505],[102894,.0915],[150000,.1116],[220000,.1216],[Infinity,.1316]], bpa:12989 },
+    qc: { n:'Quebec', b:[[51780,.14],[103545,.19],[126000,.24],[Infinity,.2575]], bpa:18952, abate:.165, qpp:true },
+    bc: { n:'British Columbia', b:[[50363,.056],[100726,.077],[115606,.105],[136475,.1229],[185048,.147],[258083,.168],[Infinity,.205]], bpa:13216 },
+    ab: { n:'Alberta', b:[[61200,.08],[154259,.10],[185111,.12],[246813,.13],[370220,.14],[Infinity,.15]], bpa:22769 },
+    mb: { n:'Manitoba', b:[[47000,.108],[100000,.1275],[Infinity,.174]], bpa:15780 },
+    sk: { n:'Saskatchewan', b:[[54532,.105],[155805,.125],[Infinity,.145]], bpa:20381 },
+    nb: { n:'New Brunswick', b:[[49958,.094],[99916,.14],[185064,.16],[Infinity,.195]], bpa:13664 },
+    ns: { n:'Nova Scotia', b:[[29590,.0879],[59180,.1495],[93000,.1667],[150000,.175],[Infinity,.21]], bpa:11932 },
+    pe: { n:'Prince Edward Island', b:[[32656,.0965],[64313,.1363],[105000,.1665],[140000,.18],[Infinity,.1837]], bpa:15000 },
+    nl: { n:'Newfoundland and Labrador', b:[[43198,.087],[86395,.145],[154244,.158],[215943,.178],[275870,.198],[551739,.208],[Infinity,.218]], bpa:13094 },
+    yt: { n:'Yukon', b:[[55867,.064],[111733,.09],[154906,.109],[500000,.128],[Infinity,.15]], bpa:16452 },
+    nt: { n:'Northwest Territories', b:[[48326,.059],[96655,.086],[157139,.122],[Infinity,.1405]], bpa:18198 },
+    nu: { n:'Nunavut', b:[[53268,.04],[106537,.07],[173205,.09],[Infinity,.115]], bpa:19659 }
+  };
+  var CPP = { ympe:74600, exempt:3500, rate:.0595, yampe:85000, rate2:.04, qppRate:.064 };
+  var EI = { mie:68900, rate:.0163 };
+
+  function taxOn(inc, b) {
+    var t = 0, prev = 0;
+    for (var i = 0; i < b.length; i++) {
+      var amt = Math.min(inc, b[i][0]) - prev;
+      if (amt > 0) t += amt * b[i][1];
+      prev = b[i][0];
+      if (inc <= b[i][0]) break;
+    }
+    return t;
+  }
+  function fmt(n) {
+    var neg = n < 0, s = Math.abs(Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return (neg ? '−$' : '$') + s;
+  }
+  function pct(x) { return (x*100).toFixed(1) + '%'; }
+
+  function calc(salary, key, rrspDed) {
+    var P = PROV[key];
+    var taxable = Math.max(salary - rrspDed, 0);
+    // CPP / QPP
+    var penRate = P.qpp ? CPP.qppRate : CPP.rate;
+    var cpp = Math.min(Math.max(taxable - CPP.exempt, 0), CPP.ympe - CPP.exempt) * penRate;
+    var cpp2 = Math.min(Math.max(taxable - CPP.ympe, 0), CPP.yampe - CPP.ympe) * CPP.rate2;
+    // EI (Quebec: standard rate shown; QPIP excluded — disclosed)
+    var ei = Math.min(taxable, EI.mie) * EI.rate;
+    // Federal
+    var bpa = FED.bpa;
+    if (taxable > FED.bpaStart) {
+      var f = Math.min((taxable - FED.bpaStart) / (FED.bpaEnd - FED.bpaStart), 1);
+      bpa = FED.bpa - (FED.bpa - FED.bpaBase) * f;
+    }
+    var fedGross = taxOn(taxable, FED.b);
+    var fedCredit = bpa * .14 + (cpp + cpp2 + ei) * .14;
+    var fedTax = Math.max(fedGross - fedCredit, 0);
+    if (P.abate) fedTax *= (1 - P.abate);
+    // Provincial
+    var provGross = taxOn(taxable, P.b);
+    var provTax = Math.max(provGross - P.bpa * P.b[0][1], 0);
+    var totalTax = fedTax + provTax;
+    var totalDed = totalTax + cpp + cpp2 + ei;
+    var takehome = salary - totalDed - rrspDed; // RRSP cash also leaves the pocket
+    // marginal rate on income tax (+$1,000 differential)
+    function allTax(inc) {
+      var t2 = Math.max(inc - rrspDed, 0);
+      var g = taxOn(t2, FED.b);
+      var bp = FED.bpa;
+      if (t2 > FED.bpaStart) { var ff = Math.min((t2 - FED.bpaStart)/(FED.bpaEnd - FED.bpaStart), 1); bp = FED.bpa - (FED.bpa - FED.bpaBase)*ff; }
+      var c2 = Math.min(Math.max(t2 - CPP.exempt,0), CPP.ympe - CPP.exempt) * penRate;
+      var c22 = Math.min(Math.max(t2 - CPP.ympe,0), CPP.yampe - CPP.ympe) * CPP.rate2;
+      var e2 = Math.min(t2, EI.mie) * EI.rate;
+      var ft = Math.max(g - (bp*.14 + (c2+c22+e2)*.14), 0);
+      if (P.abate) ft *= (1 - P.abate);
+      return ft + Math.max(taxOn(t2, P.b) - P.bpa*P.b[0][1], 0);
+    }
+    var marg = salary > 0 ? (allTax(salary+1000) - allTax(salary)) / 1000 : 0;
+    return { P:P, taxable:taxable, cpp:cpp, cpp2:cpp2, ei:ei, fedTax:fedTax, provTax:provTax,
+             totalTax:totalTax, totalDed:totalDed, takehome:takehome, marg:marg,
+             avg: salary > 0 ? totalDed/salary : 0 };
+  }
+
+  var COLORS = { take:'#19704e', fed:'#0b6fdb', prov:'#7a4fa3', cpp:'#b36a1f' };
+
+  function compute() {
+    var salary = parseFloat($('in-salary').value) || 0;
+    var key = $('in-prov').value;
+    var rrsp = parseFloat($('in-rrsp').value) || 0;
+    var r = calc(salary, key, rrsp);
+    $('r-prov').textContent = r.P.n;
+    $('r-takehome').textContent = fmt(r.takehome);
+    $('r-sub').textContent = fmt(r.takehome/12) + ' / month · ' + fmt(r.takehome/26) + ' biweekly · ' + fmt(r.totalDed) + ' total deductions';
+    $('r-marg').textContent = pct(r.marg);
+    $('r-avg').textContent = pct(r.avg);
+    var pen = r.cpp + r.cpp2, penLabel = r.P.qpp ? 'QPP + QPP2' : 'CPP + CPP2';
+    var rows = [
+      ['Federal income tax', r.fedTax, COLORS.fed],
+      ['Provincial income tax', r.provTax, COLORS.prov],
+      [penLabel, pen, COLORS.cpp],
+      ['EI premiums', r.ei, '#506158']
+    ];
+    var mx = Math.max(r.takehome, r.fedTax, r.provTax, pen, r.ei, 1);
+    var bh = '';
+    bh += bar('You keep', r.takehome, COLORS.take, mx);
+    rows.forEach(function (x) { bh += bar(x[0], x[1], x[2], mx); });
+    $('r-bars').innerHTML = bh;
+    var th = '';
+    rows.forEach(function (x) {
+      th += '<tr><td>' + x[0] + '</td><td class="num">' + fmt(x[1]) + '</td><td class="num">' + fmt(x[1]/26) + '</td></tr>';
+    });
+    th += '<tr><td><strong>Take-home pay</strong></td><td class="num"><strong>' + fmt(r.takehome) + '</strong></td><td class="num"><strong>' + fmt(r.takehome/26) + '</strong></td></tr>';
+    $('r-table').innerHTML = th;
+  }
+  function bar(name, v, color, mx) {
+    return '<div class="bar-row"><div class="bar-top"><span class="bar-name"><span class="dot" style="background:' + color + '"></span>' + name +
+      '</span><span class="bar-val">' + fmt(v) + '</span></div>' +
+      '<div class="bar-track"><div class="bar-fill" style="width:' + (Math.max(v,0)/mx*100).toFixed(1) + '%;background:' + color + '"></div></div></div>';
+  }
+
+  $('in-salary').addEventListener('input', function () { $('rg-salary').value = $('in-salary').value; compute(); });
+  $('rg-salary').addEventListener('input', function () { $('in-salary').value = $('rg-salary').value; compute(); });
+  $('in-prov').addEventListener('change', compute);
+  $('in-rrsp').addEventListener('input', compute);
+  document.querySelectorAll('.info-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var t = document.getElementById(btn.getAttribute('data-info'));
+      var open = t.hidden; t.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+  compute();
+})();
+</script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>

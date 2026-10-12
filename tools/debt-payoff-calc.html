@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Debt Payoff Planner · The Open Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: #f5f7f4; --surface: #ffffff; --surface-2: #e9eeea;
+      --ink: #17231d; --muted: #506158; --line: #c8d2cb;
+      --acc: #19704e; --warn: #b33b32;
+      --shadow: 0 14px 40px rgba(24, 46, 35, 0.08);
+      --focus: #0b6fdb; --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101713; --surface: #17201b; --surface-2: #202c25;
+        --ink: #edf5ef; --muted: #b5c3ba; --line: #3a4a40;
+        --acc: #6ed2a1; --warn: #f18c80;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.28); --focus: #69b5ff;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 "IBM Plex Sans", sans-serif; }
+    button, input { font: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .topbar { display: flex; align-items: center; gap: 10px; max-width: 1060px; margin: 0 auto; padding: 14px 22px; border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+    .tool-page { max-width: 1060px; margin: 0 auto; padding: 30px 22px 60px; }
+    .tool-head { max-width: 720px; margin-bottom: 26px; }
+    .tool-head h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 10px; }
+    .tool-head .lede { color: var(--muted); font-size: 1.05rem; margin: 0; }
+    .tool-grid { display: grid; grid-template-columns: 400px minmax(0, 1fr); gap: 22px; align-items: start; }
+    @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .inputs { padding: 22px; }
+    .debt { border: 1px solid var(--line); border-radius: 10px; padding: 14px; margin-bottom: 12px; background: var(--paper); }
+    .debt-head { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .debt-head input[type="text"] { flex: 1; min-height: 38px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 6px 10px; font-weight: 600; min-width: 0; }
+    .debt-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+    .debt-grid label { display: block; font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 4px; font-weight: 600; }
+    .debt-grid input { width: 100%; min-height: 40px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); color: var(--ink); padding: 6px 10px; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .debt-grid input:focus { border-color: var(--acc); outline: none; }
+    .rm { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; padding: 4px 8px; flex: 0 0 auto; }
+    .rm:hover { color: var(--warn); }
+    .add-btn { width: 100%; min-height: 44px; border: 1px dashed var(--line); border-radius: 10px; background: none; color: var(--muted); font-weight: 600; cursor: pointer; margin-bottom: 18px; }
+    .add-btn:hover { border-color: var(--acc); color: var(--acc); }
+    .field { margin-bottom: 18px; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
+    label.flabel { font-weight: 600; font-size: 0.93rem; }
+    .number-wrap { position: relative; width: 118px; flex: 0 0 auto; }
+    .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); right: 11px; color: var(--muted); pointer-events: none; font-size: 0.88rem; }
+    input[type="number"].big { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); padding: 8px 30px 8px 12px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+    .mode { display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); padding: 4px; gap: 4px; border-radius: 9px; }
+    .mode button { border: 0; background: transparent; color: var(--muted); min-height: 46px; padding: 8px 10px; cursor: pointer; border-radius: 6px; font-weight: 600; font-size: 0.9rem; }
+    .mode button.active { background: var(--acc); color: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.15); }
+    @media (prefers-color-scheme: dark) { .mode button.active { color: #0c1f14; } }
+    .info-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--muted); font-family: Georgia, serif; font-style: italic; font-size: 0.78rem; line-height: 1; cursor: pointer; padding: 0; flex: 0 0 auto; }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--surface-2); color: var(--muted); font-size: 0.87rem; font-weight: 400; }
+    .results { overflow: hidden; }
+    .result-head { padding: 24px 26px 20px; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px; }
+    .bignum { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(2rem, 4.5vw, 2.7rem); letter-spacing: -0.02em; margin: 0; color: var(--acc); }
+    .sub { color: var(--muted); margin: 6px 0 0; font-size: 0.95rem; }
+    .compare { margin: 14px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--surface-2); font-size: 0.92rem; color: var(--muted); }
+    .order { padding: 22px 26px; }
+    .order h3 { font-size: 1rem; margin: 0 0 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    td.num, th.num { text-align: right; }
+    .badge { display: inline-block; font-size: 0.75rem; font-weight: 700; background: var(--acc); color: #fff; border-radius: 999px; padding: 2px 10px; margin-left: 8px; }
+    @media (prefers-color-scheme: dark) { .badge { color: #0c1f14; } }
+    details.assumptions { border-top: 1px solid var(--line); padding: 18px 26px 22px; color: var(--muted); font-size: 0.9rem; }
+    details.assumptions summary { cursor: pointer; font-weight: 700; color: var(--ink); font-size: 0.95rem; }
+    details.assumptions ul { margin: 10px 0 0 1.2rem; padding: 0; } details.assumptions li { margin-bottom: 6px; }
+    .fineprint { max-width: 1060px; margin: 0 auto; padding: 0 22px 40px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+<link rel="apple-touch-icon" href="/tools/debt-payoff-calc-icon-180.png">
+<link rel="manifest" href="/tools/debt-payoff-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Debt Payoff Planner">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <div class="topbar">
+    <a class="brand" href="../index.html">📖 The Open Book</a>
+    <span class="sep">·</span>
+    <a href="index.html" style="color: var(--muted);">All tools</a>
+  </div>
+  <div class="tool-page">
+    <div class="tool-head">
+      <h1>Debt Payoff Planner</h1>
+      <p class="lede">Avalanche or snowball — pick your strategy, add an extra monthly payment, and see your debt-free date.</p>
+    </div>
+    <div class="tool-grid">
+      <div class="card inputs">
+        <div id="debts"></div>
+        <button class="add-btn" id="btn-add">+ Add another debt</button>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label class="flabel" for="in-extra">Extra monthly payment</label>
+            <button class="info-btn" aria-expanded="false" data-info="info-ex">i</button></span>
+            <span class="number-wrap"><input type="number" class="big" id="in-extra" value="200" min="0" max="10000" step="25"><span class="suffix">$/mo</span></span></div>
+          <p class="info-text" id="info-ex" hidden>On top of all minimums. This single number is the fastest lever you have — even $100 changes the timeline dramatically.</p>
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label class="flabel">Strategy</label>
+            <button class="info-btn" aria-expanded="false" data-info="info-st">i</button></span></div>
+          <p class="info-text" id="info-st" hidden><strong>Avalanche</strong> (highest rate first) costs the least in interest. <strong>Snowball</strong> (smallest balance first) kills debts fastest for the psychological win. The math favours avalanche; humans often need snowball.</p>
+          <div class="mode" role="group" aria-label="Payoff strategy">
+            <button id="m-av" class="active">🏔️ Avalanche</button>
+            <button id="m-sn">⛄ Snowball</button>
+          </div>
+        </div>
+      </div>
+      <div class="card results">
+        <div class="result-head">
+          <p class="eyebrow">Debt-free date</p>
+          <p class="bignum" id="r-date">…</p>
+          <p class="sub" id="r-sub">…</p>
+          <p class="compare" id="r-compare"></p>
+        </div>
+        <div class="order">
+          <h3>Payoff order</h3>
+          <table><thead><tr><th>#</th><th>Debt</th><th class="num">Cleared</th><th class="num">Interest paid</th></tr></thead><tbody id="r-order"></tbody></table>
+        </div>
+        <details class="assumptions">
+          <summary>Assumptions</summary>
+          <ul>
+            <li>Minimums are paid on every debt each month; the extra payment (plus each cleared debt's freed-up payment) rolls to the current target.</li>
+            <li>Rates stay fixed; no new borrowing. One missed minimum breaks the plan — automate them.</li>
+            <li>If minimums don't cover a debt's monthly interest, the plan can't work — the calculator will tell you.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+  <p class="fineprint">Educational tool only, not financial advice.</p>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var debts = [
+    { name: 'Credit card', bal: 6500, apr: 21.99, min: 150 },
+    { name: 'Student loan', bal: 18000, apr: 7.5, min: 220 },
+    { name: 'Car loan', bal: 12000, apr: 8.9, min: 310 }
+  ];
+  var strategy = 'avalanche';
+
+  function fmt(n) { var s=Math.abs(Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g,','); return (n<0?'−$':'$')+s; }
+
+  function renderDebts() {
+    var w = $('debts'); w.innerHTML = '';
+    debts.forEach(function (d, i) {
+      var div = document.createElement('div'); div.className = 'debt';
+      div.innerHTML =
+        '<div class="debt-head"><input type="text" value="' + d.name.replace(/"/g,'&quot;') + '" data-i="' + i + '" data-k="name" aria-label="Debt name">' +
+        (debts.length > 1 ? '<button class="rm" data-i="' + i + '" aria-label="Remove debt">×</button>' : '') + '</div>' +
+        '<div class="debt-grid">' +
+        '<div><label>Balance $</label><input type="number" min="0" step="50" value="' + d.bal + '" data-i="' + i + '" data-k="bal"></div>' +
+        '<div><label>APR %</label><input type="number" min="0" max="40" step="0.1" value="' + d.apr + '" data-i="' + i + '" data-k="apr"></div>' +
+        '<div><label>Min $/mo</label><input type="number" min="0" step="5" value="' + d.min + '" data-i="' + i + '" data-k="min"></div>' +
+        '</div>';
+      w.appendChild(div);
+    });
+    w.querySelectorAll('input').forEach(function (inp) {
+      inp.addEventListener('input', function () {
+        var i = +inp.getAttribute('data-i'), k = inp.getAttribute('data-k');
+        debts[i][k] = k === 'name' ? inp.value : (parseFloat(inp.value) || 0);
+        compute();
+      });
+    });
+    w.querySelectorAll('.rm').forEach(function (b) {
+      b.addEventListener('click', function () { debts.splice(+b.getAttribute('data-i'), 1); renderDebts(); compute(); });
+    });
+  }
+
+  function simulate(order) {
+    // order: array of debt indices in payoff priority
+    var ds = order.map(function (i) { return { bal: debts[i].bal, apr: debts[i].apr, min: debts[i].min, name: debts[i].name, idx: i, intPaid: 0 }; });
+    var extra = parseFloat($('in-extra').value) || 0;
+    var alive = ds.filter(function (d) { return d.bal > 0; });
+    if (alive.length === 0) return { months: 0, totalInt: 0, cleared: [] };
+    // total monthly outflow stays constant: extra + every debt's minimum (freed minimums roll to the target)
+    var fixedPool = extra + alive.reduce(function (s, d) { return s + d.min; }, 0);
+    var startInterest = alive.reduce(function (s, d) { return s + d.bal * d.apr/1200; }, 0);
+    if (fixedPool < startInterest) return { stuck: true };
+    var month = 0, totalInt = 0, cleared = [];
+    while (alive.length > 0 && month < 900) {
+      month++;
+      var pool = fixedPool;
+      alive.forEach(function (d) {
+        var interest = d.bal * d.apr/1200;
+        var pay = Math.min(d.min, d.bal + interest);
+        d.bal = d.bal + interest - pay;
+        var ip = Math.min(interest, pay);
+        d.intPaid += ip; totalInt += ip;
+        pool -= pay;
+      });
+      var target = null;
+      for (var t = 0; t < order.length; t++) {
+        var cand = null;
+        for (var k = 0; k < alive.length; k++) if (alive[k].idx === order[t] && alive[k].bal > 0.005) { cand = alive[k]; break; }
+        if (cand) { target = cand; break; }
+      }
+      if (target && pool > 0) target.bal = Math.max(target.bal - pool, 0);
+      var done = alive.filter(function (d) { return d.bal <= 0.005; });
+      done.forEach(function (d) { cleared.push({ name: d.name, month: month, intPaid: d.intPaid }); });
+      alive = alive.filter(function (d) { return d.bal > 0.005; });
+    }
+    return { months: month, totalInt: totalInt, cleared: cleared, stuck: month >= 900 };
+  }
+
+  function orderIdx() {
+    var idx = debts.map(function (_, i) { return i; }).filter(function (i) { return debts[i].bal > 0; });
+    if (strategy === 'avalanche') idx.sort(function (a, b) { return debts[b].apr - debts[a].apr || debts[a].bal - debts[b].bal; });
+    else idx.sort(function (a, b) { return debts[a].bal - debts[b].bal; });
+    return idx;
+  }
+
+  function compute() {
+    if (!debts.some(function (d) { return d.bal > 0; })) {
+      $('r-date').textContent = 'No debts entered.';
+      $('r-sub').textContent = 'Add a debt to build your plan.';
+      $('r-compare').textContent = '';
+      $('r-order').innerHTML = '';
+      return;
+    }
+    var res = simulate(orderIdx());
+    if (res.stuck) {
+      $('r-date').textContent = 'Minimums don\'t cover interest.';
+      $('r-sub').textContent = 'At least one debt is growing faster than its minimum payment. Increase payments or seek advice — this needs attention now.';
+      $('r-compare').textContent = '';
+      $('r-order').innerHTML = '';
+      return;
+    }
+    var date = new Date(); date.setMonth(date.getMonth() + res.months);
+    var ds = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    $('r-date').textContent = ds[date.getMonth()] + ' ' + date.getFullYear();
+    var yrs = Math.floor(res.months/12), mo = res.months % 12;
+    $('r-sub').textContent = 'That\'s ' + res.months + ' months (' + (yrs > 0 ? yrs + 'y ' : '') + mo + 'm) · ' + fmt(res.totalInt) + ' total interest.';
+    // compare with the other strategy
+    var other = strategy === 'avalanche' ? 'snowball' : 'avalanche';
+    var keep = strategy; strategy = other;
+    var res2 = simulate(orderIdx());
+    strategy = keep;
+    var cmp = $('r-compare');
+    if (!res2.stuck) {
+      var dInt = res2.totalInt - res.totalInt, dMo = res2.months - res.months;
+      cmp.textContent = strategy === 'avalanche'
+        ? 'Snowball would cost ' + fmt(Math.max(dInt,0)) + ' more in interest and take ' + Math.max(dMo,0) + ' months longer.'
+        : 'Avalanche would save ' + fmt(Math.max(-dInt,0)) + ' in interest and finish ' + Math.max(-dMo,0) + ' months sooner — but snowball kills a debt sooner for the motivation win.';
+    } else cmp.textContent = '';
+    var th = '';
+    res.cleared.forEach(function (c, i) {
+      var cd = new Date(); cd.setMonth(cd.getMonth() + c.month);
+      th += '<tr><td>' + (i+1) + (i===0 ? '<span class="badge">first</span>' : '') + '</td><td>' + c.name.replace(/</g,'&lt;') + '</td><td class="num">' +
+            ds[cd.getMonth()] + ' ' + cd.getFullYear() + '</td><td class="num">' + fmt(c.intPaid) + '</td></tr>';
+    });
+    $('r-order').innerHTML = th;
+  }
+
+  $('btn-add').addEventListener('click', function () {
+    if (debts.length >= 8) return;
+    debts.push({ name: 'Debt ' + (debts.length+1), bal: 5000, apr: 10, min: 100 });
+    renderDebts(); compute();
+  });
+  $('in-extra').addEventListener('input', compute);
+  $('m-av').addEventListener('click', function () { strategy='avalanche'; $('m-av').classList.add('active'); $('m-sn').classList.remove('active'); compute(); });
+  $('m-sn').addEventListener('click', function () { strategy='snowball'; $('m-sn').classList.add('active'); $('m-av').classList.remove('active'); compute(); });
+  document.querySelectorAll('.info-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var t = document.getElementById(btn.getAttribute('data-info'));
+      var open = t.hidden; t.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+  renderDebts(); compute();
+})();
+</script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>

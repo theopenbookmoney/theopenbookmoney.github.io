@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Mortgage Explorer · The Open Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: #f5f7f4; --surface: #ffffff; --surface-2: #e9eeea;
+      --ink: #17231d; --muted: #506158; --line: #c8d2cb;
+      --acc: #19704e; --int: #b33b32; --prin: #0b6fdb;
+      --shadow: 0 14px 40px rgba(24, 46, 35, 0.08);
+      --focus: #0b6fdb; --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101713; --surface: #17201b; --surface-2: #202c25;
+        --ink: #edf5ef; --muted: #b5c3ba; --line: #3a4a40;
+        --acc: #6ed2a1; --int: #f18c80; --prin: #69b5ff;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.28); --focus: #69b5ff;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 "IBM Plex Sans", sans-serif; }
+    button, input { font: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .topbar { display: flex; align-items: center; gap: 10px; max-width: 1060px; margin: 0 auto; padding: 14px 22px; border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+    .tool-page { max-width: 1060px; margin: 0 auto; padding: 30px 22px 60px; }
+    .tool-head { max-width: 720px; margin-bottom: 26px; }
+    .tool-head h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 10px; }
+    .tool-head .lede { color: var(--muted); font-size: 1.05rem; margin: 0; }
+    .tool-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 22px; align-items: start; }
+    @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .inputs { padding: 22px; }
+    .field { margin-bottom: 20px; } .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
+    label { font-weight: 600; font-size: 0.93rem; }
+    .number-wrap { position: relative; width: 118px; flex: 0 0 auto; }
+    .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); right: 11px; color: var(--muted); pointer-events: none; font-size: 0.88rem; }
+    input[type="number"] { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); padding: 8px 30px 8px 12px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+    input[type="number"]:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(25,112,78,0.15); outline: none; }
+    input[type="range"] { width: 100%; height: 5px; margin: 2px 0 0; appearance: none; background: var(--surface-2); border-radius: 999px; accent-color: var(--acc); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--acc); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--acc); }
+    .info-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--muted); font-family: Georgia, serif; font-style: italic; font-size: 0.78rem; line-height: 1; cursor: pointer; padding: 0; flex: 0 0 auto; }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--surface-2); color: var(--muted); font-size: 0.87rem; font-weight: 400; }
+    .results { overflow: hidden; }
+    .result-head { padding: 24px 26px 20px; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px; }
+    .bigpay { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: -0.02em; margin: 0; color: var(--acc); font-variant-numeric: tabular-nums; }
+    .bigpay-sub { color: var(--muted); margin: 6px 0 0; font-size: 0.95rem; }
+    .stat-row { display: flex; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+    .stat { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; flex: 1 1 140px; }
+    .stat .k { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .stat .v { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .extra-win { margin: 16px 0 0; padding: 14px 16px; border-radius: 10px; background: var(--surface-2); font-size: 0.95rem; }
+    .extra-win strong { color: var(--acc); }
+    .viz { padding: 22px 26px; border-bottom: 1px solid var(--line); }
+    .viz h3 { font-size: 1rem; margin: 0 0 4px; }
+    .viz p.hint { color: var(--muted); font-size: 0.88rem; margin: 0 0 14px; }
+    #chart { width: 100%; height: 220px; display: block; }
+    .legend { display: flex; gap: 18px; margin-top: 10px; font-size: 0.88rem; color: var(--muted); }
+    .legend .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; }
+    .sched { padding: 22px 26px; max-height: 340px; overflow-y: auto; }
+    .sched h3 { font-size: 1rem; margin: 0 0 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+    th, td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; position: sticky; top: 0; background: var(--surface); }
+    details.assumptions { border-top: 1px solid var(--line); padding: 18px 26px 22px; color: var(--muted); font-size: 0.9rem; }
+    details.assumptions summary { cursor: pointer; font-weight: 700; color: var(--ink); font-size: 0.95rem; }
+    details.assumptions ul { margin: 10px 0 0 1.2rem; padding: 0; } details.assumptions li { margin-bottom: 6px; }
+    .fineprint { max-width: 1060px; margin: 0 auto; padding: 0 22px 40px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+<link rel="apple-touch-icon" href="/tools/mortgage-calc-icon-180.png">
+<link rel="manifest" href="/tools/mortgage-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Mortgage Explorer">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <div class="topbar">
+    <a class="brand" href="../index.html">📖 The Open Book</a>
+    <span class="sep">·</span>
+    <a href="index.html" style="color: var(--muted);">All tools</a>
+  </div>
+  <div class="tool-page">
+    <div class="tool-head">
+      <h1>Mortgage Explorer</h1>
+      <p class="lede">Your payment, your amortization, and what extra payments actually do — the three numbers that matter before every Bank of Canada decision.</p>
+    </div>
+    <div class="tool-grid">
+      <div class="card inputs">
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-price">Home price</label></span>
+            <span class="number-wrap"><input type="number" id="in-price" value="400000" min="50000" max="5000000" step="5000"><span class="suffix">$</span></span></div>
+          <input type="range" id="rg-price" min="150000" max="1500000" step="5000" value="400000" aria-label="Home price slider">
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-down">Down payment</label></span>
+            <span class="number-wrap"><input type="number" id="in-down" value="20" min="5" max="100" step="0.5"><span class="suffix">%</span></span></div>
+          <input type="range" id="rg-down" min="5" max="60" step="0.5" value="20" aria-label="Down payment slider">
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-rate">Mortgage rate</label>
+            <button class="info-btn" aria-expanded="false" data-info="info-rate">i</button></span>
+            <span class="number-wrap"><input type="number" id="in-rate" value="5" min="0.5" max="15" step="0.05"><span class="suffix">%</span></span></div>
+          <p class="info-text" id="info-rate" hidden>Canadian fixed mortgages compound semi-annually, not monthly — this calculator uses the true Canadian effective rate, the way your lender does.</p>
+          <input type="range" id="rg-rate" min="2" max="10" step="0.05" value="5" aria-label="Mortgage rate slider">
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-amort">Amortization</label></span>
+            <span class="number-wrap"><input type="number" id="in-amort" value="25" min="5" max="30" step="1"><span class="suffix">yrs</span></span></div>
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-extra">Extra payment</label>
+            <button class="info-btn" aria-expanded="false" data-info="info-extra">i</button></span>
+            <span class="number-wrap"><input type="number" id="in-extra" value="0" min="0" max="5000" step="25"><span class="suffix">$/mo</span></span></div>
+          <p class="info-text" id="info-extra" hidden>An extra amount paid toward principal every month. Most lenders allow 15–20% annual prepayment without penalty — check yours.</p>
+          <input type="range" id="rg-extra" min="0" max="1500" step="25" value="0" aria-label="Extra payment slider">
+        </div>
+      </div>
+      <div class="card results">
+        <div class="result-head">
+          <p class="eyebrow">Monthly payment</p>
+          <p class="bigpay" id="r-pay">$…</p>
+          <p class="bigpay-sub" id="r-sub">…</p>
+          <div class="stat-row">
+            <div class="stat"><div class="k">Total interest</div><div class="v" id="r-int">$…</div></div>
+            <div class="stat"><div class="k">Payoff in</div><div class="v" id="r-years">…</div></div>
+            <div class="stat"><div class="k">Loan amount</div><div class="v" id="r-loan">$…</div></div>
+          </div>
+          <p class="extra-win" id="r-extra" hidden></p>
+        </div>
+        <div class="viz">
+          <h3>Where each payment goes</h3>
+          <p class="hint">Early years are mostly interest — that's the part the "rent is throwing money away" crowd never mentions.</p>
+          <canvas id="chart" width="600" height="220"></canvas>
+          <div class="legend">
+            <span><span class="dot" style="background:var(--int)"></span>Interest</span>
+            <span><span class="dot" style="background:var(--prin)"></span>Principal</span>
+          </div>
+        </div>
+        <div class="sched">
+          <h3>Year-by-year schedule</h3>
+          <table><thead><tr><th>Year</th><th>Interest</th><th>Principal</th><th>Balance</th></tr></thead><tbody id="r-sched"></tbody></table>
+        </div>
+        <details class="assumptions">
+          <summary>Assumptions</summary>
+          <ul>
+            <li>Canadian semi-annual compounding converted to the equivalent monthly rate — the legal standard for Canadian mortgages.</li>
+            <li>Fixed rate for the whole amortization; real mortgages renew every 1–5 years at new rates.</li>
+            <li>Extra payments go entirely to principal, within typical prepayment privileges.</li>
+            <li>Excludes property tax, CMHC insurance, and maintenance — this is the mortgage alone.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+  <p class="fineprint">Educational tool only, not financial advice. Your lender's numbers govern.</p>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  // Canadian semi-annual compounding -> equivalent monthly rate
+  function mRate(annualPct) { return Math.pow(1 + annualPct/200, 1/6) - 1; }
+  function pmt(P, annualPct, years) {
+    var r = mRate(annualPct), n = Math.round(years*12);
+    if (r === 0) return P/n;
+    var f = Math.pow(1+r, n);
+    return P * r * f / (f - 1);
+  }
+  function fmt(n) { var neg=n<0, s=Math.abs(Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g,','); return (neg?'−$':'$')+s; }
+
+  function amortize(loan, annualPct, years, extra) {
+    var r = mRate(annualPct), base = pmt(loan, annualPct, years), pay = base + extra;
+    var bal = loan, months = 0, totInt = 0, rows = [], yI = 0, yP = 0;
+    var cssInt = getComputedStyle(document.documentElement).getPropertyValue('--int').trim() || '#b33b32';
+    var cssPrin = getComputedStyle(document.documentElement).getPropertyValue('--prin').trim() || '#0b6fdb';
+    var yearly = [];
+    while (bal > 0.005 && months < 600) {
+      var interest = bal * r;
+      var princ = Math.min(pay - interest, bal);
+      if (princ < 0) princ = 0;
+      bal -= princ; totInt += interest; yI += interest; yP += princ; months++;
+      yearly.push({interest: interest, principal: princ});
+      if (months % 12 === 0 || bal <= 0.005) {
+        rows.push({ year: Math.ceil(months/12), interest: yI, principal: yP, balance: Math.max(bal,0) });
+        yI = 0; yP = 0;
+      }
+    }
+    return { pay: base, months: months, totInt: totInt, rows: rows, yearly: yearly, cssInt: cssInt, cssPrin: cssPrin };
+  }
+
+  function drawChart(yearly) {
+    var c = $('chart'), ctx = c.getContext('2d');
+    var W = c.width, H = c.height, pad = 8;
+    ctx.clearRect(0, 0, W, H);
+    // aggregate by year
+    var yrs = [];
+    for (var i = 0; i < yearly.length; i += 12) {
+      var si = 0, sp = 0;
+      for (var j = i; j < Math.min(i+12, yearly.length); j++) { si += yearly[j].interest; sp += yearly[j].principal; }
+      yrs.push({ i: si, p: sp });
+    }
+    var n = yrs.length, bw = (W - pad*2) / n;
+    var mx = 0;
+    yrs.forEach(function (y) { mx = Math.max(mx, y.i + y.p); });
+    var cssInt = getComputedStyle(document.documentElement).getPropertyValue('--int').trim() || '#b33b32';
+    var cssPrin = getComputedStyle(document.documentElement).getPropertyValue('--prin').trim() || '#0b6fdb';
+    yrs.forEach(function (y, idx) {
+      var x = pad + idx * bw + 1, w = Math.max(bw - 2, 1);
+      var hi = (y.i / mx) * (H - pad*2), hp = (y.p / mx) * (H - pad*2);
+      ctx.fillStyle = cssPrin;
+      ctx.fillRect(x, H - pad - hi - hp, w, hp);
+      ctx.fillStyle = cssInt;
+      ctx.fillRect(x, H - pad - hi, w, hi);
+    });
+  }
+
+  function compute() {
+    var price = parseFloat($('in-price').value) || 0,
+        downPct = parseFloat($('in-down').value) || 0,
+        rate = parseFloat($('in-rate').value) || 0,
+        amort = parseFloat($('in-amort').value) || 25,
+        extra = parseFloat($('in-extra').value) || 0;
+    var loan = price * (1 - downPct/100);
+    var base = amortize(loan, rate, amort, 0);
+    $('r-pay').textContent = fmt(base.pay);
+    $('r-loan').textContent = fmt(loan);
+    $('r-int').textContent = fmt(base.totInt);
+    $('r-years').textContent = (base.months/12).toFixed(1) + ' yrs';
+    $('r-sub').textContent = 'On ' + fmt(loan) + ' at ' + rate.toFixed(2) + '% over ' + amort + ' years (Canadian semi-annual compounding).';
+    if (extra > 0) {
+      var ex = amortize(loan, rate, amort, extra);
+      var savedInt = base.totInt - ex.totInt, savedMo = base.months - ex.months;
+      var el = $('r-extra');
+      el.hidden = false;
+      el.innerHTML = 'With <strong>' + fmt(extra) + '/mo extra</strong>: mortgage-free <strong>' +
+        (savedMo/12).toFixed(1) + ' years sooner</strong>, saving <strong>' + fmt(savedInt) + '</strong> in interest.';
+      drawChart(ex.yearly);
+    } else {
+      $('r-extra').hidden = true;
+      drawChart(base.yearly);
+    }
+    var a = extra > 0 ? amortize(loan, rate, amort, extra) : base;
+    var th = '';
+    a.rows.forEach(function (r) {
+      th += '<tr><td>' + r.year + '</td><td>' + fmt(r.interest) + '</td><td>' + fmt(r.principal) + '</td><td>' + fmt(r.balance) + '</td></tr>';
+    });
+    $('r-sched').innerHTML = th;
+  }
+
+  [['in-price','rg-price'],['in-down','rg-down'],['in-rate','rg-rate'],['in-extra','rg-extra']].forEach(function (p) {
+    $(p[0]).addEventListener('input', function () { $(p[1]).value = $(p[0]).value; compute(); });
+    $(p[1]).addEventListener('input', function () { $(p[0]).value = $(p[1]).value; compute(); });
+  });
+  $('in-amort').addEventListener('input', compute);
+  document.querySelectorAll('.info-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var t = document.getElementById(btn.getAttribute('data-info'));
+      var open = t.hidden; t.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+  compute();
+})();
+</script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>
