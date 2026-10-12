@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>“Renting Is Throwing Money Away” — The Most Expensive Myth in Canadian Money | The Open Book</title>
+<meta name="description" content="The math of renting vs buying in Canada: unrecoverable costs, the 5% rule, and an interactive calculator. Neither is throwing money away — it's math, not morality.">
+<style>
+  :root { --ink: #1a1a2e; --paper: #faf9f7; --accent: #2a7f62; --muted: #6b7280; --line: #e5e1da; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: var(--paper); color: var(--ink); line-height: 1.75; }
+  .topbar { border-bottom: 1px solid var(--line); background: #fff; }
+  .topbar .inner { max-width: 680px; margin: 0 auto; padding: 0.9rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .topbar a.brand { text-decoration: none; color: var(--ink); font-size: 1.15rem; font-weight: bold; }
+  .topbar a.tools { margin-left: auto; text-decoration: none; color: var(--muted); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
+  .topbar a.home { margin-left: 1.2rem; text-decoration: none; color: var(--muted); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .kicker { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 0.75rem; }
+  h1 { font-size: 2rem; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .dateline { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  article p { margin-bottom: 1.25rem; }
+  article h2 { font-size: 1.4rem; margin: 2.25rem 0 1rem; line-height: 1.35; }
+  article ul, article ol { margin: 0 0 1.25rem 1.5rem; }
+  article li { margin-bottom: 0.6rem; }
+  article table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.92rem; }
+  article th, article td { border: 1px solid var(--line); padding: 0.6rem 0.75rem; text-align: left; vertical-align: top; }
+  article th { background: #f1efe9; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  article hr { border: none; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+  article em { color: #3a3a4a; }
+  .calc-wrap { margin: 2rem 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #fff; }
+  .calc-wrap iframe { width: 100%; border: 0; display: block; min-height: 600px; }
+  .calc-label { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0.8rem 1.2rem 0; }
+  footer { border-top: 1px solid var(--line); margin-top: 1rem; padding: 2rem 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html">📖 The Open Book</a>
+  <a class="tools" href="tools/">Tools</a>
+  <a class="home" href="index.html">All articles</a>
+</div></div>
+<div class="wrap">
+  <div class="kicker">The Open Book · Money, explained</div>
+  <h1>“Renting Is Throwing Money Away” — The Most Expensive Myth in Canadian Money</h1>
+  <div class="dateline">October 2026</div>
+  <article>
+<p><em>Sam is fictional — his story is invented to make the math stick. Every number in this article is real 2026 data or a clearly labelled assumption you can change in the calculator below.</em></p>
+<p>Sam is 45, divorced, and renting a townhouse in Saskatoon. Two years ago he owned a house with his ex-wife. The settlement split everything down the middle, and he walked away with half a retirement fund and a rental lease.</p>
+<p>Every family barbecue since, someone has told him he's throwing money away.</p>
+<p>His brother-in-law said it while flipping burgers: "You're just paying someone else's mortgage, man." His coworker said it with the confidence of a man who has never opened a spreadsheet: "Rent is 100% unrecoverable. At least a mortgage builds equity."</p>
+<p>Sam came to Priya — Rob's wife, the household's spreadsheet keeper — and asked the question nobody at the barbecue could answer: "Am I actually throwing money away? Show me the math."</p>
+<p>She did. And the answer is why this article exists.</p>
+<h2>The myth, stated plainly</h2>
+<p>The myth goes like this: every rent dollar is gone forever, while every mortgage dollar builds your wealth. Therefore renting = throwing money away, and buying = always smarter.</p>
+<p>It feels true because half of it is true. Rent is indeed 100% unrecoverable — you will never see that money again. But the second half is where the sleight of hand happens. <strong>Most of what a homeowner pays is also unrecoverable</strong>, especially in the early years. The myth survives because nobody itemizes it.</p>
+<h2>The reframe: compare what's unrecoverable</h2>
+<p>Forget comparing the mortgage payment to the rent. That's the wrong race. The right race is: <em>how much money is gone forever on each side?</em></p>
+<p>On the owning side, gone forever includes:</p>
+<ul>
+<li><strong>Mortgage interest.</strong> On a $320,000 mortgage at 5%, the first month's payment includes <strong>$1,333 of pure interest</strong> — gone, forever, just like rent. In year one, roughly 70% of every mortgage payment is interest.</li>
+<li><strong>Property tax.</strong> Roughly 1% of the home's value per year in most Canadian cities. Gone.</li>
+<li><strong>Maintenance.</strong> Roofs, furnaces, water heaters, windows. Averaged over decades: about 1% of the home's value per year. Gone.</li>
+<li><strong>Home insurance.</strong> Gone.</li>
+<li><strong>CMHC insurance</strong>, if you put down less than 20% — 2.8% to 4% of the mortgage, added to your loan. It protects the lender, not you. Gone.</li>
+<li><strong>Closing costs</strong> when you buy (land transfer tax, legal fees — and in Toronto, a <em>second</em> municipal land transfer tax) and roughly <strong>5% in selling costs</strong> when you sell. Gone.</li>
+</ul>
+<p>Add it up and the "unrecoverable" pile for owning is enormous. That's the number you must compare against rent — not the mortgage payment.</p>
+<h2>The 5% rule: the back-of-the-napkin version</h2>
+<p>Ben Felix of the Rational Reminder podcast popularized a beautifully simple test: <strong>the unrecoverable costs of owning run about 5% of the home's value per year</strong> — roughly 1% maintenance, ~1% property tax, and ~3% cost of capital (your mortgage rate, or the return you're giving up by locking money in a down payment).</p>
+<p>So: multiply the home's price by 5%. If that number is <em>higher</em> than a year's rent for a comparable home, renting and investing the difference will probably win. If it's lower, buying probably wins.</p>
+<p>It's a rule of thumb, not gospel — which is why we built the calculator below. But it kills the myth in one line: renting is only "throwing money away" if owning wastes <em>less</em>.</p>
+<h2>The worked example: Sam's numbers</h2>
+<p>Priya ran Sam's actual situation. A $400,000 townhouse in Saskatoon, 20% down ($80,000), 5% mortgage, 25-year amortization. Comparable rent: $1,600 a month.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Buyer (per month, year 1)</th>
+<th>Renter (per month)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shelter payment</td>
+<td>$1,871 mortgage</td>
+<td>$1,600 rent</td>
+</tr>
+<tr>
+<td>Property tax + maintenance + insurance</td>
+<td>$767</td>
+<td>—</td>
+</tr>
+<tr>
+<td><strong>Total outlay</strong></td>
+<td><strong>$2,638</strong></td>
+<td><strong>$1,600</strong></td>
+</tr>
+<tr>
+<td><strong>Unrecoverable (gone forever)</strong></td>
+<td><strong>$2,100</strong></td>
+<td><strong>$1,600</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Read that last row twice. The renter "throws away" $1,600 a month. The buyer throws away <strong>$2,100</strong> a month — $500 <em>more</em> — while also tying up $80,000 plus closing costs.</p>
+<p>Now the ten-year verdict, with the renter investing the $80,000 down payment plus every dollar of monthly savings at a moderate 6% return, and the home appreciating at 3% a year:</p>
+<ul>
+<li><strong>Buyer ends with: $274,130</strong> (home equity after selling costs)</li>
+<li><strong>Renter ends with: $307,019</strong> (investment portfolio)</li>
+<li><strong>Renting wins by about $33,000.</strong></li>
+</ul>
+<p>Nobody at the barbecue mentioned that the buyer's first <em>decade</em> of payments is mostly interest, tax, and maintenance — or that the renter's invested down payment compounds the whole time. The myth counts the buyer's equity and forgets the buyer's costs. The math counts both.</p>
+<h2>Where buying genuinely wins</h2>
+<p>This is not an anti-buying article. The editorial rule here is scenario honesty: buying wins clearly <strong>in the right scenario</strong>. Change the inputs and watch it flip — for example, a $350,000 home, $1,750 rent, 15-year stay, and 3.5% rent inflation: <strong>buying wins by roughly $156,000</strong>, pulling ahead for good in year four.</p>
+<p>Buying wins IF:</p>
+<ul>
+<li><strong>You'll stay a long time (10+ years).</strong> The mortgage payment stays fixed while rent compounds upward. Time is the buyer's best friend — short stays get murdered by closing and selling costs (on a 4-year stay in our example, renting wins by ~$27,000).</li>
+<li><strong>Rents are high relative to prices.</strong> The lower the price-to-rent ratio, the better buying looks. Parts of the Prairies and Atlantic Canada often favour buying; Toronto and Vancouver frequently favour renting on pure math.</li>
+<li><strong>You won't actually invest the difference.</strong> This is the big one, and it's behavioural, not mathematical. The renter's victory above assumes every spare dollar gets invested, every month, for ten years. Most humans don't do that. A mortgage is forced savings with a roof on it — and for undisciplined investors, forced beats optimal-but-imaginary.</li>
+<li><strong>You value stability and control.</strong> No landlord selling out from under you, no renoviction, paint the walls whatever colour you want. That's worth real money, even if it never shows in a spreadsheet.</li>
+<li><strong>Canada's tax code is on your side.</strong> The principal residence exemption means your home's gains are tax-free — a genuine, enormous advantage no stock portfolio gets.</li>
+</ul>
+<h2>Where renting genuinely wins</h2>
+<p>Renting wins IF:</p>
+<ul>
+<li><strong>Your horizon is short or uncertain.</strong> New job, new city, new relationship, maybe kids — buying and selling within five years means closing costs, land transfer tax, and a 5% selling commission eat your equity alive.</li>
+<li><strong>You need mobility.</strong> A renter can chase a better job across the country with 60 days' notice. An owner needs months and tens of thousands of dollars.</li>
+<li><strong>Price-to-rent ratios are stretched.</strong> When a $400,000 home rents for $1,600 (a ratio near 21), the math leans renter — as our example just proved.</li>
+<li><strong>You will actually invest the difference.</strong> The renter's edge is entirely behavioural. Automate it — same day the rent leaves, the investment goes in — or the whole comparison collapses.</li>
+</ul>
+<h2>The honest catch nobody mentions</h2>
+<p>Here's the sentence the myth gets backwards: <strong>renting doesn't build wealth — investing the difference does.</strong> The barbecue crowd is accidentally right about one thing: a renter who spends the $1,038 monthly savings on takeout ends up with nothing, while the buyer ends up with a paid-off house. The calculator assumes a disciplined renter. Before you choose renting, ask whether that's you. Priya's exact words to Sam: "The math says rent. But the math assumes you're you-on-your-best-day, every month, for a decade."</p>
+<h2>The verdict: math, not morality</h2>
+<p>Nobody is "throwing money away." You're paying for shelter either way — the only question is which pile of unrecoverable costs is smaller, and what happens to the difference.</p>
+<p>Run your own numbers instead of taking Sam's word for it — or mine. Plug in your own home price, rent, and mortgage rate in the calculator below, and watch which side wins. Drag the time horizon out and find your breakeven year. That's the whole decision, on one screen.</p>
+<div class="calc-wrap"><div class="calc-label">Interactive calculator</div><iframe src="tools/rent-vs-buy-calc.html" title="Interactive calculator" loading="lazy"></iframe></div>
+<hr />
+<p><em>The Open Book is educational content, not financial advice. Assumptions are labelled throughout — change any of them in the calculator and the verdict updates. That's the point.</em></p>
+  </article>
+</div>
+<footer>The Open Book · Educational content only, not financial advice.<br><a href="index.html">theopenbookmoney.github.io</a></footer>
+<script>
+window.addEventListener('message', function (e) {
+  if (e.data && e.data.obmCalcHeight) {
+    var f = document.querySelector('.calc-wrap iframe');
+    if (f) f.style.height = e.data.obmCalcHeight + 'px';
+  }
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,482 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Rent vs Buy Calculator · The Open Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: #f5f7f4;
+      --surface: #ffffff;
+      --surface-2: #e9eeea;
+      --ink: #17231d;
+      --muted: #506158;
+      --line: #c8d2cb;
+      --buy: #19704e;
+      --rent: #b36a1f;
+      --shadow: 0 14px 40px rgba(24, 46, 35, 0.08);
+      --focus: #0b6fdb;
+      --accent: #14532d;
+      --on-accent: #ffffff;
+      --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101713;
+        --surface: #17201b;
+        --surface-2: #202c25;
+        --ink: #edf5ef;
+        --muted: #b5c3ba;
+        --line: #3a4a40;
+        --buy: #6ed2a1;
+        --rent: #f0b46a;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+        --focus: #69b5ff;
+        --accent: #6ed2a1;
+        --on-accent: #0c1f14;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font: 16px/1.55 "IBM Plex Sans", sans-serif;
+    }
+    button, input { font: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 2px;
+    }
+
+    .topbar {
+      display: flex; align-items: center; gap: 10px;
+      max-width: 1060px; margin: 0 auto; padding: 14px 22px;
+      border-bottom: 1px solid var(--line);
+      font-size: 0.85rem; color: var(--muted);
+    }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+
+    .tool-page { max-width: 1060px; margin: 0 auto; padding: 30px 22px 60px; }
+    .tool-head { max-width: 720px; margin-bottom: 26px; }
+    .tool-head h1 {
+      font-family: "Source Serif 4", Georgia, serif;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 10px;
+    }
+    .tool-head .lede { color: var(--muted); font-size: 1.05rem; margin: 0; }
+
+    .tool-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 22px; align-items: start; }
+    @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+
+    .inputs { padding: 22px; }
+    .section-title { font-weight: 700; font-size: 0.92rem; margin: 0 0 12px; display: flex; align-items: center; gap: 6px; }
+    .section-title.buy { color: var(--buy); }
+    .section-title.rent { color: var(--rent); }
+    .section + .section { margin-top: 26px; padding-top: 20px; border-top: 1px solid var(--line); }
+
+    .field { margin-bottom: 18px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
+    label { font-weight: 600; font-size: 0.93rem; }
+    .number-wrap { position: relative; width: 118px; flex: 0 0 auto; }
+    .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); right: 11px; color: var(--muted); pointer-events: none; font-size: 0.88rem; }
+    input[type="number"] {
+      width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 8px;
+      background: var(--paper); color: var(--ink); padding: 8px 30px 8px 12px;
+      text-align: right; font-weight: 600; font-variant-numeric: tabular-nums;
+    }
+    input[type="number"]:focus { border-color: var(--buy); box-shadow: 0 0 0 3px rgba(25,112,78,0.15); outline: none; }
+    input[type="range"] { width: 100%; height: 5px; margin: 2px 0 0; appearance: none; background: var(--surface-2); border-radius: 999px; accent-color: var(--buy); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--buy); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--buy); }
+
+    .info-btn {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--line); background: none; color: var(--muted);
+      font-family: Georgia, serif; font-style: italic; font-size: 0.78rem; line-height: 1;
+      cursor: pointer; padding: 0; flex: 0 0 auto;
+    }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text {
+      margin: 10px 0 0; padding: 10px 12px; border-radius: 8px;
+      background: var(--surface-2); color: var(--muted); font-size: 0.87rem; font-weight: 400;
+    }
+
+    .results { overflow: hidden; }
+    .result-head { padding: 24px 26px 20px; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px; }
+    .result-head h2 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(1.5rem, 3.5vw, 2.1rem); letter-spacing: -0.02em; margin: 0; line-height: 1.2; }
+    .result-head h2 .win-buy { color: var(--buy); }
+    .result-head h2 .win-rent { color: var(--rent); }
+    .crossover { margin: 10px 0 0; color: var(--muted); font-size: 0.95rem; }
+
+    .bars { padding: 22px 26px; border-bottom: 1px solid var(--line); }
+    .bar-row { margin-bottom: 16px; }
+    .bar-row:last-child { margin-bottom: 0; }
+    .bar-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+    .bar-name { font-weight: 700; font-size: 0.95rem; }
+    .bar-name .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; }
+    .dot.buy { background: var(--buy); } .dot.rent { background: var(--rent); }
+    .bar-val { font-weight: 700; font-variant-numeric: tabular-nums; }
+    .bar-track { height: 12px; background: var(--surface-2); border-radius: 999px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 999px; transition: width .3s; }
+    .bar-fill.buy { background: var(--buy); } .bar-fill.rent { background: var(--rent); }
+    .bar-note { font-size: 0.85rem; color: var(--muted); margin-top: 12px; }
+
+    .breakdown { padding: 22px 26px; }
+    .breakdown h3 { font-size: 1rem; margin: 0 0 12px; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+    th { color: var(--muted); font-weight: 600; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    td.num, th.num { text-align: right; }
+    tr.total td { font-weight: 700; border-bottom: none; }
+
+    details.assumptions { border-top: 1px solid var(--line); padding: 18px 26px 22px; color: var(--muted); font-size: 0.9rem; }
+    details.assumptions summary { cursor: pointer; font-weight: 700; color: var(--ink); font-size: 0.95rem; }
+    details.assumptions ul { margin: 10px 0 0 1.2rem; padding: 0; }
+    details.assumptions li { margin-bottom: 6px; }
+
+    .fineprint { max-width: 1060px; margin: 0 auto; padding: 0 22px 40px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+<link rel="apple-touch-icon" href="/tools/rent-vs-buy-calc-icon-180.png">
+<link rel="manifest" href="/tools/rent-vs-buy-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Rent vs Buy">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <div class="topbar">
+    <a class="brand" href="../index.html">📖 The Open Book</a>
+    <span class="sep">·</span>
+    <a href="../rent-vs-buy.html" style="color: var(--muted);">Read the article</a>
+    <span class="sep">·</span>
+    <a href="tools/" style="color: var(--muted);">All tools</a>
+  </div>
+
+  <div class="tool-page">
+    <div class="tool-head">
+      <h1>Rent vs Buy Calculator</h1>
+      <p class="lede">Same life, two paths: buy the home, or rent it and invest every dollar of the difference. After your time horizon, who has more wealth?</p>
+    </div>
+
+    <div class="tool-grid">
+      <div class="card inputs">
+        <div class="section">
+          <p class="section-title buy">🏠 Buying</p>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-price">Home price</label></span>
+              <span class="number-wrap"><input type="number" id="in-price" value="400000" min="50000" max="5000000" step="1000"><span class="suffix">$</span></span></div>
+            <input type="range" id="rg-price" min="150000" max="1500000" step="5000" value="400000" aria-label="Home price slider">
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-down">Down payment</label>
+              <button class="info-btn" aria-expanded="false" data-info="info-down">i</button></span>
+              <span class="number-wrap"><input type="number" id="in-down" value="20" min="5" max="100" step="0.5"><span class="suffix">%</span></span></div>
+            <p class="info-text" id="info-down" hidden>Below 20% down, CMHC mortgage insurance is added to your loan automatically (2.8–4% depending on loan-to-value, the real 2026 premium tiers). It protects the lender, not you — and you pay for it.</p>
+            <input type="range" id="rg-down" min="5" max="50" step="0.5" value="20" aria-label="Down payment slider">
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-rate">Mortgage rate</label></span>
+              <span class="number-wrap"><input type="number" id="in-rate" value="5" min="0.5" max="15" step="0.05"><span class="suffix">%</span></span></div>
+            <input type="range" id="rg-rate" min="2" max="10" step="0.05" value="5" aria-label="Mortgage rate slider">
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-amort">Amortization</label></span>
+              <span class="number-wrap"><input type="number" id="in-amort" value="25" min="5" max="30" step="1"><span class="suffix">yrs</span></span></div>
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-tax">Property tax</label></span>
+              <span class="number-wrap"><input type="number" id="in-tax" value="1" min="0" max="3" step="0.05"><span class="suffix">%/yr</span></span></div>
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-maint">Maintenance</label>
+              <button class="info-btn" aria-expanded="false" data-info="info-maint">i</button></span>
+              <span class="number-wrap"><input type="number" id="in-maint" value="1" min="0" max="3" step="0.1"><span class="suffix">%/yr</span></span></div>
+            <p class="info-text" id="info-maint" hidden>Roofs, furnaces, water heaters, windows — averaged over decades, about 1% of the home's value per year. Some years zero, some years a $12,000 furnace.</p>
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-ins">Home insurance</label></span>
+              <span class="number-wrap"><input type="number" id="in-ins" value="1200" min="0" max="10000" step="50"><span class="suffix">$/yr</span></span></div>
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-close">Closing costs (buying)</label>
+              <button class="info-btn" aria-expanded="false" data-info="info-close">i</button></span>
+              <span class="number-wrap"><input type="number" id="in-close" value="1.5" min="0" max="5" step="0.1"><span class="suffix">%</span></span></div>
+            <p class="info-text" id="info-close" hidden>Land transfer tax, legal fees, title insurance, inspections. Varies wildly by province — Toronto buyers pay a second municipal land transfer tax; Saskatchewan buyers pay far less.</p>
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-sell">Selling costs</label></span>
+              <span class="number-wrap"><input type="number" id="in-sell" value="5" min="0" max="10" step="0.25"><span class="suffix">%</span></span></div>
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-appr">Home price growth</label></span>
+              <span class="number-wrap"><input type="number" id="in-appr" value="3" min="-2" max="10" step="0.1"><span class="suffix">%/yr</span></span></div>
+            <input type="range" id="rg-appr" min="0" max="7" step="0.1" value="3" aria-label="Home price growth slider">
+          </div>
+        </div>
+
+        <div class="section">
+          <p class="section-title rent">🔑 Renting</p>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-rent">Monthly rent (comparable home)</label>
+              <button class="info-btn" aria-expanded="false" data-info="info-rent">i</button></span>
+              <span class="number-wrap"><input type="number" id="in-rent" value="1600" min="300" max="10000" step="25"><span class="suffix">$/mo</span></span></div>
+            <p class="info-text" id="info-rent" hidden>Compare like with like: the rent for a home similar to the one you'd buy, not a basement suite. This is where most rent-vs-buy takes quietly cheat.</p>
+            <input type="range" id="rg-rent" min="800" max="4000" step="25" value="1600" aria-label="Monthly rent slider">
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-rentinfl">Rent inflation</label></span>
+              <span class="number-wrap"><input type="number" id="in-rentinfl" value="2.5" min="0" max="8" step="0.1"><span class="suffix">%/yr</span></span></div>
+          </div>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-ret">Investment return</label>
+              <button class="info-btn" aria-expanded="false" data-info="info-ret">i</button></span>
+              <span class="number-wrap"><input type="number" id="in-ret" value="6" min="0" max="12" step="0.1"><span class="suffix">%/yr</span></span></div>
+            <p class="info-text" id="info-ret" hidden>The return the renter earns on the down payment and every dollar of monthly savings invested instead of paid to a mortgage. 6% is a moderate long-run diversified portfolio assumption — not a promise.</p>
+            <input type="range" id="rg-ret" min="2" max="10" step="0.1" value="6" aria-label="Investment return slider">
+          </div>
+        </div>
+
+        <div class="section">
+          <p class="section-title">⏳ Horizon</p>
+          <div class="field">
+            <div class="field-top"><span class="label-line"><label for="in-horizon">How long you'll stay</label>
+              <button class="info-btn" aria-expanded="false" data-info="info-hor">i</button></span>
+              <span class="number-wrap"><input type="number" id="in-horizon" value="10" min="1" max="30" step="1"><span class="suffix">yrs</span></span></div>
+            <p class="info-text" id="info-hor" hidden>The single most important input. Short stays punish buying (closing + selling costs); long stays reward it (the mortgage gets inflated away while rent keeps rising).</p>
+            <input type="range" id="rg-horizon" min="1" max="30" step="1" value="10" aria-label="Time horizon slider">
+          </div>
+        </div>
+      </div>
+
+      <div class="card results">
+        <div class="result-head">
+          <p class="eyebrow">After <span id="r-years">10</span> years</p>
+          <h2 id="r-verdict">…</h2>
+          <p class="crossover" id="r-crossover"></p>
+        </div>
+        <div class="bars">
+          <div class="bar-row">
+            <div class="bar-top"><span class="bar-name"><span class="dot buy"></span>Buyer ends with</span><span class="bar-val" id="r-buyval">…</span></div>
+            <div class="bar-track"><div class="bar-fill buy" id="r-buybar" style="width:0%"></div></div>
+          </div>
+          <div class="bar-row">
+            <div class="bar-top"><span class="bar-name"><span class="dot rent"></span>Renter ends with</span><span class="bar-val" id="r-rentval">…</span></div>
+            <div class="bar-track"><div class="bar-fill rent" id="r-rentbar" style="width:0%"></div></div>
+          </div>
+          <p class="bar-note" id="r-note"></p>
+        </div>
+        <div class="breakdown">
+          <h3>Where the money goes — first year</h3>
+          <table>
+            <tr><th></th><th class="num">Buyer / mo</th><th class="num">Renter / mo</th></tr>
+            <tr><td>Shelter payment</td><td class="num" id="t-mort">$…</td><td class="num" id="t-rent">$…</td></tr>
+            <tr><td>Property tax + maintenance + insurance</td><td class="num" id="t-carry">$…</td><td class="num">—</td></tr>
+            <tr><td>Unrecoverable (gone forever)</td><td class="num" id="t-unrec">$…</td><td class="num" id="t-unrec-r">$…</td></tr>
+            <tr class="total"><td>Total monthly outlay</td><td class="num" id="t-total">$…</td><td class="num" id="t-total-r">$…</td></tr>
+          </table>
+        </div>
+        <details class="assumptions">
+          <summary>Assumptions</summary>
+          <ul>
+            <li>Both start with the same cash: down payment + closing costs. The renter invests it on day one.</li>
+            <li>Every month, the renter invests the difference when owning costs more than rent — and draws down when rent costs more.</li>
+            <li>Property tax, maintenance and insurance rise 2% a year; rent rises at your rent-inflation rate.</li>
+            <li>CMHC insurance (2.8–4% by loan-to-value tier) is added to the mortgage when the down payment is under 20%.</li>
+            <li>Selling costs are deducted from the buyer's final equity. Principal-residence capital-gains exemption is reflected in the untaxed home equity.</li>
+            <li>Investment returns are pre-tax and smooth — real markets wobble. This is a comparison engine, not a prediction.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <p class="fineprint">Educational tool only, not financial advice. Figures are estimates — your lender, insurer, and province will have their own numbers.</p>
+
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+
+  var FIELDS = [
+    ['price', 'in-price', 'rg-price'],
+    ['down', 'in-down', 'rg-down'],
+    ['rate', 'in-rate', 'rg-rate'],
+    ['amort', 'in-amort', null],
+    ['tax', 'in-tax', null],
+    ['maint', 'in-maint', null],
+    ['ins', 'in-ins', null],
+    ['close', 'in-close', null],
+    ['sell', 'in-sell', null],
+    ['appr', 'in-appr', 'rg-appr'],
+    ['rent', 'in-rent', 'rg-rent'],
+    ['rentinfl', 'in-rentinfl', null],
+    ['ret', 'in-ret', 'rg-ret'],
+    ['horizon', 'in-horizon', 'rg-horizon']
+  ];
+
+  function val(id) { var v = parseFloat($(id).value); return isNaN(v) ? 0 : v; }
+
+  function pmt(principal, annualRate, years) {
+    var r = annualRate / 1200, n = Math.round(years * 12);
+    if (n <= 0) return 0;
+    if (r === 0) return principal / n;
+    var f = Math.pow(1 + r, n);
+    return principal * r * f / (f - 1);
+  }
+  function balance(principal, annualRate, years, afterMonths) {
+    var r = annualRate / 1200, n = Math.round(years * 12);
+    var k = Math.min(Math.max(afterMonths, 0), n);
+    if (r === 0) return Math.max(principal - (principal / n) * k, 0);
+    var p = pmt(principal, annualRate, years);
+    var f = Math.pow(1 + r, k);
+    return Math.max(principal * f - p * (f - 1) / r, 0);
+  }
+  function cmhcPremium(loan, downPct) {
+    if (downPct >= 20) return 0;
+    var ltv = loan / (loan / (1 - downPct / 100)) * 100; // loan-to-value %
+    var rate = ltv > 90 ? 4.00 : ltv > 85 ? 3.10 : 2.80;
+    return loan * rate / 100;
+  }
+  function fmt(n) {
+    var neg = n < 0;
+    var s = Math.abs(Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return (neg ? '−$' : '$') + s;
+  }
+
+  function compute() {
+    var price = val('in-price'), downPct = val('in-down'), rate = val('in-rate'),
+        amort = val('in-amort'), taxPct = val('in-tax'), maintPct = val('in-maint'),
+        ins = val('in-ins'), closePct = val('in-close'), sellPct = val('in-sell'),
+        appr = val('in-appr'), rent0 = val('in-rent'), rentInfl = val('in-rentinfl'),
+        ret = val('in-ret'), H = Math.round(val('in-horizon'));
+    if (H < 1) H = 1; if (H > 30) H = 30;
+
+    var down = price * downPct / 100;
+    var closing = price * closePct / 100;
+    var loan0 = price - down;
+    var premium = cmhcPremium(loan0, downPct);
+    var loan = loan0 + premium;
+    var mp = pmt(loan, rate, amort);
+    var carry0 = (price * (taxPct + maintPct) / 100 + ins) / 12; // monthly tax+maint+ins, year 1
+    var rM = ret / 1200;
+
+    var months = H * 12;
+    var portfolio = down + closing; // renter invests the same starting cash
+    var crossover = null;
+    var firstInterest = loan * rate / 1200;
+
+    for (var m = 0; m < months; m++) {
+      var y = m / 12;
+      var ownMonthly = mp + carry0 * Math.pow(1.02, y);
+      var rentM = rent0 * Math.pow(1 + rentInfl / 100, y);
+      var d = ownMonthly - rentM; // >0: renter invests it; <0: renter draws down
+      portfolio = portfolio * (1 + rM) + d;
+      if ((m + 1) % 12 === 0) {
+        var yy = (m + 1) / 12;
+        var hv = price * Math.pow(1 + appr / 100, yy);
+        var buyerNet = hv - balance(loan, rate, amort, m + 1) - hv * sellPct / 100;
+        if (crossover === null && yy > 1 && buyerNet >= portfolio) crossover = yy;
+      }
+    }
+    var homeVal = price * Math.pow(1 + appr / 100, H);
+    var buyerNet = homeVal - balance(loan, rate, amort, months) - homeVal * sellPct / 100;
+    var renterNet = portfolio;
+    var diff = buyerNet - renterNet;
+
+    // headline
+    $('r-years').textContent = H;
+    var v = $('r-verdict');
+    if (Math.abs(diff) < 500) {
+      v.innerHTML = 'A wash — <span class="win-buy">buying</span> and <span class="win-rent">renting</span> end within $500 of each other.';
+    } else if (diff > 0) {
+      v.innerHTML = 'Buying comes out <span class="win-buy">' + fmt(diff) + ' ahead</span> after ' + H + ' years.';
+    } else {
+      v.innerHTML = 'Renting (and investing the difference) comes out <span class="win-rent">' + fmt(-diff) + ' ahead</span> after ' + H + ' years.';
+    }
+    var co = $('r-crossover');
+    if (crossover !== null) {
+      co.textContent = 'Buying pulls ahead for good in year ' + crossover + ' — stay at least that long for the math to favour owning.';
+    } else if (diff > 0) {
+      co.textContent = 'Buying is ahead from the start with these numbers — usually means rent is very high relative to the price.';
+    } else {
+      co.textContent = 'With these numbers, buying never catches up within ' + H + ' years. Try a longer horizon or lower rent inflation.';
+    }
+
+    // bars
+    var mx = Math.max(buyerNet, renterNet, 1);
+    $('r-buyval').textContent = fmt(buyerNet);
+    $('r-rentval').textContent = fmt(renterNet);
+    $('r-buybar').style.width = (Math.max(buyerNet, 0) / mx * 100).toFixed(1) + '%';
+    $('r-rentbar').style.width = (Math.max(renterNet, 0) / mx * 100).toFixed(1) + '%';
+    $('r-note').textContent = premium > 0
+      ? 'Includes ' + fmt(premium) + ' of CMHC insurance added to the mortgage (' + downPct.toFixed(1) + '% down). Home value after ' + H + ' years: ' + fmt(homeVal) + '.'
+      : 'Home value after ' + H + ' years: ' + fmt(homeVal) + ' (at ' + appr.toFixed(1) + '%/yr). No CMHC premium at ' + downPct.toFixed(1) + '% down.';
+
+    // first-year monthly breakdown
+    var unrecBuy = firstInterest + carry0;
+    $('t-mort').textContent = fmt(mp);
+    $('t-rent').textContent = fmt(rent0);
+    $('t-carry').textContent = fmt(carry0);
+    $('t-unrec').textContent = fmt(unrecBuy);
+    $('t-unrec-r').textContent = fmt(rent0);
+    $('t-total').textContent = fmt(mp + carry0);
+    $('t-total-r').textContent = fmt(rent0);
+  }
+
+  // wire inputs <-> sliders
+  FIELDS.forEach(function (f) {
+    var num = $(f[1]);
+    num.addEventListener('input', function () {
+      if (f[2]) $(f[2]).value = num.value;
+      compute();
+    });
+    if (f[2]) {
+      var rg = $(f[2]);
+      rg.addEventListener('input', function () { num.value = rg.value; compute(); });
+    }
+  });
+
+  // info buttons
+  document.querySelectorAll('.info-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var t = document.getElementById(btn.getAttribute('data-info'));
+      var open = t.hidden;
+      t.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+
+  compute();
+})();
+</script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>
