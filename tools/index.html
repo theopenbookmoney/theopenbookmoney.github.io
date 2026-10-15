@@ -10,6 +10,10 @@
   :root { --ink: #1a1a2e; --paper: #faf9f7; --accent: #2a7f62; --muted: #6b7280; --line: #e5e1da; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Georgia, 'Times New Roman', serif; background: var(--paper); color: var(--ink); line-height: 1.7; }
+  .topbar { border-bottom: 1px solid var(--line); background: #fff; }
+  .topbar .inner { max-width: 640px; margin: 0 auto; padding: 0.9rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .topbar a.brand { text-decoration: none; color: var(--ink); font-size: 1.15rem; font-weight: bold; }
+  .topbar a.home { margin-left: auto; text-decoration: none; color: var(--muted); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
   .wrap { max-width: 640px; margin: 0 auto; padding: 3rem 1.5rem; }
   header { text-align: center; margin-bottom: 2rem; }
   .mark { font-size: 3rem; margin-bottom: 0.5rem; }
@@ -31,10 +35,12 @@
 </style>
 </head>
 <body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="../index.html">📖 The Open Book</a>
+  <a class="home" href="../index.html#latest">All articles</a>
+</div></div>
 <div class="wrap">
-  <p class="back"><a href="../index.html">&larr; All articles</a></p>
   <header>
-    <div class="mark">📖</div>
     <h1>Tools</h1>
     <p class="tagline">Every interactive tool, in one place.</p>
   </header>
