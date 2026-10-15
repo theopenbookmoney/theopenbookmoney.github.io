@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Much House Can You Actually Afford? The Bank’s Math vs Your Math | The Open Book</title>
+<meta name="description" content="The pre-approval says one number; your budget says another. GDS/TDS ratios, the stress test, CMHC insurance, and the true monthly cost — with an interactive calculator.">
+<link rel="canonical" href="https://theopenbookmoney.com/mortgage.html">
+<style>
+  :root { --ink: #1a1a2e; --paper: #faf9f7; --accent: #2a7f62; --muted: #6b7280; --line: #e5e1da; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: var(--paper); color: var(--ink); line-height: 1.75; }
+  .topbar { border-bottom: 1px solid var(--line); background: #fff; }
+  .topbar .inner { max-width: 680px; margin: 0 auto; padding: 0.9rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .topbar a.brand { text-decoration: none; color: var(--ink); font-size: 1.15rem; font-weight: bold; }
+  .topbar a.tools { margin-left: auto; text-decoration: none; color: var(--muted); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
+  .topbar a.home { margin-left: 1.2rem; text-decoration: none; color: var(--muted); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .kicker { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 0.75rem; }
+  h1 { font-size: 2rem; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .dateline { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  article p { margin-bottom: 1.25rem; }
+  article h2 { font-size: 1.4rem; margin: 2.25rem 0 1rem; line-height: 1.35; }
+  article ul, article ol { margin: 0 0 1.25rem 1.5rem; }
+  article li { margin-bottom: 0.6rem; }
+  article table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.92rem; }
+  article th, article td { border: 1px solid var(--line); padding: 0.6rem 0.75rem; text-align: left; vertical-align: top; }
+  article th { background: #f1efe9; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  article hr { border: none; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+  article em { color: #3a3a4a; }
+  .calc-wrap { margin: 2rem 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #fff; }
+  .calc-wrap iframe { width: 100%; border: 0; display: block; min-height: 600px; }
+  .calc-label { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0.8rem 1.2rem 0; }
+  footer { border-top: 1px solid var(--line); margin-top: 1rem; padding: 2rem 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html">📖 The Open Book</a>
+  <a class="tools" href="tools/">Tools</a>
+  <a class="home" href="articles.html">All articles</a>
+</div></div>
+<div class="wrap">
+  <div class="kicker">The Open Book · Money, explained</div>
+  <h1>How Much House Can You Actually Afford? The Bank’s Math vs Your Math</h1>
+  <div class="dateline">October 2026</div>
+  <article>
+<p><em>Rob is fictional — his story is invented to make the math stick. Every number in this article is real 2026 data or a clearly labelled assumption you can change in the calculator below.</em></p>
+<p>The letter arrived on a Tuesday. Rob carried it in from the mailbox like it was a winning lottery ticket: a mortgage pre-approval from the bank. A big number, printed in a confident font, saying the bank would lend Rob and Priya enough to buy the upsized house they'd been circling for months — four bedrooms, a garage that fits the minivan, a yard the kids could actually play in.</p>
+<p>Priya read the number, did the mental math she'd been doing in her head since the first open house, and said the sentence this article is about:</p>
+<p>"That's what they'll <em>lend</em> us. It's not what we can <em>afford</em>."</p>
+<p>Rob is 38, a night-shift supervisor at a distribution warehouse in Saskatoon. Priya, 36, is a nurse. Two kids — Maya, 8, and Liam, 5. They own a smaller place now and want room to grow. The bank's number said yes. Priya's spreadsheet was about to say something more complicated. She opened it that night, and this is what was in it.</p>
+<h2>The bank's three gates</h2>
+<p>Before the bank hands you a number, you pass through three gates. Understanding them is the whole game — because each gate measures something slightly different from "can you afford this."</p>
+<p><strong>Gate 1: The down payment.</strong> Federal rules set the minimum: 5% on the first $500,000 of the price, 10% on any amount above that up to $999,999, and 20% minimum on $1 million and up. Below 20% down, you also pay mortgage default insurance — and this is the part buyers underestimate. The 2026 CMHC premium tiers are 4.00% of the mortgage for 5–9.99% down, 3.10% for 10–14.99% down, and 2.80% for 15–19.99% down. The premium gets added to your loan, so you pay interest on it for 25 years. (As of December 2024, first-time buyers can also choose a 30-year amortization on insured mortgages, with a 0.20% premium surcharge.)</p>
+<p><strong>Gate 2: The debt ratios.</strong> The bank computes two percentages against your <em>gross</em> income — before tax, before everything:</p>
+<ul>
+<li><strong>GDS (Gross Debt Service):</strong> your housing costs — mortgage principal and interest, property tax, heating, plus half of condo fees — divided by gross monthly income. The standard ceiling is <strong>32%</strong>. For strong applications, CMHC allows lenders to stretch to <strong>39%</strong>.</li>
+<li><strong>TDS (Total Debt Service):</strong> everything in GDS plus all other debts — car loans, credit card minimums, lines of credit. Standard ceiling <strong>40%</strong>, stretchable to <strong>44%</strong>.</li>
+</ul>
+<p><strong>Gate 3: The stress test.</strong> The bank doesn't test you at the rate you'll actually pay. Under OSFI's Guideline B-20 — confirmed unchanged in January 2026 — federally regulated lenders must qualify you at the <strong>greater of your contract rate plus 2%, or 5.25%</strong>. Insured and uninsured mortgages alike. So at a 4.29% contract rate, you're approved as if your rate were 6.29%.</p>
+<p>Notice what none of these gates measure: your groceries, your kids, your car insurance, the furnace that will die in February. The gates measure the <em>bank's</em> risk. Your budget is a separate exam — and nobody administers it but you.</p>
+<h2>The worked example: Rob and Priya's numbers</h2>
+<p>Priya built the scenario the way the bank would, then the way a household actually lives. First, the assumptions — labelled, so you can swap in your own:</p>
+<table>
+<thead>
+<tr>
+<th>Assumption</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Home price</td>
+<td>$500,000 (illustrative — Saskatoon detached homes averaged ~$498,000 in late-September 2026 weekly MLS data; the SRA benchmark was $439,600)</td>
+</tr>
+<tr>
+<td>Household income</td>
+<td>$140,000 gross (Rob $65K + Priya $75K)</td>
+</tr>
+<tr>
+<td>Down payment</td>
+<td>10% ($50,000)</td>
+</tr>
+<tr>
+<td>Contract rate</td>
+<td>4.29% five-year fixed, 25-year amortization (illustrative — published October 2026 five-year fixed rates sit around 4.3%)</td>
+</tr>
+<tr>
+<td>Property tax</td>
+<td>1% of value per year ($417/mo)</td>
+</tr>
+<tr>
+<td>Heating</td>
+<td>$180/mo</td>
+</tr>
+<tr>
+<td>Maintenance</td>
+<td>1% of value per year ($417/mo)</td>
+</tr>
+<tr>
+<td>Home insurance</td>
+<td>$125/mo</td>
+</tr>
+<tr>
+<td>Other debts</td>
+<td>$600/mo ($450 car payment + $150 card minimums)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Gate 1:</strong> 10% clears the 5% minimum. CMHC premium at 3.10% on the $450,000 mortgage = <strong>$13,950</strong>, added to the loan. Real mortgage from day one: <strong>$463,950</strong>.</p>
+<p><strong>Gate 3 (before gate 2, because the stress test feeds the ratios):</strong> at the 6.29% qualifying rate, the monthly payment on $463,950 is <strong>$3,049</strong>. At the 4.29% rate they'll actually pay, it's <strong>$2,514</strong>. That $535-a-month gap is borrowing power the stress test quietly deletes — the single biggest reason pre-approvals come in lower than buyers expect.</p>
+<p><strong>Gate 2:</strong> GDS = ($3,049 + $417 tax + $180 heating) ÷ $11,667 gross monthly = <strong>31.2%</strong> — under the 32% ceiling. TDS adds the $600 in other debts = <strong>36.4%</strong> — under 40%. The bank stamps it: approved.</p>
+<p>And here's the part that made Rob put the letter down: at 32% GDS, the bank's math would stretch to roughly a <strong>$514,000</strong> home with 10% down. The letter wasn't just approving the house they wanted. It was inviting them to borrow <em>more</em>.</p>
+<h2>The number the bank never shows you</h2>
+<p>Priya's spreadsheet had a second column. The bank's column ends at approval. Hers kept going — into what the house actually costs every month, paid in real dollars:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Per month</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mortgage (at the 4.29% you actually pay)</td>
+<td>$2,514</td>
+</tr>
+<tr>
+<td>Property tax</td>
+<td>$417</td>
+</tr>
+<tr>
+<td>Heating</td>
+<td>$180</td>
+</tr>
+<tr>
+<td>Maintenance (the roof doesn't care about your ratios)</td>
+<td>$417</td>
+</tr>
+<tr>
+<td>Home insurance</td>
+<td>$125</td>
+</tr>
+<tr>
+<td><strong>True monthly cost of the house</strong></td>
+<td><strong>$3,653</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Now compare that to income two ways. Against gross income — the bank's way — $3,653 is 31%. Comfortable. Responsible. The letter was right.</p>
+<p>Against the roughly <strong>$8,420 a month</strong> Rob and Priya actually take home after income tax, CPP, and EI — it's <strong>43%</strong>. And that 43% buys only the house. Not groceries for four. Not the minivan's insurance. Not RESP contributions for Maya and Liam, whose expensive years are still ahead. Not the emergency fund.</p>
+<p>This is the tension, stated plainly: <strong>the bank approved them at 31% of money they don't get to spend.</strong> GDS is calculated on gross income and counts only PITH — principal, interest, taxes, heating. Maintenance isn't in it. Insurance isn't in it. Children aren't in it. The bank's ratios answer "will we get our money back?" Your budget has to answer "will we still have a life?" — and those are different questions with different answers.</p>
+<h2>Borrowing near the max: great IF… / think twice IF…</h2>
+<p>This is not mortgage advice — it's the math behind the approval, and the honest version is scenario-based. Borrowing near your approved maximum is defensible <strong>IF</strong>:</p>
+<ul>
+<li><strong>Your income is stable and likely to grow.</strong> A nurse and a warehouse supervisor with seniority — decent footing, not speculative.</li>
+<li><strong>The down payment isn't your last dollar.</strong> Keep six months of the <em>true</em> cost ($3,653, not $2,514) liquid after closing. The bank doesn't require this. Reality does.</li>
+<li><strong>You'll stay put for 10+ years.</strong> Buying and selling inside five years lets closing costs and commissions eat the equity the mortgage was building.</li>
+<li><strong>The payment leaves room for the rest of the plan.</strong> Retirement savings, RESP contributions, the emergency fund — the mortgage can't be your entire financial life.</li>
+</ul>
+<p>Think twice <strong>IF</strong>:</p>
+<ul>
+<li><strong>The true cost crosses 40% of take-home.</strong> At 43%, one surprise — a transmission, a roof, a stretch without overtime — and the budget has no shock absorber.</li>
+<li><strong>An income is fragile.</strong> Night-shift premiums and overtime aren't guaranteed; price the house on the income you'd have in a lean year, not a flush one.</li>
+<li><strong>The kids' costs are about to rise.</strong> Maya is 8, Liam is 5. Braces, activities, food bills that grow with teenagers — the household's expenses have a known upward slope and the mortgage doesn't care.</li>
+<li><strong>You'd be buying the letter, not the house.</strong> A pre-approval is a ceiling, not a target. The bank profits when you borrow more; it never has to live in your budget.</li>
+</ul>
+<p>Priya's verdict to Rob, in the exact words the spreadsheet earned: "We're approved for the house. We're not approved for our life in the house. There's a difference, and it's about four hundred dollars a month of breathing room we don't have."</p>
+<h2>The honest catch nobody mentions</h2>
+<p>Here's what the three gates are really for: they protect the lender against <em>your</em> worst case. The stress test imagines rates at 6.29%. The ratios imagine you devoting a third of gross pay to shelter. What no gate imagines is the actual texture of a household budget — that gross pay arrives 40% lighter, that houses consume 1% of their value in maintenance whether or not anyone budgeted for it, that "approved" and "affordable" are measured in different currencies.</p>
+<p>Rob still wants the bigger house. He's just shopping for it with two numbers now instead of one: the bank's number, and Priya's. The bank's number says what you can borrow. Priya's says what you can live with. Get the second one first — it's the only one you'll be paying.</p>
+<p>Don't take Rob's word for it — run your own numbers in the calculator below. Plug in your income, debts, and down payment, and see what the bank's math says you can borrow versus what your budget says you can afford. That's the whole decision, on one screen.</p>
+<div class="calc-wrap"><div class="calc-label">Interactive calculator</div><iframe src="tools/mortgage-calc.html" title="Interactive calculator" loading="lazy"></iframe></div>
+  </article>
+</div>
+<footer>The Open Book · Educational content only, not financial advice.<br><a href="index.html">theopenbookmoney.com</a></footer>
+<script>
+window.addEventListener('message', function (e) {
+  if (e.data && e.data.obmCalcHeight) {
+    var f = document.querySelector('.calc-wrap iframe');
+    if (f) f.style.height = e.data.obmCalcHeight + 'px';
+  }
+});
+</script>
+</body>
+</html>
