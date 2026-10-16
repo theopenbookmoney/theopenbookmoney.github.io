@@ -1,6 +1,6 @@
 // Open Book tools service worker: cache-first so tools work offline
 // (e.g. Sleep Sounds from the home screen in airplane mode).
-var CACHE = 'openbook-tools-v4';
+var CACHE = 'openbook-tools-v5';
 var ASSETS = [
   '/tools/',
   '/tools/index.html',
@@ -19,7 +19,7 @@ var ASSETS = [
   '/tools/white-noise-manifest.json',
   '/tools/tfsa-vs-rrsp-calc-manifest.json',
   '/tools/compound-interest-calc-manifest.json',
-  '/tools/rent-vs-buy-calc-manifest.json'
+  '/tools/rent-vs-buy-calc-manifest.json',
   '/tools/take-home-pay-calc.html',
   '/tools/take-home-pay-calc-icon-180.png',
   '/tools/take-home-pay-calc-icon-512.png',
@@ -40,6 +40,10 @@ var ASSETS = [
   '/tools/debt-payoff-calc-icon-180.png',
   '/tools/debt-payoff-calc-icon-512.png',
   '/tools/debt-payoff-calc-manifest.json',
+  '/tools/retirement-calc.html',
+  '/tools/retirement-calc-icon-180.png',
+  '/tools/retirement-calc-icon-512.png',
+  '/tools/retirement-calc-manifest.json',
 ];
 self.addEventListener('install', function (e) {
   e.waitUntil(

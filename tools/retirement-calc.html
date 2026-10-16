@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Retirement Calculator · The Open Book</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap');
+
+    :root {
+      color-scheme: light dark;
+      --paper: #f4f3ee;
+      --surface: #ffffff;
+      --surface-2: #eae9e2;
+      --ink: #17231d;
+      --muted: #526057;
+      --line: #cfd4cd;
+      --green: #176b49;
+      --green-soft: #d9ede2;
+      --orange: #b65326;
+      --orange-soft: #f4e2d7;
+      --track: #d8dcd6;
+      --shadow: 0 18px 45px rgba(29, 39, 33, .09);
+      --radius-lg: 28px;
+      --radius-md: 16px;
+      --focus: #0b6fdb;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101612;
+        --surface: #18211c;
+        --surface-2: #222d27;
+        --ink: #edf5ef;
+        --muted: #b5c1b9;
+        --line: #35443b;
+        --green: #62ca91;
+        --green-soft: #173b29;
+        --orange: #ee946c;
+        --orange-soft: #47291e;
+        --track: #39453e;
+        --shadow: 0 22px 60px rgba(0, 0, 0, .28);
+        --focus: #69b5ff;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 280px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 2px;
+    }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar { border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar-inner { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 14px 0; display: flex; align-items: center; gap: 10px; }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+
+    .tool-head { max-width: 720px; padding: 30px 0 6px; }
+    .tool-head h1 {
+      margin: 0 0 10px;
+      font-family: "Literata", serif;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .tool-head p { margin: 0; font-size: 1.05rem; color: var(--muted); }
+
+    .calculator { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; padding: 24px 0 40px; }
+    .panel, .results { background: var(--surface); box-shadow: var(--shadow); }
+    .panel { align-self: start; padding: 24px; border-radius: 4px var(--radius-lg) var(--radius-lg) 4px; }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .panel h2, .results h2 { margin: 0; font-family: "Literata", serif; font-size: 1.45rem; letter-spacing: -.025em; }
+    .sample-label { margin-top: 5px; font-size: .76rem; color: var(--muted); }
+    .reset {
+      border: 0; border-bottom: 1px solid var(--line); padding: 2px 0; background: none; color: var(--muted); cursor: pointer; font-size: .82rem;
+    }
+    .reset:hover, .reset:focus-visible { color: var(--ink); border-color: var(--ink); }
+
+    .field { margin-bottom: 22px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 9px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
+    label { font-weight: 600; font-size: .91rem; }
+    .number-wrap { position: relative; width: 144px; flex: 0 0 auto; }
+    .number-wrap .prefix, .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: .9rem; }
+    .number-wrap .prefix { left: 12px; }
+    .number-wrap .suffix { right: 12px; }
+    input[type="number"], select {
+      width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); color: var(--ink); outline: none;
+    }
+    input[type="number"] { padding: 8px 36px 8px 26px; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .no-prefix input[type="number"] { padding-left: 12px; }
+    input[type="number"]:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+    input[type="range"] { width: 100%; height: 5px; margin: 4px 0 0; appearance: none; background: var(--track); border-radius: 999px; accent-color: var(--green); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--green); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--green); }
+    select { padding: 8px 34px 8px 11px; cursor: pointer; }
+    .select-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .select-row label { display: block; margin-bottom: 7px; font-size: .8rem; color: var(--muted); }
+
+    .info-btn {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--line); background: none; color: var(--muted);
+      font-family: Georgia, serif; font-style: italic; font-size: .78rem; line-height: 1;
+      cursor: pointer; padding: 0; flex: 0 0 auto;
+    }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text {
+      margin: 10px 0 0; padding: 10px 12px; border-radius: 8px;
+      background: var(--surface-2); color: var(--muted); font-size: .85rem;
+    }
+
+    .results { min-width: 0; border-radius: var(--radius-lg) 4px 4px var(--radius-lg); overflow: hidden; }
+    .result-top { padding: 28px 30px 22px; }
+    .result-title-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .horizon { color: var(--muted); font-size: .88rem; }
+
+    .bignumber { margin-top: 24px; padding: 22px; background: var(--green-soft); border-radius: 12px; text-align: center; }
+    .bignumber .kicker { display: block; font-size: .85rem; color: var(--muted); margin-bottom: 6px; }
+    .bignumber strong { display: block; font-family: "Literata", serif; font-size: clamp(2rem, 5vw, 3rem); line-height: 1.1; letter-spacing: -.035em; color: var(--green); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .bignumber .explain { display: block; margin-top: 8px; font-size: .88rem; color: var(--muted); }
+
+    .verdict { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 18px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .verdict .cell { background: var(--surface); padding: 20px; }
+    .verdict .cell h3 { margin: 0 0 6px; font-family: "Literata", serif; font-size: 1.05rem; letter-spacing: -.02em; }
+    .verdict .cell .big { font-family: "Literata", serif; font-size: clamp(1.4rem, 3vw, 1.9rem); letter-spacing: -.03em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .verdict .cell .note { display: block; margin-top: 8px; font-size: .85rem; color: var(--muted); }
+    .verdict .cell.ahead .big { color: var(--green); }
+    .verdict .cell.behind .big { color: var(--orange); }
+
+    .punchline { margin: 18px 0 0; padding: 16px 18px; border-radius: 12px; font-size: 1rem; }
+    .punchline.good { background: var(--green-soft); }
+    .punchline.bad { background: var(--orange-soft); }
+    .punchline strong { font-variant-numeric: tabular-nums; }
+    .punchline.good strong { color: var(--green); }
+    .punchline.bad strong { color: var(--orange); }
+
+    .composition { margin-top: 20px; }
+    .bar { display: flex; height: 12px; border-radius: 2px; overflow: hidden; background: var(--surface-2); }
+    .bar-current { background: var(--ink); }
+    .bar-contributions { background: var(--muted); }
+    .bar-growth { background: var(--green); }
+    .legend { display: flex; flex-wrap: wrap; gap: 9px 18px; margin-top: 10px; color: var(--muted); font-size: .76rem; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink); }
+    .dot.contributions { background: var(--muted); }
+    .dot.growth { background: var(--green); }
+
+    .assumptions { margin: 6px 0 0; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+    .assumptions summary { padding: 16px 20px; cursor: pointer; font-weight: 600; font-size: .95rem; list-style: none; }
+    .assumptions summary::-webkit-details-marker { display: none; }
+    .assumptions summary::before { content: "+ "; color: var(--muted); }
+    .assumptions[open] summary::before { content: "− "; }
+    .assumptions .body { padding: 0 20px 18px; color: var(--muted); font-size: .88rem; }
+    .assumptions .body p { margin: 0 0 10px; }
+    .assumptions code { display: block; margin: 8px 0 12px; color: var(--green); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 1rem; font-weight: 700; }
+
+    .fineprint { margin: 22px 0 60px; color: var(--muted); font-size: .85rem; }
+    .fineprint a { color: inherit; }
+
+    @media (max-width: 850px) {
+      .calculator { grid-template-columns: 1fr; }
+      .panel, .results { border-radius: 22px; }
+      .panel { position: static; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      .tool-head { padding-top: 22px; }
+      .calculator { gap: 14px; padding-top: 16px; }
+      .panel { padding: 20px 16px; }
+      .field-top { align-items: center; }
+      .number-wrap { width: 132px; }
+      .select-row { grid-template-columns: 1fr; }
+      .result-top { padding-left: 18px; padding-right: 18px; }
+      .result-title-row { align-items: flex-start; flex-direction: column; gap: 4px; }
+      .verdict { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+<link rel="canonical" href="https://theopenbookmoney.com/tools/retirement-calc.html">
+<link rel="apple-touch-icon" href="/tools/retirement-calc-icon-180.png">
+<link rel="manifest" href="/tools/retirement-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Retirement Number">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html" target="_top">The Open Book</a>
+      <span class="sep">·</span>
+      <span>Retirement calculator</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <h1>Retirement calculator</h1>
+      <p>What is your number — and are you on track to reach it?</p>
+    </div>
+
+    <section class="calculator" aria-label="Retirement calculator">
+      <form class="panel" id="calculatorForm">
+        <div class="panel-head">
+          <div>
+            <h2>Your numbers</h2>
+            <div class="sample-label">Starter example — change anything</div>
+          </div>
+          <button type="button" class="reset" id="resetButton">Reset</button>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label-line"><label for="spending">Yearly spending in retirement</label>
+              <button type="button" class="info-btn" data-info="info-spending" aria-expanded="false" aria-label="About yearly spending">i</button></span>
+            <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="spending" type="number" min="0" max="100000000" step="1000" value="60000" inputmode="decimal" /></div>
+          </div>
+          <input id="spendingRange" type="range" min="10000" max="200000" step="1000" value="60000" aria-label="Yearly spending slider" />
+          <p class="info-text" id="info-spending" hidden>What you will spend per year once retired, in today's dollars. Most people spend less than they earn now — the mortgage is often gone.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label-line"><label for="pension">Yearly pension income (CPP + OAS)</label>
+              <button type="button" class="info-btn" data-info="info-pension" aria-expanded="false" aria-label="About pension income">i</button></span>
+            <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="pension" type="number" min="0" max="100000000" step="500" value="25000" inputmode="decimal" /></div>
+          </div>
+          <input id="pensionRange" type="range" min="0" max="100000" step="500" value="25000" aria-label="Pension income slider" />
+          <p class="info-text" id="info-pension" hidden>What CPP, OAS, and any work pension will pay you per year. Check your CPP estimate in My Service Canada Account — most people get less than the maximum.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="current">Savings today</label>
+            <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="current" type="number" min="0" max="100000000" step="1000" value="150000" inputmode="decimal" /></div>
+          </div>
+          <input id="currentRange" type="range" min="0" max="2000000" step="5000" value="150000" aria-label="Current savings slider" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="monthly">Monthly contribution</label>
+            <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="monthly" type="number" min="0" max="1000000" step="25" value="1000" inputmode="decimal" /></div>
+          </div>
+          <input id="monthlyRange" type="range" min="0" max="10000" step="25" value="1000" aria-label="Monthly contribution slider" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label-line"><label for="rate">Annual return</label>
+              <button type="button" class="info-btn" data-info="info-rate" aria-expanded="false" aria-label="About the annual return assumption">i</button></span>
+            <div class="number-wrap no-prefix"><input id="rate" type="number" min="-20" max="50" step="0.1" value="6" inputmode="decimal" /><span class="suffix">%</span></div>
+          </div>
+          <input id="rateRange" type="range" min="0" max="15" step="0.1" value="6" aria-label="Annual return slider" />
+          <p class="info-text" id="info-rate" hidden>Assumed steady every year — reality bounces around. This is an assumption, not a promise. Try 4% to see the cautious version.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="years">Years until retirement</label>
+            <div class="number-wrap no-prefix"><input id="years" type="number" min="1" max="60" step="1" value="20" inputmode="numeric" /><span class="suffix">yr</span></div>
+          </div>
+          <input id="yearsRange" type="range" min="1" max="50" step="1" value="20" aria-label="Years until retirement slider" />
+        </div>
+
+        <div class="select-row">
+          <div>
+            <label for="currency">Currency display</label>
+            <select id="currency">
+              <option value="USD" selected>USD ($)</option>
+              <option value="CAD">CAD ($)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="AUD">AUD ($)</option>
+              <option value="INR">INR (₹)</option>
+            </select>
+          </div>
+        </div>
+      </form>
+
+      <section class="results" aria-live="polite" aria-labelledby="results-heading">
+        <div class="result-top">
+          <div class="result-title-row">
+            <h2 id="results-heading">Your retirement number</h2>
+            <span class="horizon" id="gapLine"></span>
+          </div>
+
+          <div class="bignumber">
+            <span class="kicker">You need about</span>
+            <strong id="targetNumber">$0</strong>
+            <span class="explain" id="targetExplain"></span>
+          </div>
+
+          <div class="verdict">
+            <div class="cell" id="projectedCell">
+              <h3>You are projected to have</h3>
+              <div class="big" id="projectedSavings">$0</div>
+              <span class="note" id="projectedNote"></span>
+            </div>
+            <div class="cell" id="diffCell">
+              <h3 id="diffTitle">Surplus</h3>
+              <div class="big" id="diffAmount">$0</div>
+              <span class="note" id="diffNote"></span>
+            </div>
+          </div>
+
+          <p class="punchline" id="punchline" hidden></p>
+
+          <div class="composition">
+            <div class="bar" aria-hidden="true">
+              <span class="bar-current" id="currentBar"></span>
+              <span class="bar-contributions" id="contributionBar"></span>
+              <span class="bar-growth" id="growthBar"></span>
+            </div>
+            <div class="legend">
+              <span><i class="dot"></i>Savings today</span>
+              <span><i class="dot contributions"></i>Future contributions</span>
+              <span><i class="dot growth"></i>Growth</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <details class="assumptions">
+      <summary>How this works</summary>
+      <div class="body">
+        <p><strong>The 25x rule:</strong> a rule of thumb from a 1994 study of US markets. It says you can take about 4% of your savings per year in retirement. Flip it around: multiply the yearly gap by 25.</p>
+        <code>your number = 25 × (yearly spending − yearly pension income)</code>
+        <p><strong>The projection:</strong> your savings today grow at the assumed return for the years left, plus the future value of every monthly contribution.</p>
+        <code>projected = savings × (1 + rate)<sup>years</sup> + monthly × growth of annuity</code>
+        <p>Educational estimate: assumes a steady return with contributions at the end of each month, in today's dollars, before fees and taxes. Real returns vary. The 25x rule is a starting point, not a guarantee.</p>
+      </div>
+    </details>
+
+    <p class="fineprint">The Open Book · Educational estimate — not investment advice. <a href="../retirement.html" target="_top">Read the full guide</a></p>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+      var defaults = { spending: 60000, pension: 25000, current: 150000, monthly: 1000, rate: 6, years: 20, currency: 'USD' };
+      var ids = ['spending','pension','current','monthly','rate','years','currency'];
+
+      function el(id) { return document.getElementById(id); }
+      function number(id) {
+        var n = parseFloat(el(id).value);
+        return isFinite(n) ? n : 0;
+      }
+      function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+      function fullMoney(value) {
+        var currency = el('currency').value;
+        try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency, maximumFractionDigits: 0 }).format(value); }
+        catch (e) { return '$' + Math.round(value).toLocaleString(); }
+      }
+      function currencySymbol() {
+        try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: el('currency').value, currencyDisplay: 'narrowSymbol', maximumFractionDigits: 0 }).formatToParts(0).filter(function(p){return p.type === 'currency';})[0].value; }
+        catch (e) { return '$'; }
+      }
+      function monthlyRate(annualPercent) {
+        var nominal = annualPercent / 100;
+        if (nominal === 0) return 0;
+        var effectiveAnnual = Math.pow(1 + nominal / 12, 12) - 1;
+        return Math.pow(1 + effectiveAnnual, 1 / 12) - 1;
+      }
+      function retirementNumber(spending, pension) {
+        var gap = Math.max(0, spending - pension);
+        return { gap: gap, number: gap * 25 };
+      }
+      function projectSavings(current, monthly, rate, years) {
+        var months = Math.round(years * 12);
+        var r = monthlyRate(rate);
+        var grown = current * Math.pow(1 + r, months);
+        var annuity = r === 0 ? monthly * months : monthly * (Math.pow(1 + r, months) - 1) / r;
+        return { total: grown + annuity, fromCurrent: grown, fromContrib: annuity, contributed: monthly * months };
+      }
+      function syncPair(inputId, rangeId) {
+        var input = el(inputId), range = el(rangeId);
+        input.addEventListener('input', function () { range.value = clamp(number(inputId), parseFloat(range.min), parseFloat(range.max)); calculate(); });
+        range.addEventListener('input', function () { input.value = range.value; calculate(); });
+      }
+      function calculate() {
+        var spending = clamp(number('spending'), 0, 100000000);
+        var pension = clamp(number('pension'), 0, 100000000);
+        var current = clamp(number('current'), 0, 100000000);
+        var monthly = clamp(number('monthly'), 0, 1000000);
+        var rate = clamp(number('rate'), -20, 50);
+        var years = Math.round(clamp(number('years'), 1, 60));
+
+        var rn = retirementNumber(spending, pension);
+        var proj = projectSavings(current, monthly, rate, years);
+        var diff = proj.total - rn.number;
+
+        el('gapLine').textContent = fullMoney(rn.gap) + ' per year must come from savings';
+        el('targetNumber').textContent = fullMoney(rn.number);
+        el('targetExplain').textContent = '25 × ' + fullMoney(rn.gap) + ' yearly gap (rule of thumb)';
+        el('projectedSavings').textContent = fullMoney(proj.total);
+        el('projectedNote').textContent = 'after ' + years + (years === 1 ? ' year' : ' years') + ' at ' + rate + '%';
+
+        var diffCell = el('diffCell');
+        var projectedCell = el('projectedCell');
+        diffCell.classList.remove('ahead', 'behind');
+        projectedCell.classList.remove('ahead', 'behind');
+        if (diff >= 0) {
+          el('diffTitle').textContent = 'Surplus';
+          el('diffAmount').textContent = fullMoney(diff);
+          el('diffNote').textContent = 'above your number — on track';
+          diffCell.classList.add('ahead');
+          projectedCell.classList.add('ahead');
+          el('punchline').className = 'punchline good';
+          el('punchline').innerHTML = 'On these assumptions, you reach your number with <strong>' + fullMoney(diff) + '</strong> to spare. Change the return to 4% to see the cautious version.';
+        } else {
+          el('diffTitle').textContent = 'Shortfall';
+          el('diffAmount').textContent = fullMoney(Math.abs(diff));
+          el('diffNote').textContent = 'below your number — not there yet';
+          diffCell.classList.add('behind');
+          projectedCell.classList.add('behind');
+          el('punchline').className = 'punchline bad';
+          el('punchline').innerHTML = 'On these assumptions, you land <strong>' + fullMoney(Math.abs(diff)) + '</strong> short. Try raising the monthly amount — small changes now matter more than big changes later.';
+        }
+        el('punchline').hidden = false;
+
+        var denom = Math.max(proj.total, 1);
+        el('currentBar').style.width = (Math.max(0, proj.fromCurrent) / denom * 100) + '%';
+        el('contributionBar').style.width = (Math.max(0, proj.contributed) / denom * 100) + '%';
+        el('growthBar').style.width = (Math.max(0, proj.total - proj.fromCurrent - proj.contributed) / denom * 100) + '%';
+        document.querySelectorAll('.currency-symbol').forEach(function(node){ node.textContent = currencySymbol(); });
+      }
+      syncPair('spending','spendingRange');
+      syncPair('pension','pensionRange');
+      syncPair('current','currentRange');
+      syncPair('monthly','monthlyRange');
+      syncPair('rate','rateRange');
+      syncPair('years','yearsRange');
+      el('currency').addEventListener('change', calculate);
+      el('resetButton').addEventListener('click', function(){
+        ids.forEach(function(id){ el(id).value = defaults[id]; });
+        ['spending','pension','current','monthly','rate','years'].forEach(function(id){ el(id+'Range').value = defaults[id]; });
+        calculate();
+      });
+      el('calculatorForm').addEventListener('submit', function(e){ e.preventDefault(); });
+      document.querySelectorAll('.info-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var target = document.getElementById(btn.getAttribute('data-info'));
+          var opening = target.hidden;
+          target.hidden = !opening;
+          btn.setAttribute('aria-expanded', String(opening));
+        });
+      });
+      calculate();
+    }());
+  </script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>
