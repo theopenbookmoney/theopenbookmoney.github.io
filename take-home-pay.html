@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Where Does Your Paycheque Actually Go? | The Open Book</title>
+<meta name="description" content="Four bites come out of every Canadian paycheque before it reaches you — plus the bucket myth that makes everyone overestimate their tax rate. Worked with 2026 numbers, plus an interactive calculator.">
+<link rel="canonical" href="https://theopenbookmoney.com/take-home-pay.html">
+<style>
+  :root { --ink: #1a1a2e; --paper: #faf9f7; --accent: #2a7f62; --muted: #6b7280; --line: #e5e1da; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: var(--paper); color: var(--ink); line-height: 1.75; }
+  .topbar { border-bottom: 1px solid var(--line); background: #fff; }
+  .topbar .inner { max-width: 680px; margin: 0 auto; padding: 0.9rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .topbar a.brand { text-decoration: none; color: var(--ink); font-size: 1.15rem; font-weight: bold; }
+  .topbar a.tools { margin-left: auto; text-decoration: none; color: var(--muted); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
+  .topbar a.home { margin-left: 1.2rem; text-decoration: none; color: var(--muted); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
+  .wrap { max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .kicker { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 0.75rem; }
+  h1 { font-size: 2rem; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .dateline { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  article p { margin-bottom: 1.25rem; }
+  article h2 { font-size: 1.4rem; margin: 2.25rem 0 1rem; line-height: 1.35; }
+  article ul, article ol { margin: 0 0 1.25rem 1.5rem; }
+  article li { margin-bottom: 0.6rem; }
+  article table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.92rem; }
+  article th, article td { border: 1px solid var(--line); padding: 0.6rem 0.75rem; text-align: left; vertical-align: top; }
+  article th { background: #f1efe9; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  article hr { border: none; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+  article em { color: #3a3a4a; }
+  .calc-wrap { margin: 2rem 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: #fff; }
+  .calc-wrap iframe { width: 100%; border: 0; display: block; min-height: 600px; }
+  .calc-label { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0.8rem 1.2rem 0; }
+  footer { border-top: 1px solid var(--line); margin-top: 1rem; padding: 2rem 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html">📖 The Open Book</a>
+  <a class="tools" href="tools/">Tools</a>
+  <a class="home" href="articles.html">All articles</a>
+</div></div>
+<div class="wrap">
+  <div class="kicker">The Open Book · Money, explained</div>
+  <h1>Where Does Your Paycheque Actually Go?</h1>
+  <div class="dateline">October 2026</div>
+  <article>
+<p><em>Jasmine is fictional — her story is invented to make the math stick. Every number in this article is real 2026 data or a clearly labelled assumption you can change in the calculator below.</em></p>
+<p>Jasmine got her first full-time-ish pay stub last month. Barista shifts all week, food delivery on weekends. She had done the math in her head a hundred times: about $32,000 a year. That is $2,667 a month. Rent is covered. Groceries are covered. Maybe even a little left over.</p>
+<p>Then she looked at the actual deposit. It was smaller. A lot smaller.</p>
+<p>She stared at the stub. Lines of tiny text. Numbers with names she did not recognize. Federal tax. Provincial tax. CPP. EI. Each one had taken a bite.</p>
+<p>"Where did my money go?" she asked Priya. Priya is her sister-in-law, a nurse, the one with the spreadsheet. Priya smiled. "Everyone asks that the first time. Let me open the book on it."</p>
+<p>This article is that book.</p>
+<h2>The four bites</h2>
+<p>Four things come out of a Canadian paycheque before it reaches you. Here is each one, in plain words.</p>
+<p><strong>1. Federal income tax.</strong> This goes to the Government of Canada. It pays for things like health transfers, the military, and federal programs. The rate goes up in steps as you earn more. More on that in a minute.</p>
+<p><strong>2. Provincial income tax.</strong> This goes to your province — Saskatchewan, in Jasmine's case. It pays for schools, hospitals, and roads near you. Each province sets its own rates.</p>
+<p><strong>3. CPP — the Canada Pension Plan.</strong> This is your retirement savings, forced by law. You pay 5.95% of your pay (after the first $3,500, which is exempt). Your employer pays the same amount again on your behalf. One day, it pays you a monthly pension. You cannot opt out. Think of it as paying your 70-year-old self.</p>
+<p><strong>4. EI — Employment Insurance.</strong> This is 1.63% of your pay. It is a safety net. If you lose your job through no fault of your own, EI pays you while you look for work. Most people never claim it. Everyone pays it.</p>
+<p>That is the whole list. Two taxes, one pension, one safety net. Nothing mysterious. Just four bites.</p>
+<h2>The myth that scares everyone</h2>
+<p>Here is the sentence that confuses almost every Canadian at some point:</p>
+<p>"I'm in the 24.5% tax bracket, so the government takes 24.5% of my pay."</p>
+<p>Wrong. That is not how brackets work. Not even close.</p>
+<p>Tax brackets are like stairs. Each rate only touches the dollars on its own step. The 14% federal rate touches only the dollars in the first federal bracket. The 20.5% rate touches only the dollars above that. And so on.</p>
+<p>Picture five buckets in a row. Your first $58,523 of income fills bucket one, taxed at 14%. Only the dollars that spill over into bucket two get taxed at 20.5%. The dollars in bucket one never move. They stay at 14% forever.</p>
+<p>This means a raise can never make you poorer. If a raise pushes some dollars into a higher bracket, only those extra dollars get the higher rate. Everything below stays exactly where it was. Anyone who tells you "don't take the raise, you'll lose money to taxes" does not understand buckets.</p>
+<h2>Jasmine's pay stub, line by line</h2>
+<p>Assumptions, labelled: Jasmine earns <strong>$32,000</strong> a year in 2026 and lives in Saskatchewan. All rates below are real 2026 figures.</p>
+<p><strong>CPP:</strong> 5.95% × ($32,000 − $3,500) = <strong>$1,695.75</strong> a year. The first $3,500 is exempt. Your boss pays the same amount on top.</p>
+<p><strong>EI:</strong> 1.63% × $32,000 = <strong>$521.60</strong> a year.</p>
+<p><strong>Federal tax:</strong> 14% × $32,000 = $4,480. But wait — the basic personal amount. The first $16,452 you earn is tax-free at the federal level. That wipes out 14% × $16,452 = $2,303.28 of the bill. Federal tax owed: <strong>$2,176.72</strong>.</p>
+<p><strong>Saskatchewan tax:</strong> 10.5% × $32,000 = $3,360. Saskatchewan's basic personal amount is $20,381, which wipes out 10.5% × $20,381 = $2,140.01. Provincial tax owed: <strong>$1,220.00</strong> (rounded).</p>
+<p>Now add it up:</p>
+<table>
+<thead>
+<tr>
+<th>Deduction</th>
+<th>Per year</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPP</td>
+<td>$1,695.75</td>
+</tr>
+<tr>
+<td>EI</td>
+<td>$521.60</td>
+</tr>
+<tr>
+<td>Federal tax</td>
+<td>$2,176.72</td>
+</tr>
+<tr>
+<td>Saskatchewan tax</td>
+<td>$1,220.00</td>
+</tr>
+<tr>
+<td><strong>Total taken</strong></td>
+<td><strong>$5,614.07</strong></td>
+</tr>
+<tr>
+<td><strong>Take-home pay</strong></td>
+<td><strong>$26,385.93</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Jasmine's $32,000 becomes about <strong>$26,386</strong>. That is $2,199 a month, not $2,667.</p>
+<p>Now look at the real rate. $5,614 ÷ $32,000 = <strong>17.5%</strong>. Not 24.5%. The "bracket" said 24.5%, but the basic personal amounts shielded thousands of dollars first. The bracket is the rate on your <em>next</em> dollar. The 17.5% is the rate on <em>all</em> your dollars. Those are different numbers, and mixing them up is the most common tax mistake in Canada.</p>
+<h2>What a raise really gives you</h2>
+<p>Jasmine's boss offers her $1,000 more a year. Should she take it? Obviously yes — but how much of it does she keep?</p>
+<p>The next dollar is taxed at the marginal rate: 24.5% combined (14% federal + 10.5% provincial). CPP and EI take another 7.58% on it. So she keeps:</p>
+<p>$1,000 × (1 − 0.245 − 0.0758) = <strong>$679.20</strong></p>
+<p>About 68 cents on every extra dollar. Not the full dollar. But never less than zero — the raise always helps, because only the new dollars get the higher rate. The old dollars keep their old rates.</p>
+<p>This is the number that matters when you compare two job offers, or decide whether overtime is worth it. Not your "bracket." Your marginal rate: what the <em>next</em> dollar keeps.</p>
+<h2>When this actually matters</h2>
+<p>You do not need to memorize brackets. But this knowledge earns its keep in a few specific spots:</p>
+<p><strong>Comparing job offers.</strong> A $40,000 offer and a $44,000 offer differ by $4,000 on paper. After marginal tax, CPP, and EI, the real gap is closer to $2,700. Still worth taking. Just smaller than it looks.</p>
+<p><strong>Deciding on RRSP contributions.</strong> An RRSP deduction saves you tax at your <em>marginal</em> rate — 24.5% for Jasmine, not 17.5%. That is why the marginal number, not the average, drives the RRSP-vs-TFSA math.</p>
+<p><strong>Reading any "tax the rich" headline.</strong> When someone says a billionaire "pays 33%," that is only the rate on dollars above $258,482. Their first $58,523 was taxed at 14%, just like yours. Buckets all the way up.</p>
+<p><strong>Understanding your own stub.</strong> Which is where we started. Nobody should have to wonder where a sixth of their pay went.</p>
+<h2>The bottom line</h2>
+<p>Jasmine's money did not vanish. It went to four places: two taxes that fund the country and the province, a pension that pays her future self, and insurance in case work disappears. The stub looks scary because the names are jargon. The math underneath is just buckets and subtraction.</p>
+<p>Priya's summary, taped to Jasmine's fridge: "You earn $32,000. You keep $26,386. The 17.5% is real. The 24.5% only touches your next dollar. Now you know more than most adults."</p>
+<p>Don't take Jasmine's word for it — run your own paycheque in the calculator below. Plug in your salary and province, and see exactly where every dollar goes before it reaches you. That's the whole pay stub, on one screen.</p>
+<div class="calc-wrap"><div class="calc-label">Interactive calculator</div><iframe src="tools/take-home-pay-calc.html" title="Interactive calculator" loading="lazy"></iframe></div>
+<hr />
+<p><em>The Open Book is educational content, not financial advice. Tax figures are 2026 CRA and provincial rules as verified at writing; Jasmine's income is a labelled assumption — change it in the calculator and the numbers update.</em></p>
+  </article>
+</div>
+<footer>The Open Book · Educational content only, not financial advice.<br><a href="index.html">theopenbookmoney.com</a></footer>
+<script>
+window.addEventListener('message', function (e) {
+  if (e.data && e.data.obmCalcHeight) {
+    var f = document.querySelector('.calc-wrap iframe');
+    if (f) f.style.height = e.data.obmCalcHeight + 'px';
+  }
+});
+</script>
+</body>
+</html>
