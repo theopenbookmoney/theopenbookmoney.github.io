@@ -1,0 +1,428 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>RESP Calculator · The Open Book</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap');
+
+    :root {
+      color-scheme: light dark;
+      --paper: #f4f3ee;
+      --surface: #ffffff;
+      --surface-2: #eae9e2;
+      --ink: #17231d;
+      --muted: #526057;
+      --line: #cfd4cd;
+      --green: #176b49;
+      --green-soft: #d9ede2;
+      --orange: #b65326;
+      --orange-soft: #f4e2d7;
+      --track: #d8dcd6;
+      --shadow: 0 18px 45px rgba(29, 39, 33, .09);
+      --radius-lg: 28px;
+      --radius-md: 16px;
+      --focus: #0b6fdb;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101612;
+        --surface: #18211c;
+        --surface-2: #222d27;
+        --ink: #edf5ef;
+        --muted: #b5c1b9;
+        --line: #35443b;
+        --green: #62ca91;
+        --green-soft: #173b29;
+        --orange: #ee946c;
+        --orange-soft: #47291e;
+        --track: #39453e;
+        --shadow: 0 22px 60px rgba(0, 0, 0, .28);
+        --focus: #69b5ff;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 280px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 2px;
+    }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar { border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar-inner { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 14px 0; display: flex; align-items: center; gap: 10px; }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+
+    .tool-head { max-width: 720px; padding: 30px 0 6px; }
+    .tool-head h1 {
+      margin: 0 0 10px;
+      font-family: "Literata", serif;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .tool-head p { margin: 0; font-size: 1.05rem; color: var(--muted); }
+
+    .calculator { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; padding: 24px 0 40px; }
+    .panel, .results { background: var(--surface); box-shadow: var(--shadow); }
+    .panel { align-self: start; padding: 24px; border-radius: 4px var(--radius-lg) var(--radius-lg) 4px; }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .panel h2, .results h2 { margin: 0; font-family: "Literata", serif; font-size: 1.45rem; letter-spacing: -.025em; }
+    .sample-label { margin-top: 5px; font-size: .76rem; color: var(--muted); }
+    .reset {
+      border: 0; border-bottom: 1px solid var(--line); padding: 2px 0; background: none; color: var(--muted); cursor: pointer; font-size: .82rem;
+    }
+    .reset:hover, .reset:focus-visible { color: var(--ink); border-color: var(--ink); }
+
+    .field { margin-bottom: 22px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 9px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
+    label { font-weight: 600; font-size: .91rem; }
+    .number-wrap { position: relative; width: 144px; flex: 0 0 auto; }
+    .number-wrap .prefix, .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: .9rem; }
+    .number-wrap .prefix { left: 12px; }
+    .number-wrap .suffix { right: 12px; }
+    input[type="number"], select {
+      width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); color: var(--ink); outline: none;
+    }
+    input[type="number"] { padding: 8px 36px 8px 26px; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .no-prefix input[type="number"] { padding-left: 12px; }
+    input[type="number"]:focus, select:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+    input[type="range"] { width: 100%; height: 5px; margin: 4px 0 0; appearance: none; background: var(--track); border-radius: 999px; accent-color: var(--green); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--green); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--green); }
+    select { padding: 8px 34px 8px 11px; cursor: pointer; }
+    .select-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .select-row label { display: block; margin-bottom: 7px; font-size: .8rem; color: var(--muted); }
+
+    .info-btn {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--line); background: none; color: var(--muted);
+      font-family: Georgia, serif; font-style: italic; font-size: .78rem; line-height: 1;
+      cursor: pointer; padding: 0; flex: 0 0 auto;
+    }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text {
+      margin: 10px 0 0; padding: 10px 12px; border-radius: 8px;
+      background: var(--surface-2); color: var(--muted); font-size: .85rem;
+    }
+
+    .results { min-width: 0; border-radius: var(--radius-lg) 4px 4px var(--radius-lg); overflow: hidden; }
+    .result-top { padding: 28px 30px 22px; }
+    .result-title-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .horizon { color: var(--muted); font-size: .88rem; }
+
+    .grand { margin-top: 20px; }
+    .grand .big {
+      font-family: "Literata", serif;
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.1; letter-spacing: -.04em;
+      font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
+      color: var(--green);
+    }
+    .grand .label { margin-top: 4px; color: var(--muted); font-size: .9rem; }
+
+    .breakdown { margin-top: 22px; border-top: 1px solid var(--line); }
+    .breakdown .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: .95rem; }
+    .breakdown .row span { color: var(--muted); }
+    .breakdown .row strong { font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .breakdown .row.grant strong { color: var(--green); }
+
+    .punchline { margin: 18px 0 0; padding: 16px 18px; background: var(--green-soft); border-radius: 12px; font-size: 1rem; }
+    .punchline strong { color: var(--green); font-variant-numeric: tabular-nums; }
+
+    .cap-note { margin: 14px 0 0; padding: 16px 18px; background: var(--orange-soft); border-radius: 12px; font-size: .92rem; }
+    .cap-note strong { color: var(--orange); }
+
+    .composition { margin-top: 20px; }
+    .bar { display: flex; height: 12px; border-radius: 2px; overflow: hidden; background: var(--surface-2); }
+    .bar-contributions { background: var(--ink); }
+    .bar-grant { background: var(--green); }
+    .bar-growth { background: var(--muted); }
+    .legend { display: flex; flex-wrap: wrap; gap: 9px 18px; margin-top: 10px; color: var(--muted); font-size: .76rem; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink); }
+    .dot.grant { background: var(--green); }
+    .dot.growth { background: var(--muted); }
+
+    .assumptions { margin: 6px 0 0; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+    .assumptions summary { padding: 16px 20px; cursor: pointer; font-weight: 600; font-size: .95rem; list-style: none; }
+    .assumptions summary::-webkit-details-marker { display: none; }
+    .assumptions summary::before { content: "+ "; color: var(--muted); }
+    .assumptions[open] summary::before { content: "− "; }
+    .assumptions .body { padding: 0 20px 18px; color: var(--muted); font-size: .88rem; }
+    .assumptions .body p { margin: 0 0 10px; }
+    .assumptions code { display: inline-block; margin: 2px 0; color: var(--green); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92rem; font-weight: 700; }
+
+    .fineprint { margin: 22px 0 60px; color: var(--muted); font-size: .85rem; }
+    .fineprint a { color: inherit; }
+
+    @media (max-width: 850px) {
+      .calculator { grid-template-columns: 1fr; }
+      .panel, .results { border-radius: 22px; }
+      .panel { position: static; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      .tool-head { padding-top: 22px; }
+      .calculator { gap: 14px; padding-top: 16px; }
+      .panel { padding: 20px 16px; }
+      .field-top { align-items: center; }
+      .number-wrap { width: 132px; }
+      .result-top { padding-left: 18px; padding-right: 18px; }
+      .result-title-row { align-items: flex-start; flex-direction: column; gap: 4px; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+<link rel="canonical" href="https://theopenbookmoney.com/tools/resp-calc.html">
+<link rel="apple-touch-icon" href="/tools/resp-calc-icon-180.png">
+<link rel="manifest" href="/tools/resp-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="RESP Planner">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html" target="_top">The Open Book</a>
+      <span class="sep">·</span>
+      <span>RESP calculator</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <h1>RESP calculator</h1>
+      <p>How big could your kid's education fund grow? Your savings, the free grant, and time — on one screen.</p>
+    </div>
+
+    <section class="calculator" aria-label="RESP calculator">
+      <form class="panel" id="calculatorForm">
+        <div class="panel-head">
+          <div>
+            <h2>Your numbers</h2>
+            <div class="sample-label">Starter example — change anything</div>
+          </div>
+          <button type="button" class="reset" id="resetButton">Reset</button>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label-line"><label for="annual">Yearly contribution</label>
+              <button type="button" class="info-btn" data-info="info-grant" aria-expanded="false" aria-label="About the government grant">i</button></span>
+            <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="annual" type="number" min="0" max="50000" step="100" value="2500" inputmode="decimal" /></div>
+          </div>
+          <input id="annualRange" type="range" min="0" max="10000" step="100" value="2500" aria-label="Yearly contribution slider" />
+          <p class="info-text" id="info-grant" hidden>The government adds 20% of what you put in, up to $500 a year — so $2,500 a year earns the full grant. Contributing more than $2,500 earns no extra grant that year.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="years">Years until school</label>
+            <div class="number-wrap no-prefix"><input id="years" type="number" min="1" max="18" step="1" value="13" inputmode="numeric" /><span class="suffix">yr</span></div>
+          </div>
+          <input id="yearsRange" type="range" min="1" max="18" step="1" value="13" aria-label="Years until school slider" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label-line"><label for="rate">Annual growth</label>
+              <button type="button" class="info-btn" data-info="info-rate" aria-expanded="false" aria-label="About the growth assumption">i</button></span>
+            <div class="number-wrap no-prefix"><input id="rate" type="number" min="0" max="20" step="0.1" value="6" inputmode="decimal" /><span class="suffix">%</span></div>
+          </div>
+          <input id="rateRange" type="range" min="0" max="12" step="0.1" value="6" aria-label="Annual growth slider" />
+          <p class="info-text" id="info-rate" hidden>Assumed steady every year — reality bounces around. This is an illustration, not a prediction. Nobody can promise a return.</p>
+        </div>
+
+        <div class="select-row">
+          <div>
+            <label for="currency">Currency display</label>
+            <select id="currency">
+              <option value="CAD" selected>CAD ($)</option>
+              <option value="USD">USD ($)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="AUD">AUD ($)</option>
+              <option value="INR">INR (₹)</option>
+            </select>
+          </div>
+        </div>
+      </form>
+
+      <section class="results" aria-live="polite" aria-labelledby="results-heading">
+        <div class="result-top">
+          <div class="result-title-row">
+            <h2 id="results-heading">When school starts</h2>
+            <span class="horizon" id="horizonLabel"></span>
+          </div>
+
+          <div class="grand">
+            <div class="big" id="grandTotal">$0</div>
+            <div class="label">Estimated education fund</div>
+          </div>
+
+          <div class="breakdown">
+            <div class="row"><span>Your contributions</span><strong id="contribTotal">$0</strong></div>
+            <div class="row grant"><span>Free grant money (20%)</span><strong id="grantTotal">$0</strong></div>
+            <div class="row"><span>Estimated growth</span><strong id="growthTotal">$0</strong></div>
+          </div>
+
+          <p class="punchline" id="punchline" hidden></p>
+          <p class="cap-note" id="capNote" hidden></p>
+
+          <div class="composition">
+            <div class="bar" aria-hidden="true">
+              <span class="bar-contributions" id="contribBar"></span>
+              <span class="bar-grant" id="grantBar"></span>
+              <span class="bar-growth" id="growthBar"></span>
+            </div>
+            <div class="legend">
+              <span><i class="dot"></i>Your contributions</span>
+              <span><i class="dot grant"></i>Free grant money</span>
+              <span><i class="dot growth"></i>Growth</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <details class="assumptions">
+      <summary>How this works</summary>
+      <div class="body">
+        <p><strong>The free grant:</strong> the Canada Education Savings Grant adds <code>20%</code> of your yearly contribution, up to <code>$500 a year</code>, with a <code>$7,200 lifetime maximum</code> per child (Government of Canada figures, verified at writing). Contributing more than $2,500 in a year earns no extra grant that year.</p>
+        <p><strong>The growth:</strong> each year's contribution plus its grant compounds once a year at the rate you set. Contributions are assumed at year-end.</p>
+        <p>Educational estimate: ignores the extra grant for lower-income families, grant catch-up room, taxes on withdrawal, and fees. Growth is an assumption, not a promise.</p>
+      </div>
+    </details>
+
+    <p class="fineprint">The Open Book · Educational estimate — not investment advice. <a href="../resp.html" target="_top">Read the full guide</a></p>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+      var defaults = { annual: 2500, years: 13, rate: 6, currency: 'CAD' };
+      var ids = ['annual','years','rate','currency'];
+
+      function el(id) { return document.getElementById(id); }
+      function number(id) {
+        var n = parseFloat(el(id).value);
+        return isFinite(n) ? n : 0;
+      }
+      function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+      function fullMoney(value) {
+        var currency = el('currency').value;
+        try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: currency, maximumFractionDigits: 0 }).format(value); }
+        catch (e) { return '$' + Math.round(value).toLocaleString(); }
+      }
+      function currencySymbol() {
+        try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: el('currency').value, currencyDisplay: 'narrowSymbol', maximumFractionDigits: 0 }).formatToParts(0).filter(function(p){return p.type === 'currency';})[0].value; }
+        catch (e) { return '$'; }
+      }
+      function respProjection(annual, years, rate) {
+        var r = rate / 100;
+        var grantPerYear = Math.min(0.20 * annual, 500);
+        var contributions = annual * years;
+        var total = 0;
+        var grant = 0;
+        for (var t = 1; t <= years; t++) {
+          var gt = grantPerYear;
+          if (grant + gt > 7200) gt = 7200 - grant;
+          grant += gt;
+          total += (annual + gt) * Math.pow(1 + r, years - t);
+        }
+        var growth = total - contributions - grant;
+        return { contributions: contributions, grant: grant, growth: growth, total: total, capHit: grant >= 7200 };
+      }
+      function syncPair(inputId, rangeId) {
+        var input = el(inputId), range = el(rangeId);
+        input.addEventListener('input', function () { range.value = clamp(number(inputId), parseFloat(range.min), parseFloat(range.max)); calculate(); });
+        range.addEventListener('input', function () { input.value = range.value; calculate(); });
+      }
+      function calculate() {
+        var annual = clamp(number('annual'), 0, 50000);
+        var years = Math.round(clamp(number('years'), 1, 18));
+        var rate = clamp(number('rate'), 0, 20);
+
+        var p = respProjection(annual, years, rate);
+
+        el('horizonLabel').textContent = 'After ' + years + (years === 1 ? ' year' : ' years') + ' of saving';
+        el('grandTotal').textContent = fullMoney(p.total);
+        el('contribTotal').textContent = fullMoney(p.contributions);
+        el('grantTotal').textContent = fullMoney(p.grant);
+        el('growthTotal').textContent = fullMoney(p.growth);
+
+        var denom = Math.max(p.total, 1);
+        el('contribBar').style.width = (p.contributions / denom * 100) + '%';
+        el('grantBar').style.width = (p.grant / denom * 100) + '%';
+        el('growthBar').style.width = (Math.max(0, p.growth) / denom * 100) + '%';
+        document.querySelectorAll('.currency-symbol').forEach(function(node){ node.textContent = currencySymbol(); });
+
+        el('punchline').innerHTML = 'On ' + fullMoney(annual) + ' a year for ' + years + (years === 1 ? ' year' : ' years') + ', your ' + fullMoney(p.contributions) + ' becomes about ' + fullMoney(p.total) + ' — including <strong>' + fullMoney(p.grant) + '</strong> of free grant money.';
+        el('punchline').hidden = false;
+
+        if (p.capHit) {
+          el('capNote').innerHTML = 'You have earned the full <strong>$7,200</strong> lifetime grant. Contributing more per year will not earn any extra grant money — but it still grows inside the account.';
+          el('capNote').hidden = false;
+        } else {
+          el('capNote').hidden = true;
+        }
+      }
+      syncPair('annual','annualRange');
+      syncPair('years','yearsRange');
+      syncPair('rate','rateRange');
+      el('currency').addEventListener('change', calculate);
+      el('resetButton').addEventListener('click', function(){
+        ids.forEach(function(id){ el(id).value = defaults[id]; });
+        ['annual','years','rate'].forEach(function(id){ el(id+'Range').value = defaults[id]; });
+        calculate();
+      });
+      el('calculatorForm').addEventListener('submit', function(e){ e.preventDefault(); });
+      document.querySelectorAll('.info-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var target = document.getElementById(btn.getAttribute('data-info'));
+          var opening = target.hidden;
+          target.hidden = !opening;
+          btn.setAttribute('aria-expanded', String(opening));
+        });
+      });
+      calculate();
+    }());
+  </script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>

@@ -1,6 +1,6 @@
 // Open Book tools service worker: cache-first so tools work offline
 // (e.g. Sleep Sounds from the home screen in airplane mode).
-var CACHE = 'openbook-tools-v8';
+var CACHE = 'openbook-tools-v9';
 var ASSETS = [
   '/tools/',
   '/tools/index.html',
@@ -56,6 +56,10 @@ var ASSETS = [
   '/tools/capital-gains-calc-icon-180.png',
   '/tools/capital-gains-calc-icon-512.png',
   '/tools/capital-gains-calc-manifest.json',
+  '/tools/resp-calc.html',
+  '/tools/resp-calc-icon-180.png',
+  '/tools/resp-calc-icon-512.png',
+  '/tools/resp-calc-manifest.json',
 ];
 self.addEventListener('install', function (e) {
   e.waitUntil(
