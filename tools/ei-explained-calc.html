@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>EI Weekly Benefit Estimator · The Open Book</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap');
+
+    :root {
+      color-scheme: light dark;
+      --paper: #f4f3ee;
+      --surface: #ffffff;
+      --surface-2: #eae9e2;
+      --ink: #17231d;
+      --muted: #526057;
+      --line: #cfd4cd;
+      --green: #176b49;
+      --green-soft: #d9ede2;
+      --orange: #b65326;
+      --orange-soft: #f4e2d7;
+      --track: #d8dcd6;
+      --shadow: 0 18px 45px rgba(29, 39, 33, .09);
+      --radius-lg: 28px;
+      --radius-md: 16px;
+      --focus: #0b6fdb;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101612;
+        --surface: #18211c;
+        --surface-2: #222d27;
+        --ink: #edf5ef;
+        --muted: #b5c1b9;
+        --line: #35443b;
+        --green: #62ca91;
+        --green-soft: #173b29;
+        --orange: #ee946c;
+        --orange-soft: #47291e;
+        --track: #39453e;
+        --shadow: 0 22px 60px rgba(0, 0, 0, .28);
+        --focus: #69b5ff;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 280px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 2px;
+    }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar { border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar-inner { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 14px 0; display: flex; align-items: center; gap: 10px; }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+
+    .tool-head { max-width: 720px; padding: 30px 0 6px; }
+    .tool-head h1 {
+      margin: 0 0 10px;
+      font-family: "Literata", serif;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .tool-head p { margin: 0; font-size: 1.05rem; color: var(--muted); }
+
+    .calculator { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; padding: 24px 0 40px; }
+    .panel, .results { background: var(--surface); box-shadow: var(--shadow); }
+    .panel { align-self: start; padding: 24px; border-radius: 4px var(--radius-lg) var(--radius-lg) 4px; }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .panel h2, .results h2 { margin: 0; font-family: "Literata", serif; font-size: 1.45rem; letter-spacing: -.025em; }
+    .sample-label { margin-top: 5px; font-size: .76rem; color: var(--muted); }
+    .reset {
+      border: 0; border-bottom: 1px solid var(--line); padding: 2px 0; background: none; color: var(--muted); cursor: pointer; font-size: .82rem;
+    }
+    .reset:hover, .reset:focus-visible { color: var(--ink); border-color: var(--ink); }
+
+    .field { margin-bottom: 22px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 9px; }
+    label { font-weight: 600; font-size: .91rem; }
+    .helper { margin: 10px 0 0; font-size: .85rem; color: var(--muted); }
+    .helper strong { color: var(--ink); }
+    .number-wrap { position: relative; width: 144px; flex: 0 0 auto; }
+    .number-wrap .prefix, .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: .9rem; }
+    .number-wrap .prefix { left: 12px; }
+    .number-wrap .suffix { right: 12px; }
+    input[type="number"] {
+      width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); color: var(--ink); outline: none;
+      padding: 8px 12px 8px 26px; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    input[type="number"]:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+
+    .results { min-width: 0; border-radius: var(--radius-lg) 4px 4px var(--radius-lg); overflow: hidden; }
+    .result-top { padding: 28px 30px 22px; }
+    .result-title-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .horizon { color: var(--muted); font-size: .88rem; }
+
+    .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 24px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .scenario { background: var(--surface); padding: 20px; }
+    .scenario h3 { margin: 0 0 6px; font-family: "Literata", serif; font-size: 1.08rem; letter-spacing: -.02em; }
+    .scenario.cap h3 { color: var(--orange); }
+    .scenario .big { font-family: "Literata", serif; font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.15; letter-spacing: -.035em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .scenario .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 10px; color: var(--muted); font-size: .86rem; }
+    .scenario .row strong { color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    .punchline { margin: 18px 0 0; padding: 16px 18px; background: var(--green-soft); border-radius: 12px; font-size: 1rem; }
+    .punchline strong { color: var(--green); font-variant-numeric: tabular-nums; }
+    .punchline.capped { background: var(--orange-soft); }
+    .punchline.capped strong { color: var(--orange); }
+
+    .notes { margin: 18px 0 0; padding: 0; list-style: none; }
+    .notes li { position: relative; padding-left: 20px; margin-bottom: 10px; font-size: .92rem; color: var(--muted); }
+    .notes li::before { content: "–"; position: absolute; left: 4px; color: var(--muted); }
+    .notes strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+
+    .assumptions { margin: 6px 0 0; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+    .assumptions summary { padding: 16px 20px; cursor: pointer; font-weight: 600; font-size: .95rem; list-style: none; }
+    .assumptions summary::-webkit-details-marker { display: none; }
+    .assumptions summary::before { content: "+ "; color: var(--muted); }
+    .assumptions[open] summary::before { content: "− "; }
+    .assumptions .body { padding: 0 20px 18px; color: var(--muted); font-size: .88rem; }
+    .assumptions .body p { margin: 0 0 10px; }
+    .assumptions code { display: block; margin: 8px 0 12px; color: var(--green); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 1rem; font-weight: 700; }
+
+    .fineprint { margin: 22px 0 60px; color: var(--muted); font-size: .85rem; }
+    .fineprint a { color: inherit; }
+
+    @media (max-width: 850px) {
+      .calculator { grid-template-columns: 1fr; }
+      .panel, .results { border-radius: 22px; }
+      .panel { position: static; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      .tool-head { padding-top: 22px; }
+      .calculator { gap: 14px; padding-top: 16px; }
+      .panel { padding: 20px 16px; }
+      .field-top { align-items: center; }
+      .number-wrap { width: 132px; }
+      .result-top { padding-left: 18px; padding-right: 18px; }
+      .result-title-row { align-items: flex-start; flex-direction: column; gap: 4px; }
+      .versus { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+<link rel="canonical" href="https://theopenbookmoney.com/tools/ei-explained-calc.html">
+<link rel="apple-touch-icon" href="/tools/ei-explained-calc-icon-180.png">
+<link rel="manifest" href="/tools/ei-explained-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="EI Benefit Estimator">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html" target="_top">The Open Book</a>
+      <span class="sep">·</span>
+      <span>EI weekly benefit estimator</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <h1>EI weekly benefit estimator</h1>
+      <p>Laid off? EI replaces part of your pay. Here is roughly what you would get each week.</p>
+    </div>
+
+    <section class="calculator" aria-label="EI weekly benefit estimator">
+      <form class="panel" id="calculatorForm">
+        <div class="panel-head">
+          <div>
+            <h2>Your numbers</h2>
+            <div class="sample-label">Starter example — change anything</div>
+          </div>
+          <button type="button" class="reset" id="resetButton">Reset</button>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="weekly">Average weekly earnings</label>
+            <div class="number-wrap"><span class="prefix">$</span><input id="weekly" type="number" min="0" max="100000" step="25" value="1100" inputmode="decimal" /></div>
+          </div>
+          <p class="helper">Yearly salary <strong>÷ 52</strong> = weekly earnings. Paid hourly? Use <strong>hourly wage × hours per week</strong>.</p>
+        </div>
+      </form>
+
+      <section class="results" aria-live="polite" aria-labelledby="results-heading">
+        <div class="result-top">
+          <div class="result-title-row">
+            <h2 id="results-heading">Your weekly benefit</h2>
+            <span class="horizon">2026 rules — 55% of insurable earnings</span>
+          </div>
+
+          <div class="versus">
+            <div class="scenario">
+              <h3>You would get</h3>
+              <div class="big" id="eiBenefit">$0</div>
+              <div class="row"><span>Each week</span><strong>before tax</strong></div>
+            </div>
+            <div class="scenario cap">
+              <h3>The ceiling</h3>
+              <div class="big">$729</div>
+              <div class="row"><span>The most anyone gets</span><strong>/week</strong></div>
+            </div>
+          </div>
+
+          <p class="punchline" id="eiNote"></p>
+
+          <ul class="notes">
+            <li>55% of your weekly pay would be <strong id="eiUncapped">$0</strong>.</li>
+            <li>This only estimates the <strong>weekly amount</strong>. You can get benefits for <strong>14 to 45 weeks</strong>, depending on your hours worked and your region&rsquo;s unemployment rate.</li>
+            <li>EI payments count as income — <strong>you pay tax</strong> on them.</li>
+            <li>There is normally a <strong>one-week waiting period</strong> before payments start.</li>
+          </ul>
+        </div>
+      </section>
+    </section>
+
+    <details class="assumptions">
+      <summary>How this works</summary>
+      <div class="body">
+        <p><strong>The math:</strong> EI pays 55% of your average weekly earnings, up to a maximum. In 2026, only earnings up to $68,900 a year count — that is what produces the $729 weekly maximum.</p>
+        <code>weekly benefit = 55% × weekly earnings, capped at $729</code>
+        <p>Educational estimate — your actual benefit depends on your official earnings record and Service Canada&rsquo;s calculation.</p>
+      </div>
+    </details>
+
+    <p class="fineprint">The Open Book · Educational estimate — not financial advice. <a href="../ei-explained.html" target="_top">Read the full guide</a></p>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* === PURE-MATH-START === */
+      var EI_RATE = 0.55;
+      var EI_MAX_INSURABLE = 68900;
+      var EI_MAX_WEEKLY = 729;
+
+      function eiWeeklyBenefit(weeklyEarnings) {
+        weeklyEarnings = Math.max(0, weeklyEarnings);
+        var uncapped = weeklyEarnings * EI_RATE;
+        var capped = uncapped > EI_MAX_WEEKLY;
+        return {
+          benefit: Math.round(Math.min(uncapped, EI_MAX_WEEKLY)),
+          uncapped: Math.round(uncapped * 100) / 100,
+          capped: capped,
+          maxInsurable: EI_MAX_INSURABLE,
+          maxWeekly: EI_MAX_WEEKLY
+        };
+      }
+      /* === PURE-MATH-END === */
+
+      function el(id) { return document.getElementById(id); }
+      function number(id) {
+        var n = parseFloat(el(id).value);
+        return isFinite(n) ? n : 0;
+      }
+      function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+      function dollars(n) { return '$' + Math.round(n).toLocaleString('en-CA'); }
+
+      function calculate() {
+        var weekly = clamp(number('weekly'), 0, 1000000);
+        var r = eiWeeklyBenefit(weekly);
+
+        el('eiBenefit').textContent = dollars(r.benefit);
+        el('eiUncapped').textContent = dollars(r.uncapped);
+
+        var note = el('eiNote');
+        if (r.capped) {
+          note.className = 'punchline capped';
+          note.innerHTML = 'Your earnings are above the <strong>$68,900</strong> maximum insurable earnings, so you get the maximum <strong>$729/week</strong>.';
+        } else {
+          note.className = 'punchline';
+          note.innerHTML = 'Your earnings are under the <strong>$68,900</strong> maximum, so the full 55% of your pay is your benefit: <strong>' + dollars(r.benefit) + '/week</strong>.';
+        }
+      }
+
+      el('weekly').addEventListener('input', calculate);
+      el('resetButton').addEventListener('click', function () {
+        el('weekly').value = 1100;
+        calculate();
+      });
+      el('calculatorForm').addEventListener('submit', function (e) { e.preventDefault(); });
+      calculate();
+    }());
+  </script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>

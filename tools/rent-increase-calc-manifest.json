@@ -1,0 +1,20 @@
+{
+  "name": "Rent Increase Checker | The Open Book",
+  "short_name": "Rent Increase Checker",
+  "start_url": "/tools/rent-increase-calc.html",
+  "display": "standalone",
+  "background_color": "#faf9f7",
+  "theme_color": "#2a7f62",
+  "icons": [
+    {
+      "src": "/tools/rent-increase-calc-icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/tools/rent-increase-calc-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
