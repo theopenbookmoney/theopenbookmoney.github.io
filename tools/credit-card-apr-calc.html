@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Minimum Payment Trap Calculator · The Open Book</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap');
+
+    :root {
+      color-scheme: light dark;
+      --paper: #f4f3ee;
+      --surface: #ffffff;
+      --surface-2: #eae9e2;
+      --ink: #17231d;
+      --muted: #526057;
+      --line: #cfd4cd;
+      --green: #176b49;
+      --green-soft: #d9ede2;
+      --orange: #b65326;
+      --orange-soft: #f4e2d7;
+      --track: #d8dcd6;
+      --shadow: 0 18px 45px rgba(29, 39, 33, .09);
+      --radius-lg: 28px;
+      --radius-md: 16px;
+      --focus: #0b6fdb;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101612;
+        --surface: #18211c;
+        --surface-2: #222d27;
+        --ink: #edf5ef;
+        --muted: #b5c1b9;
+        --line: #35443b;
+        --green: #62ca91;
+        --green-soft: #173b29;
+        --orange: #ee946c;
+        --orange-soft: #47291e;
+        --track: #39453e;
+        --shadow: 0 22px 60px rgba(0, 0, 0, .28);
+        --focus: #69b5ff;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 280px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 2px;
+    }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar { border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar-inner { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 14px 0; display: flex; align-items: center; gap: 10px; }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+
+    .tool-head { max-width: 720px; padding: 30px 0 6px; }
+    .tool-head h1 {
+      margin: 0 0 10px;
+      font-family: "Literata", serif;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .tool-head p { margin: 0; font-size: 1.05rem; color: var(--muted); }
+
+    .calculator { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; padding: 24px 0 40px; }
+    .panel, .results { background: var(--surface); box-shadow: var(--shadow); }
+    .panel { align-self: start; padding: 24px; border-radius: 4px var(--radius-lg) var(--radius-lg) 4px; }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .panel h2, .results h2 { margin: 0; font-family: "Literata", serif; font-size: 1.45rem; letter-spacing: -.025em; }
+    .sample-label { margin-top: 5px; font-size: .76rem; color: var(--muted); }
+    .reset {
+      border: 0; border-bottom: 1px solid var(--line); padding: 2px 0; background: none; color: var(--muted); cursor: pointer; font-size: .82rem;
+    }
+    .reset:hover, .reset:focus-visible { color: var(--ink); border-color: var(--ink); }
+
+    .field { margin-bottom: 22px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 9px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
+    label { font-weight: 600; font-size: .91rem; }
+    .number-wrap { position: relative; width: 144px; flex: 0 0 auto; }
+    .number-wrap .prefix, .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: .9rem; }
+    .number-wrap .prefix { left: 12px; }
+    .number-wrap .suffix { right: 12px; }
+    input[type="number"] {
+      width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); color: var(--ink); outline: none;
+      padding: 8px 36px 8px 26px; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    .no-prefix input[type="number"] { padding-left: 12px; }
+    input[type="number"]:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+    input[type="range"] { width: 100%; height: 5px; margin: 4px 0 0; appearance: none; background: var(--track); border-radius: 999px; accent-color: var(--green); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--green); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--green); }
+
+    .info-btn {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--line); background: none; color: var(--muted);
+      font-family: Georgia, serif; font-style: italic; font-size: .78rem; line-height: 1;
+      cursor: pointer; padding: 0; flex: 0 0 auto;
+    }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text {
+      margin: 10px 0 0; padding: 10px 12px; border-radius: 8px;
+      background: var(--surface-2); color: var(--muted); font-size: .85rem;
+    }
+
+    .results { min-width: 0; border-radius: var(--radius-lg) 4px 4px var(--radius-lg); overflow: hidden; }
+    .result-top { padding: 28px 30px 22px; }
+    .result-title-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .horizon { color: var(--muted); font-size: .88rem; }
+
+    .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 24px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .scenario { background: var(--surface); padding: 20px; }
+    .scenario h3 { margin: 0 0 6px; font-family: "Literata", serif; font-size: 1.08rem; letter-spacing: -.02em; }
+    .scenario.minimums h3 { color: var(--orange); }
+    .scenario .big { font-family: "Literata", serif; font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.15; letter-spacing: -.035em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .scenario .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 10px; color: var(--muted); font-size: .86rem; }
+    .scenario .row strong { color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    .punchline { margin: 18px 0 0; padding: 16px 18px; background: var(--green-soft); border-radius: 12px; font-size: 1rem; }
+    .punchline strong { color: var(--green); font-variant-numeric: tabular-nums; }
+
+    .chart-section { padding: 24px 30px 28px; background: var(--surface-2); }
+    .chart-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
+    .chart-head h3 { margin: 0; font-size: .95rem; }
+    .chart-head p { margin: 0; color: var(--muted); font-size: .78rem; }
+    .chart-wrap { width: 100%; aspect-ratio: 16 / 7; min-height: 220px; }
+    #payoffChart { width: 100%; height: 100%; display: block; overflow: visible; }
+    .axis-label { fill: var(--muted); font: 11px "DM Sans", sans-serif; }
+    .grid-line { stroke: var(--line); stroke-width: 1; }
+    .line-min { fill: none; stroke: var(--orange); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .line-fixed { fill: none; stroke: var(--green); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+    .legend { display: flex; flex-wrap: wrap; gap: 9px 18px; margin-top: 10px; color: var(--muted); font-size: .76rem; }
+    .legend span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot { width: 8px; height: 8px; border-radius: 50%; }
+    .dot.min { background: var(--orange); }
+    .dot.fixed { background: var(--green); }
+
+    .assumptions { margin: 6px 0 0; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+    .assumptions summary { padding: 16px 20px; cursor: pointer; font-weight: 600; font-size: .95rem; list-style: none; }
+    .assumptions summary::-webkit-details-marker { display: none; }
+    .assumptions summary::before { content: "+ "; color: var(--muted); }
+    .assumptions[open] summary::before { content: "− "; }
+    .assumptions .body { padding: 0 20px 18px; color: var(--muted); font-size: .88rem; }
+    .assumptions .body p { margin: 0 0 10px; }
+
+    .fineprint { margin: 22px 0 60px; color: var(--muted); font-size: .85rem; }
+    .fineprint a { color: inherit; }
+
+    @media (max-width: 850px) {
+      .calculator { grid-template-columns: 1fr; }
+      .panel, .results { border-radius: 22px; }
+      .panel { position: static; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      .tool-head { padding-top: 22px; }
+      .calculator { gap: 14px; padding-top: 16px; }
+      .panel { padding: 20px 16px; }
+      .field-top { align-items: center; }
+      .number-wrap { width: 132px; }
+      .result-top, .chart-section { padding-left: 18px; padding-right: 18px; }
+      .result-title-row { align-items: flex-start; flex-direction: column; gap: 4px; }
+      .versus { grid-template-columns: 1fr; }
+      .chart-wrap { min-height: 230px; aspect-ratio: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+<link rel="canonical" href="https://theopenbookmoney.com/tools/credit-card-apr-calc.html">
+<link rel="apple-touch-icon" href="/tools/credit-card-apr-calc-icon-180.png">
+<link rel="manifest" href="/tools/credit-card-apr-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Minimum Payment Trap">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html" target="_top">The Open Book</a>
+      <span class="sep">·</span>
+      <span>Minimum payment trap calculator</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <h1>Minimum payment trap calculator</h1>
+      <p>What minimum payments really cost — versus paying a fixed amount each month.</p>
+    </div>
+
+    <section class="calculator" aria-label="Minimum payment trap calculator">
+      <form class="panel" id="calculatorForm">
+        <div class="panel-head">
+          <div>
+            <h2>Your numbers</h2>
+            <div class="sample-label">Starter example — change anything</div>
+          </div>
+          <button type="button" class="reset" id="resetButton">Reset</button>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="balance">Card balance</label>
+            <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="balance" type="number" min="0" max="1000000" step="50" value="3000" inputmode="decimal" /></div>
+          </div>
+          <input id="balanceRange" type="range" min="0" max="20000" step="50" value="3000" aria-label="Balance slider" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label-line"><label for="apr">Card interest rate (APR)</label>
+              <button type="button" class="info-btn" data-info="info-apr" aria-expanded="false" aria-label="About the APR">i</button></span>
+            <div class="number-wrap no-prefix"><input id="apr" type="number" min="0" max="40" step="0.01" value="19.99" inputmode="decimal" /><span class="suffix">%</span></div>
+          </div>
+          <input id="aprRange" type="range" min="0" max="30" step="0.01" value="19.99" aria-label="APR slider" />
+          <p class="info-text" id="info-apr" hidden>Most Canadian cards charge 19.99% to 22.99% on purchases. Cash advances are usually higher — and start charging interest immediately.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label-line"><label for="fixedPay">Fixed monthly payment to compare</label>
+              <button type="button" class="info-btn" data-info="info-fixed" aria-expanded="false" aria-label="About the fixed payment">i</button></span>
+            <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="fixedPay" type="number" min="0" max="100000" step="10" value="200" inputmode="decimal" /></div>
+          </div>
+          <input id="fixedPayRange" type="range" min="25" max="2000" step="10" value="200" aria-label="Fixed payment slider" />
+          <p class="info-text" id="info-fixed" hidden>The same amount, every month, no matter what the statement says. Watch what it does to the timeline.</p>
+        </div>
+      </form>
+
+      <section class="results" aria-live="polite" aria-labelledby="results-heading">
+        <div class="result-top">
+          <div class="result-title-row">
+            <h2 id="results-heading">Paying it off</h2>
+            <span class="horizon" id="minRule"></span>
+          </div>
+
+          <div class="versus">
+            <div class="scenario minimums">
+              <h3>Minimums only</h3>
+              <div class="big" id="minTime">–</div>
+              <div class="row"><span>to pay off</span></div>
+              <div class="row"><span>Total interest</span><strong id="minInterest">$0</strong></div>
+            </div>
+            <div class="scenario fixed">
+              <h3><span id="fixedAmtLabel">$200</span>/month fixed</h3>
+              <div class="big" id="fixedTime">–</div>
+              <div class="row"><span>to pay off</span></div>
+              <div class="row"><span>Total interest</span><strong id="fixedInterest">$0</strong></div>
+            </div>
+          </div>
+
+          <p class="punchline" id="punchline"></p>
+
+          <div class="legend" style="margin-top:14px">
+            <span><i class="dot min"></i>Minimums only</span>
+            <span><i class="dot fixed"></i>Fixed payment</span>
+          </div>
+        </div>
+
+        <div class="chart-section">
+          <div class="chart-head"><h3>Balance over time</h3><p>Minimums shrink as the balance shrinks — that's the trap</p></div>
+          <div class="chart-wrap"><svg id="payoffChart" viewBox="0 0 720 320" role="img" aria-labelledby="chartTitle chartDesc"><title id="chartTitle">Payoff comparison chart</title><desc id="chartDesc">A line chart comparing the two payoff paths.</desc></svg></div>
+        </div>
+      </section>
+    </section>
+
+    <details class="assumptions">
+      <summary>How this works</summary>
+      <div class="body">
+        <p><strong>Minimum payment</strong> is estimated as the greater of $10 or 3% of the current balance each month — the most common Canadian formula. Real cards vary; some use 2% or a flat $10.</p>
+        <p>Interest accrues monthly at APR ÷ 12 on the remaining balance. No new purchases are added — this shows the cost of the balance you already have.</p>
+        <p>Educational estimate: actual payoff depends on your card's exact minimum formula, daily compounding, and fees.</p>
+      </div>
+    </details>
+
+    <p class="fineprint">The Open Book · Educational estimate — not financial advice. <a href="../credit-card-apr.html" target="_top">Read the full guide</a></p>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+      // === PURE LOGIC (node-testable) ===
+      // payoff(balance, aprPct, paymentFn) — paymentFn(balance) returns that month's payment.
+      // Returns { months, totalInterest, totalPaid, balances[] }. Caps at 1200 months.
+      function payoff(balance, aprPct, paymentFn) {
+        var r = aprPct / 1200;
+        var bal = balance, interest = 0, months = 0;
+        var balances = [bal];
+        while (bal > 0.005 && months < 1200) {
+          var intPortion = bal * r;
+          interest += intPortion;
+          bal += intPortion;
+          var pay = Math.min(paymentFn(bal), bal);
+          bal -= pay;
+          months++;
+          if (months % 1 === 0) balances.push(Math.max(0, bal));
+          if (pay <= intPortion && bal >= balance) break; // never shrinking
+        }
+        return { months: months, totalInterest: interest, totalPaid: balance - bal + interest, balances: balances, paidOff: bal <= 0.005 };
+      }
+      function minimumPayment(balance) {
+        return Math.max(10, balance * 0.03);
+      }
+      function fixedPayment(amount) {
+        return function () { return amount; };
+      }
+      function fmtTime(months) {
+        if (months >= 1200) return '30+ years';
+        var y = Math.floor(months / 12), m = months % 12;
+        if (y === 0) return m + (m === 1 ? ' month' : ' months');
+        if (m === 0) return y + (y === 1 ? ' year' : ' years');
+        return y + (y === 1 ? ' yr ' : ' yrs ') + m + ' mo';
+      }
+      // === END PURE LOGIC ===
+
+      var defaults = { balance: 3000, apr: 19.99, fixedPay: 200 };
+      var ids = ['balance', 'apr', 'fixedPay'];
+
+      function el(id) { return document.getElementById(id); }
+      function number(id) {
+        var n = parseFloat(el(id).value);
+        return isFinite(n) ? n : 0;
+      }
+      function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+      function fullMoney(value) {
+        try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 }).format(value); }
+        catch (e) { return '$' + Math.round(value).toLocaleString(); }
+      }
+      function currencySymbol() { return '$'; }
+      function syncPair(inputId, rangeId) {
+        var input = el(inputId), range = el(rangeId);
+        input.addEventListener('input', function () { range.value = clamp(number(inputId), parseFloat(range.min), parseFloat(range.max)); calculate(); });
+        range.addEventListener('input', function () { input.value = range.value; calculate(); });
+      }
+      function svgNode(name, attrs) {
+        var node = document.createElementNS('http://www.w3.org/2000/svg', name);
+        Object.keys(attrs || {}).forEach(function(k){ node.setAttribute(k, attrs[k]); });
+        return node;
+      }
+      function compactMoney(value) {
+        var abs = Math.abs(value);
+        var digits = abs >= 1000000 ? 1 : 0;
+        try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'CAD', notation: abs >= 1000000 ? 'compact' : 'standard', maximumFractionDigits: digits }).format(value); }
+        catch (e) { return '$' + Math.round(value).toLocaleString(); }
+      }
+      function drawChart(minB, fixedB) {
+        var svg = el('payoffChart');
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        var title = svgNode('title', {id:'chartTitle'}); title.textContent = 'Payoff comparison chart'; svg.appendChild(title);
+        var desc = svgNode('desc', {id:'chartDesc'}); desc.textContent = 'Balance over time for both payoff paths.'; svg.appendChild(desc);
+        var W = 720, H = 320, left = 70, right = 15, top = 15, bottom = 42;
+        var n = Math.max(minB.length, fixedB.length);
+        var max = Math.max.apply(null, minB.concat(fixedB).concat([1])) * 1.08;
+        var innerW = W-left-right, innerH = H-top-bottom;
+        function x(i){ return left + (i/(n-1))*innerW; }
+        function y(v){ return top + innerH - (v/max)*innerH; }
+        function pathFor(values) {
+          var d = '';
+          for (var i = 0; i < values.length; i++) { d += (i === 0 ? 'M' : 'L') + x(i).toFixed(2) + ' ' + y(values[i]).toFixed(2); }
+          return d;
+        }
+        for(var gLine=0; gLine<=4; gLine++) {
+          var gy = top + (gLine/4)*innerH;
+          svg.appendChild(svgNode('line',{x1:left,y1:gy,x2:W-right,y2:gy,'class':'grid-line'}));
+          var val = max * (1-gLine/4);
+          var label = svgNode('text',{x:left-10,y:gy+4,'text-anchor':'end','class':'axis-label'}); label.textContent = compactMoney(val); svg.appendChild(label);
+        }
+        // x ticks in years
+        var maxMonths = n - 1;
+        var yearTicks = Math.min(10, Math.max(1, Math.round(maxMonths / 12)));
+        for(var t=0;t<=yearTicks;t++) {
+          var mo = Math.round((maxMonths/yearTicks)*t);
+          var tx = x(mo);
+          var tl = svgNode('text',{x:tx,y:H-13,'text-anchor':t===0?'start':(t===yearTicks?'end':'middle'),'class':'axis-label'});
+          tl.textContent = mo === 0 ? 'Now' : (mo % 12 === 0 ? (mo/12) + 'y' : Math.round(mo/12*10)/10 + 'y');
+          svg.appendChild(tl);
+        }
+        svg.appendChild(svgNode('path',{d:pathFor(minB),'class':'line-min'}));
+        svg.appendChild(svgNode('path',{d:pathFor(fixedB),'class':'line-fixed'}));
+      }
+      function calculate() {
+        var balance = clamp(number('balance'), 0, 1000000);
+        var apr = clamp(number('apr'), 0, 40);
+        var fixedPay = clamp(number('fixedPay'), 1, 100000);
+
+        var min = payoff(balance, apr, minimumPayment);
+        var fix = payoff(balance, apr, fixedPayment(fixedPay));
+
+        el('minRule').textContent = 'Minimum ≈ max($10, 3% of balance)';
+        el('minTime').textContent = fmtTime(min.months);
+        el('minInterest').textContent = fullMoney(min.totalInterest);
+        el('fixedAmtLabel').textContent = fullMoney(fixedPay);
+        el('fixedTime').textContent = fmtTime(fix.months);
+        el('fixedInterest').textContent = fullMoney(fix.totalInterest);
+
+        var saved = Math.max(0, min.totalInterest - fix.totalInterest);
+        var punch = el('punchline');
+        if (balance <= 0) {
+          punch.innerHTML = 'No balance, no trap. Enter what you owe to see the real cost.';
+        } else {
+          punch.innerHTML = 'Paying <strong>' + fullMoney(fixedPay) + ' a month</strong> instead of minimums clears the debt <strong>' + fmtTime(fix.months) + ' vs ' + fmtTime(min.months) + '</strong> and saves <strong>' + fullMoney(saved) + '</strong> in interest.';
+        }
+        document.querySelectorAll('.currency-symbol').forEach(function(node){ node.textContent = currencySymbol(); });
+
+        // align series lengths for the chart
+        var n = Math.max(min.balances.length, fix.balances.length);
+        function pad(arr) {
+          var out = arr.slice();
+          while (out.length < n) out.push(0);
+          return out;
+        }
+        drawChart(pad(min.balances), pad(fix.balances));
+      }
+      ids.forEach(function(id){ syncPair(id, id + 'Range'); });
+      el('resetButton').addEventListener('click', function(){
+        ids.forEach(function(id){ el(id).value = defaults[id]; });
+        ids.forEach(function(id){ el(id + 'Range').value = defaults[id]; });
+        calculate();
+      });
+      el('calculatorForm').addEventListener('submit', function(e){ e.preventDefault(); });
+      document.querySelectorAll('.info-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var target = document.getElementById(btn.getAttribute('data-info'));
+          var opening = target.hidden;
+          target.hidden = !opening;
+          btn.setAttribute('aria-expanded', String(opening));
+        });
+      });
+      calculate();
+
+      if (typeof module !== 'undefined' && module.exports) { module.exports = { payoff: payoff, minimumPayment: minimumPayment, fixedPayment: fixedPayment, fmtTime: fmtTime }; }
+    }());
+  </script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>

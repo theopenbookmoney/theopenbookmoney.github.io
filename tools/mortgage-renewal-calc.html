@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>Renewal Savings Calculator · The Open Book</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap');
+
+    :root {
+      color-scheme: light dark;
+      --paper: #f4f3ee;
+      --surface: #ffffff;
+      --surface-2: #eae9e2;
+      --ink: #17231d;
+      --muted: #526057;
+      --line: #cfd4cd;
+      --green: #176b49;
+      --green-soft: #d9ede2;
+      --orange: #b65326;
+      --orange-soft: #f4e2d7;
+      --track: #d8dcd6;
+      --shadow: 0 18px 45px rgba(29, 39, 33, .09);
+      --radius-lg: 28px;
+      --radius-md: 16px;
+      --focus: #0b6fdb;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101612;
+        --surface: #18211c;
+        --surface-2: #222d27;
+        --ink: #edf5ef;
+        --muted: #b5c1b9;
+        --line: #35443b;
+        --green: #62ca91;
+        --green-soft: #173b29;
+        --orange: #ee946c;
+        --orange-soft: #47291e;
+        --track: #39453e;
+        --shadow: 0 22px 60px rgba(0, 0, 0, .28);
+        --focus: #69b5ff;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 280px;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "DM Sans", sans-serif;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible, summary:focus-visible {
+      outline: 3px solid var(--focus); outline-offset: 2px;
+    }
+    .wrap { width: min(1180px, calc(100% - 40px)); margin: 0 auto; }
+
+    .topbar { border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar-inner { width: min(1180px, calc(100% - 40px)); margin: 0 auto; padding: 14px 0; display: flex; align-items: center; gap: 10px; }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+
+    .tool-head { max-width: 720px; padding: 30px 0 6px; }
+    .tool-head h1 {
+      margin: 0 0 10px;
+      font-family: "Literata", serif;
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+    }
+    .tool-head p { margin: 0; font-size: 1.05rem; color: var(--muted); }
+
+    .calculator { display: grid; grid-template-columns: 380px minmax(0, 1fr); gap: 24px; padding: 24px 0 40px; }
+    .panel, .results { background: var(--surface); box-shadow: var(--shadow); }
+    .panel { align-self: start; padding: 24px; border-radius: 4px var(--radius-lg) var(--radius-lg) 4px; }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+    .panel h2, .results h2 { margin: 0; font-family: "Literata", serif; font-size: 1.45rem; letter-spacing: -.025em; }
+    .sample-label { margin-top: 5px; font-size: .76rem; color: var(--muted); }
+    .reset {
+      border: 0; border-bottom: 1px solid var(--line); padding: 2px 0; background: none; color: var(--muted); cursor: pointer; font-size: .82rem;
+    }
+    .reset:hover, .reset:focus-visible { color: var(--ink); border-color: var(--ink); }
+
+    .field { margin-bottom: 22px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 9px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
+    label { font-weight: 600; font-size: .91rem; }
+    .number-wrap { position: relative; width: 144px; flex: 0 0 auto; }
+    .number-wrap .prefix, .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; font-size: .9rem; }
+    .number-wrap .prefix { left: 12px; }
+    .number-wrap .suffix { right: 12px; }
+    input[type="number"] {
+      width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 9px; background: var(--paper); color: var(--ink); outline: none;
+      padding: 8px 36px 8px 26px; text-align: right; font-weight: 700; font-variant-numeric: tabular-nums;
+    }
+    .no-prefix input[type="number"] { padding-left: 12px; }
+    input[type="number"]:focus { border-color: var(--green); box-shadow: 0 0 0 3px var(--green-soft); }
+    input[type="range"] { width: 100%; height: 5px; margin: 4px 0 0; appearance: none; background: var(--track); border-radius: 999px; accent-color: var(--green); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--green); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--green); }
+
+    .info-btn {
+      width: 20px; height: 20px; border-radius: 50%;
+      border: 1px solid var(--line); background: none; color: var(--muted);
+      font-family: Georgia, serif; font-style: italic; font-size: .78rem; line-height: 1;
+      cursor: pointer; padding: 0; flex: 0 0 auto;
+    }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text {
+      margin: 10px 0 0; padding: 10px 12px; border-radius: 8px;
+      background: var(--surface-2); color: var(--muted); font-size: .85rem;
+    }
+
+    .results { min-width: 0; border-radius: var(--radius-lg) 4px 4px var(--radius-lg); overflow: hidden; }
+    .result-top { padding: 28px 30px 22px; }
+    .result-title-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+    .horizon { color: var(--muted); font-size: .88rem; }
+
+    .versus { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; margin-top: 24px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .scenario { background: var(--surface); padding: 20px; }
+    .scenario h3 { margin: 0 0 6px; font-family: "Literata", serif; font-size: 1.08rem; letter-spacing: -.02em; }
+    .scenario.letter h3 { color: var(--orange); }
+    .scenario .big { font-family: "Literata", serif; font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.15; letter-spacing: -.035em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+    .scenario .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 10px; color: var(--muted); font-size: .86rem; }
+    .scenario .row strong { color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    .punchline { margin: 18px 0 0; padding: 16px 18px; background: var(--green-soft); border-radius: 12px; font-size: 1rem; }
+    .punchline strong { color: var(--green); font-variant-numeric: tabular-nums; }
+
+    .chart-section { padding: 24px 30px 28px; background: var(--surface-2); }
+    .chart-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 10px; }
+    .chart-head h3 { margin: 0; font-size: .95rem; }
+    .chart-head p { margin: 0; color: var(--muted); font-size: .78rem; }
+    .bars { display: flex; flex-direction: column; gap: 14px; margin-top: 6px; }
+    .bar-row { display: grid; grid-template-columns: 170px 1fr 110px; gap: 12px; align-items: center; }
+    .bar-row .blabel { font-size: .85rem; font-weight: 600; }
+    .bar-track { height: 26px; background: var(--surface); border-radius: 6px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 6px; }
+    .bar-fill.letter { background: var(--orange); }
+    .bar-fill.shopped { background: var(--green); }
+    .bar-row .bval { font-size: .85rem; font-variant-numeric: tabular-nums; text-align: right; color: var(--muted); }
+
+    .assumptions { margin: 6px 0 0; border: 1px solid var(--line); border-radius: var(--radius-md); background: var(--surface); }
+    .assumptions summary { padding: 16px 20px; cursor: pointer; font-weight: 600; font-size: .95rem; list-style: none; }
+    .assumptions summary::-webkit-details-marker { display: none; }
+    .assumptions summary::before { content: "+ "; color: var(--muted); }
+    .assumptions[open] summary::before { content: "− "; }
+    .assumptions .body { padding: 0 20px 18px; color: var(--muted); font-size: .88rem; }
+    .assumptions .body p { margin: 0 0 10px; }
+
+    .fineprint { margin: 22px 0 60px; color: var(--muted); font-size: .85rem; }
+    .fineprint a { color: inherit; }
+
+    @media (max-width: 850px) {
+      .calculator { grid-template-columns: 1fr; }
+      .panel, .results { border-radius: 22px; }
+      .panel { position: static; }
+    }
+    @media (max-width: 600px) {
+      .wrap { width: min(100% - 24px, 1180px); }
+      .tool-head { padding-top: 22px; }
+      .calculator { gap: 14px; padding-top: 16px; }
+      .panel { padding: 20px 16px; }
+      .field-top { align-items: center; }
+      .number-wrap { width: 132px; }
+      .result-top, .chart-section { padding-left: 18px; padding-right: 18px; }
+      .result-title-row { align-items: flex-start; flex-direction: column; gap: 4px; }
+      .versus { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 1fr; gap: 4px; }
+      .bar-row .bval { text-align: left; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
+  </style>
+<link rel="canonical" href="https://theopenbookmoney.com/tools/mortgage-renewal-calc.html">
+<link rel="apple-touch-icon" href="/tools/mortgage-renewal-calc-icon-180.png">
+<link rel="manifest" href="/tools/mortgage-renewal-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Renewal Savings">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html" target="_top">The Open Book</a>
+      <span class="sep">·</span>
+      <span>Renewal savings calculator</span>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="tool-head">
+      <h1>Renewal savings calculator</h1>
+      <p>The renewal letter is an opening offer. See what shopping around is worth.</p>
+    </div>
+
+    <section class="calculator" aria-label="Renewal savings calculator">
+      <form class="panel" id="calculatorForm">
+        <div class="panel-head">
+          <div>
+            <h2>Your numbers</h2>
+            <div class="sample-label">Starter example — change anything</div>
+          </div>
+          <button type="button" class="reset" id="resetButton">Reset</button>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="balance">Mortgage balance at renewal</label>
+            <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="balance" type="number" min="0" max="10000000" step="1000" value="400000" inputmode="decimal" /></div>
+          </div>
+          <input id="balanceRange" type="range" min="50000" max="1500000" step="5000" value="400000" aria-label="Balance slider" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label-line"><label for="letterRate">Renewal letter rate</label>
+              <button type="button" class="info-btn" data-info="info-letter" aria-expanded="false" aria-label="About the renewal letter rate">i</button></span>
+            <div class="number-wrap no-prefix"><input id="letterRate" type="number" min="0" max="20" step="0.01" value="5.14" inputmode="decimal" /><span class="suffix">%</span></div>
+          </div>
+          <input id="letterRateRange" type="range" min="2" max="8" step="0.01" value="5.14" aria-label="Renewal letter rate slider" />
+          <p class="info-text" id="info-letter" hidden>The rate your current lender offers if you just sign and send it back. Usually their posted or "special" rate — rarely their best.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <span class="label-line"><label for="shoppedRate">Shopped rate</label>
+              <button type="button" class="info-btn" data-info="info-shopped" aria-expanded="false" aria-label="About the shopped rate">i</button></span>
+            <div class="number-wrap no-prefix"><input id="shoppedRate" type="number" min="0" max="20" step="0.01" value="4.34" inputmode="decimal" /><span class="suffix">%</span></div>
+          </div>
+          <input id="shoppedRateRange" type="range" min="2" max="8" step="0.01" value="4.34" aria-label="Shopped rate slider" />
+          <p class="info-text" id="info-shopped" hidden>What a broker or competing lender offers for the same term. This is the number the renewal letter is hoping you never see.</p>
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="termYears">New term length</label>
+            <div class="number-wrap no-prefix"><input id="termYears" type="number" min="1" max="10" step="1" value="5" inputmode="numeric" /><span class="suffix">yr</span></div>
+          </div>
+          <input id="termYearsRange" type="range" min="1" max="10" step="1" value="5" aria-label="Term length slider" />
+        </div>
+
+        <div class="field">
+          <div class="field-top">
+            <label for="amortYears">Years left on the mortgage</label>
+            <div class="number-wrap no-prefix"><input id="amortYears" type="number" min="1" max="35" step="1" value="25" inputmode="numeric" /><span class="suffix">yr</span></div>
+          </div>
+          <input id="amortYearsRange" type="range" min="1" max="30" step="1" value="25" aria-label="Amortization slider" />
+        </div>
+      </form>
+
+      <section class="results" aria-live="polite" aria-labelledby="results-heading">
+        <div class="result-top">
+          <div class="result-title-row">
+            <h2 id="results-heading">Over the <span id="termLabel">5</span>-year term</h2>
+            <span class="horizon" id="gapLabel"></span>
+          </div>
+
+          <div class="versus">
+            <div class="scenario letter">
+              <h3>Sign the letter</h3>
+              <div class="big" id="letterInterest">$0</div>
+              <div class="row"><span>Interest paid over term</span></div>
+              <div class="row"><span>Monthly payment</span><strong id="letterPayment">$0</strong></div>
+            </div>
+            <div class="scenario shopped">
+              <h3>Shop around</h3>
+              <div class="big" id="shoppedInterest">$0</div>
+              <div class="row"><span>Interest paid over term</span></div>
+              <div class="row"><span>Monthly payment</span><strong id="shoppedPayment">$0</strong></div>
+            </div>
+          </div>
+
+          <p class="punchline" id="punchline"></p>
+        </div>
+
+        <div class="chart-section">
+          <div class="chart-head"><h3>Interest paid over the term</h3><p>Same balance, same term — different rate</p></div>
+          <div class="bars">
+            <div class="bar-row">
+              <span class="blabel">Renewal letter</span>
+              <div class="bar-track"><div class="bar-fill letter" id="letterBar"></div></div>
+              <span class="bval" id="letterBarVal"></span>
+            </div>
+            <div class="bar-row">
+              <span class="blabel">Shopped rate</span>
+              <div class="bar-track"><div class="bar-fill shopped" id="shoppedBar"></div></div>
+              <span class="bval" id="shoppedBarVal"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <details class="assumptions">
+      <summary>How this works</summary>
+      <div class="body">
+        <p>Canadian mortgages compound semi-annually, not monthly. The calculator converts each annual rate to its exact monthly equivalent, then builds the month-by-month payment schedule for the term.</p>
+        <p>Both scenarios use the same balance, term, and remaining amortization — the only difference is the rate. Payments are monthly, fixed for the term.</p>
+        <p>Educational estimate: before fees, penalties, and qualification differences between lenders. The rate gap is what you're measuring.</p>
+      </div>
+    </details>
+
+    <p class="fineprint">The Open Book · Educational estimate — not financial advice. <a href="../mortgage-renewal.html" target="_top">Read the full guide</a></p>
+  </main>
+
+  <script>
+    (function () {
+      'use strict';
+      // === PURE LOGIC (node-testable) ===
+      // Canadian semi-annual compounding: monthly rate = (1 + annual/2)^(1/6) - 1
+      function monthlyRate(annualPct) {
+        return Math.pow(1 + annualPct / 200, 1 / 6) - 1;
+      }
+      function paymentFor(balance, annualPct, amortMonths) {
+        var i = monthlyRate(annualPct);
+        if (i === 0) return balance / amortMonths;
+        return balance * i / (1 - Math.pow(1 + i, -amortMonths));
+      }
+      // Simulate termMonths of payments; returns { payment, interestPaid, endBalance }
+      function termCost(balance, annualPct, amortMonths, termMonths) {
+        var i = monthlyRate(annualPct);
+        var pmt = paymentFor(balance, annualPct, amortMonths);
+        var bal = balance, interest = 0;
+        for (var m = 0; m < termMonths; m++) {
+          var intPortion = bal * i;
+          interest += intPortion;
+          bal = bal + intPortion - pmt;
+          if (bal < 0) { bal = 0; break; }
+        }
+        return { payment: pmt, interestPaid: interest, endBalance: Math.max(0, bal) };
+      }
+      function compare(balance, letterPct, shoppedPct, amortMonths, termMonths) {
+        var letter = termCost(balance, letterPct, amortMonths, termMonths);
+        var shopped = termCost(balance, shoppedPct, amortMonths, termMonths);
+        return {
+          letter: letter,
+          shopped: shopped,
+          interestSaved: Math.max(0, letter.interestPaid - shopped.interestPaid),
+          monthlySaved: Math.max(0, letter.payment - shopped.payment)
+        };
+      }
+      // === END PURE LOGIC ===
+
+      var defaults = { balance: 400000, letterRate: 5.14, shoppedRate: 4.34, termYears: 5, amortYears: 25 };
+      var ids = ['balance', 'letterRate', 'shoppedRate', 'termYears', 'amortYears'];
+
+      function el(id) { return document.getElementById(id); }
+      function number(id) {
+        var n = parseFloat(el(id).value);
+        return isFinite(n) ? n : 0;
+      }
+      function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+      function fullMoney(value) {
+        try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'CAD', maximumFractionDigits: 0 }).format(value); }
+        catch (e) { return '$' + Math.round(value).toLocaleString(); }
+      }
+      function currencySymbol() { return '$'; }
+      function syncPair(inputId, rangeId) {
+        var input = el(inputId), range = el(rangeId);
+        input.addEventListener('input', function () { range.value = clamp(number(inputId), parseFloat(range.min), parseFloat(range.max)); calculate(); });
+        range.addEventListener('input', function () { input.value = range.value; calculate(); });
+      }
+      function calculate() {
+        var balance = clamp(number('balance'), 0, 10000000);
+        var letterRate = clamp(number('letterRate'), 0, 20);
+        var shoppedRate = clamp(number('shoppedRate'), 0, 20);
+        var termYears = Math.round(clamp(number('termYears'), 1, 10));
+        var amortYears = Math.round(clamp(number('amortYears'), 1, 35));
+        var amortMonths = amortYears * 12;
+        var termMonths = termYears * 12;
+
+        var r = compare(balance, letterRate, shoppedRate, amortMonths, termMonths);
+
+        el('termLabel').textContent = termYears;
+        el('gapLabel').textContent = letterRate.toFixed(2) + '% vs ' + shoppedRate.toFixed(2) + '% — a ' + Math.abs(letterRate - shoppedRate).toFixed(2) + ' point gap';
+        el('letterInterest').textContent = fullMoney(r.letter.interestPaid);
+        el('letterPayment').textContent = fullMoney(r.letter.payment) + '/mo';
+        el('shoppedInterest').textContent = fullMoney(r.shopped.interestPaid);
+        el('shoppedPayment').textContent = fullMoney(r.shopped.payment) + '/mo';
+
+        var punch = el('punchline');
+        if (r.interestSaved > 1) {
+          punch.innerHTML = 'Shopping around saves <strong>' + fullMoney(r.interestSaved) + '</strong> in interest over ' + termYears + ' years — about <strong>' + fullMoney(r.monthlySaved) + ' less every month</strong>. That is the price of a signature.';
+        } else if (Math.abs(letterRate - shoppedRate) < 0.005) {
+          punch.innerHTML = 'Same rate, same cost — there is nothing to save here. The win comes from the gap.';
+        } else {
+          punch.innerHTML = 'At these rates the letter is actually cheaper — take it. (That almost never happens.)';
+        }
+
+        var maxI = Math.max(r.letter.interestPaid, r.shopped.interestPaid, 1);
+        el('letterBar').style.width = (r.letter.interestPaid / maxI * 100) + '%';
+        el('shoppedBar').style.width = (r.shopped.interestPaid / maxI * 100) + '%';
+        el('letterBarVal').textContent = fullMoney(r.letter.interestPaid);
+        el('shoppedBarVal').textContent = fullMoney(r.shopped.interestPaid);
+        document.querySelectorAll('.currency-symbol').forEach(function(node){ node.textContent = currencySymbol(); });
+      }
+      ids.forEach(function(id){ syncPair(id, id + 'Range'); });
+      el('resetButton').addEventListener('click', function(){
+        ids.forEach(function(id){ el(id).value = defaults[id]; });
+        ids.forEach(function(id){ el(id + 'Range').value = defaults[id]; });
+        calculate();
+      });
+      el('calculatorForm').addEventListener('submit', function(e){ e.preventDefault(); });
+      document.querySelectorAll('.info-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var target = document.getElementById(btn.getAttribute('data-info'));
+          var opening = target.hidden;
+          target.hidden = !opening;
+          btn.setAttribute('aria-expanded', String(opening));
+        });
+      });
+      calculate();
+
+      if (typeof module !== 'undefined' && module.exports) { module.exports = { monthlyRate: monthlyRate, paymentFor: paymentFor, termCost: termCost, compare: compare }; }
+    }());
+  </script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+</body>
+
+</html>
