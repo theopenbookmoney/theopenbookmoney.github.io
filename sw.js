@@ -1,6 +1,6 @@
 // Open Book tools service worker: cache-first so tools work offline
 // (e.g. Sleep Sounds from the home screen in airplane mode).
-var CACHE = 'openbook-tools-v13';
+var CACHE = 'openbook-tools-v14';
 var ASSETS = [
   '/tools/',
   '/tools/index.html',

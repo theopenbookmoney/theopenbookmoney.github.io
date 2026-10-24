@@ -50,6 +50,7 @@
   <a class="home" href="articles.html">All articles</a>
   <a class="home" href="family.html">The family</a>
   <a class="home" href="family-scoreboard.html">Scoreboard</a>
+  <a class="subscribe" href="#signup" style="margin-left:1.2rem;background:#2a7f62;color:#fff;padding:0.35rem 0.95rem;border-radius:999px;font-weight:600;text-decoration:none;">Subscribe</a>
 </div></div>
 <div class="wrap">
   <div class="kicker">The Open Book · Money, explained</div>
@@ -157,7 +158,69 @@
 <div class="calc-wrap"><div class="calc-label">Interactive calculator</div><iframe src="tools/compound-interest-calc.html" title="Interactive calculator" loading="lazy"></iframe></div>
 <hr />
 <p>This article is for education only and is not financial advice.</p>
-  </article>
+  <section class="ob-signup" id="signup">
+  <h2>Get the updates, not the noise</h2>
+  <p class="ob-signup-sub">One email when a tracker is refreshed or a new tool ships.
+     No spam, no selling your address, unsubscribe anytime with one click.</p>
+  <form class="ob-signup-form" id="ob-signup-form">
+    <label class="ob-signup-label" for="ob-signup-email">Email address</label>
+    <input id="ob-signup-email" type="email" name="email" required
+           placeholder="you@example.com" autocomplete="email">
+    <input type="submit" value="Subscribe">
+  </form>
+  <p class="ob-signup-msg" id="ob-signup-msg" aria-live="polite"></p>
+  <p class="ob-signup-fine">We use your email only for these updates, and only after you
+     confirm. Unsubscribe anytime with one click.</p>
+</section>
+<script>
+(function () {
+  var FORM_ACTION = "https://open-book-newsletter.theopenbookmoney.workers.dev/api/subscribe"; // e.g. https://signup.theopenbookmoney.com/api/subscribe
+  var form = document.getElementById("ob-signup-form");
+  var msg = document.getElementById("ob-signup-msg");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = document.getElementById("ob-signup-email").value.trim();
+    msg.textContent = "Sending…";
+    fetch(FORM_ACTION, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: email, source: location.pathname }),
+    })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (res.ok) {
+          msg.textContent = res.j.already
+            ? "You're already on the list — nothing more to do."
+            : "Check your inbox — click the confirmation link and you're in.";
+          form.reset();
+        } else {
+          msg.textContent = res.j.error === "invalid email"
+            ? "That email doesn't look right — try again."
+            : "Something went wrong — please try again in a bit.";
+        }
+      })
+      .catch(function () { msg.textContent = "Something went wrong — please try again in a bit."; });
+  });
+})();
+</script>
+<style>
+  .ob-signup { background: #fff; border: 1px solid #e5e1da; border-radius: 12px;
+               padding: 1.75rem 1.5rem; margin: 2.5rem 0; }
+  .ob-signup h2 { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 1.2rem;
+                  color: #1a1a2e; margin-bottom: 0.35rem; }
+  .ob-signup-sub { color: #6b7280; font-size: 0.98rem; margin-bottom: 1rem; }
+  .ob-signup-form { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .ob-signup-label { position: absolute; left: -9999px; }
+  .ob-signup-form input[type="email"] { flex: 1 1 220px; font-size: 1rem; padding: 0.65rem 0.8rem;
+      border: 1px solid #e5e1da; border-radius: 8px; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  .ob-signup-form input[type="submit"] { font-size: 1rem; font-weight: 600; color: #fff;
+      background: #2a7f62; border: none; border-radius: 8px; padding: 0.65rem 1.25rem; cursor: pointer;
+      font-family: -apple-system, 'Segoe UI', sans-serif; }
+  .ob-signup-form input[type="submit"]:hover { background: #236e55; }
+  .ob-signup-msg { font-size: 0.95rem; margin-top: 0.75rem; min-height: 1.4em; }
+  .ob-signup-fine { color: #6b7280; font-size: 0.82rem; margin-top: 0.75rem; }
+</style>
+</article>
 </div>
 <footer>The Open Book · Educational content only, not financial advice.<br><a href="index.html">theopenbookmoney.com</a></footer>
 <script>
