@@ -44,8 +44,10 @@
   .topbar .menu-btn { display: none; margin-left: auto; background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); font-size: 1.05rem; line-height: 1; padding: 0.3rem 0.6rem; cursor: pointer; font-family: -apple-system, 'Segoe UI', sans-serif; }
   .topbar .nav-links { display: contents; }
   @media (max-width: 760px) {
-    .topbar .inner { flex-wrap: wrap; }
+    .topbar .inner { flex-wrap: wrap; padding: 0.9rem 1rem; }
+    .topbar a.brand { font-size: 1rem; }
     .topbar .menu-btn { display: block; order: 3; }
+    .topbar a.subscribe { padding: 0.3rem 0.75rem !important; }
     .topbar a.subscribe { order: 2; }
     .topbar .nav-links { display: none; order: 4; flex-basis: 100%; flex-direction: column; gap: 0.15rem; padding: 0.55rem 0 0.3rem; }
     .topbar .inner.open .nav-links { display: flex; }
@@ -53,7 +55,19 @@
   }
   @media (prefers-color-scheme: dark) {
     :root { --paper: #0f0f1a; --surface: #1a1a2e; --surface-2: #23233a; --ink: #ece9e2; --muted: #9aa0ae; --line: #2e2e44; --accent: #5fc9a8; --ink-soft: #c9c4bb; }
+    .cta.primary { color: #0f0f1a; }
   }
+
+  .hero-ctas { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-bottom: 2.5rem; }
+  .cta { font-family: -apple-system, 'Segoe UI', sans-serif; font-weight: 600; text-decoration: none; padding: 0.65rem 1.25rem; border-radius: 999px; font-size: 0.98rem; }
+  .cta.primary { background: var(--accent); color: #fff; }
+  .cta.secondary { border: 1px solid var(--line); color: var(--ink); }
+  .next-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); margin-bottom: 2.5rem; }
+  .next-item { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem 1.5rem; }
+  .next-date { font-family: -apple-system, 'Segoe UI', sans-serif; font-weight: 700; color: var(--accent); }
+  .next-item p { font-size: 0.95rem; color: var(--muted); margin: 0.35rem 0 0.5rem; }
+  .next-item a { color: var(--accent); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
+  .section-intro { color: var(--muted); margin-bottom: 1rem; }
 </style>
 </head>
 <body>
@@ -72,154 +86,108 @@
   <header>
     <p class="tagline">Money, explained. Nothing hidden, every page open.</p>
   </header>
-  <p class="intro">Deep money topics in plain language — each one with a worked example and an interactive calculator built in, so you never have to take anyone’s word for it. New essays every week.</p>
-  <h2 id="latest">Latest articles</h2>
+  <p class="intro">Articles that show the math, calculators that run it, trackers that move when the news moves, and one family's real numbers, tracked in public. Everything here is free — and every number is shown, not just claimed.</p>
+  <div class="hero-ctas">
+    <a class="cta primary" href="#signup">Get notified when a tracker updates</a>
+    <a class="cta secondary" href="family-scoreboard.html">Follow the family's numbers</a>
+  </div>
+  <h2>What's changing next</h2>
+  <div class="next-grid">
+    <div class="next-item">
+      <div class="next-date">Wednesday, October 28, 2026</div>
+      <p>Bank of Canada rate decision — the rate is 2.25% now, and the decision lands that morning.</p>
+      <a href="boc-rate-decision.html">Rate tracker &rarr;</a>
+    </div>
+    <div class="next-item">
+      <div class="next-date">September 2026: 3.1%</div>
+      <p>Latest inflation reading, refreshed monthly from Statistics Canada.</p>
+      <a href="inflation-tracker.html">Inflation tracker &rarr;</a>
+    </div>
+    <div class="next-item">
+      <div class="next-date">Updated October 20, 2026</div>
+      <p>The family scoreboard moves with every article — follow five households' real numbers.</p>
+      <a href="family-scoreboard.html">Scoreboard &rarr;</a>
+    </div>
+  </div>
+  <h2>Trackers</h2>
+  <p class="section-intro">Numbers that move — bookmark these and check back around the big dates.</p>
   <div class="cards">
-    <a class="card" href="ei-explained.html">
-      <div class="date">October 2026</div>
-      <h3>Sick, Broke, and Laid Off: How EI Actually Works</h3>
-      <p>EI pays 55% of your earnings up to $729 a week — not your full salary, not automatically, and not if you quit. The real rules, a worked example, plus an interactive benefit estimator.</p>
+    <a class="card" href="boc-rate-decision.html">
+      <div class="date">Updated October 14, 2026</div>
+      <h3>Bank of Canada Rate Tracker</h3>
+      <p>The Bank of Canada's overnight rate at 2.25%, every recent decision in one table, and when the next one lands.</p>
     </a>
-    <a class="card" href="rrif-71.html">
-      <div class="date">October 2026</div>
-      <h3>71 Is Coming for Your RRSP</h3>
-      <p>By December 31 of the year you turn 71, your RRSP must become a RRIF — and the RRIF forces withdrawals whether you need the money or not. The minimum table and the seven-year planning window.</p>
+    <a class="card" href="inflation-tracker.html">
+      <div class="date">Updated October 19, 2026</div>
+      <h3>Canadian Inflation Tracker</h3>
+      <p>Inflation at 3.1% (September 2026), month by month for the past 24 months, and the Bank of Canada's 2% target — numbers from Statistics Canada.</p>
     </a>
-    <a class="card" href="cottage-tax.html">
-      <div class="date">October 2026</div>
-      <h3>Your Cottage Is a Tax Bill</h3>
-      <p>The family cottage feels like an heirloom; the taxman sees an asset. How the principal-residence exemption forces you to pick one property per year, and what a $450,000 gain means at tax time.</p>
+    <a class="card" href="inflation-annual.html">
+      <div class="date">Updated October 19, 2026</div>
+      <h3>Canadian Inflation Tracker — Annual</h3>
+      <p>Annual inflation in Canada, year by year since 2016, from Statistics Canada.</p>
     </a>
-    <a class="card" href="heloc.html">
-      <div class="date">October 2026</div>
-      <h3>The HELOC Is a Credit Card Hiding in Your House</h3>
-      <p>A HELOC feels like free money from your house — but it works like a credit card with your home as collateral. The interest-only trap, the real borrowing rules, and what $50,000 at 7% actually costs.</p>
+    <a class="card" href="family-scoreboard.html">
+      <div class="date">Updated October 20, 2026</div>
+      <h3>The Family Scoreboard</h3>
+      <p>What the Open Book family owns, what they owe, and how every money decision moves their net worth — tracked in public, updated with every article.</p>
     </a>
-    <a class="card" href="rent-increase.html">
-      <div class="date">October 2026</div>
-      <h3>Your Landlord Can’t Raise Rent Like That</h3>
-      <p>Your landlord can’t raise rent by whatever they want — most provinces set a legal ceiling. The 2026 caps, the notice rules, and a worked example of an illegal 5% hike, plus an interactive checker.</p>
+  </div>
+  <h2 style="margin-top: 2.5rem;">Popular tools</h2>
+  <div class="cards">
+    <a class="card" href="tools/take-home-pay-calc.html">
+      <h3>Take-home pay calculator</h3>
+      <p>2026 Canadian taxes, CPP and EI for every province and territory — see what a salary is actually worth.</p>
     </a>
-    <a class="card" href="sam-rebuild.html">
-      <div class="date">October 2026</div>
-      <h3>Starting Over at 45: Sam's Money Rebuild Checklist</h3>
-      <p>Sam's divorce-rebuild arc: beneficiaries, one-income budget, $500 emergency fund, credit repair, and retitling retirement — in order, no fluff.</p>
+    <a class="card" href="tools/mortgage-calc.html">
+      <h3>Mortgage explorer</h3>
+      <p>Your payment, your amortization schedule, and what extra payments really do — with true Canadian semi-annual compounding.</p>
     </a>
-    <a class="card" href="credit-card-apr.html">
-      <div class="date">October 2026</div>
-      <h3>Your Credit Card Is a 21% Loan</h3>
-      <p>Jasmine's $3,000 balance at minimum payments: 18 years, $3,750 in interest. The grace-period trick — plus an interactive calculator.</p>
+    <a class="card" href="tools/compound-interest-calc.html">
+      <h3>Compound interest calculator</h3>
+      <p>See what $200 a month becomes over decades — and what waiting ten years costs you.</p>
     </a>
-    <a class="card" href="mortgage-insurance.html">
-      <div class="date">October 2026</div>
-      <h3>The Bank's Mortgage Insurance Isn't Life Insurance</h3>
-      <p>The bank is the beneficiary, the coverage shrinks, and it costs 3x per dollar. Creditor insurance exposed — affiliate-free.</p>
+    <a class="card" href="tools/debt-payoff-calc.html">
+      <h3>Debt payoff planner</h3>
+      <p>Avalanche or snowball: pick your strategy, add an extra payment, and see your debt-free date.</p>
     </a>
-    <a class="card" href="mer-fees.html">
-      <div class="date">October 2026</div>
-      <h3>The 1% Fee Eating Your Retirement</h3>
-      <p>A 2% fee vs a 0.2% fee on $100,000 over 30 years: $288,000 gone. Nadia runs the numbers twice — myth-busted, no products.</p>
+    <a class="card" href="tools/net-worth-calc.html">
+      <h3>Net worth tracker</h3>
+      <p>The one number that tells the truth. Save monthly snapshots privately in your browser and watch the line move.</p>
     </a>
-    <a class="card" href="mortgage-renewal.html">
-      <div class="date">October 2026</div>
-      <h3>Your Mortgage Renewal Is a $10,000 Conversation</h3>
-      <p>The renewal letter is an opening offer, not a final price. Rob and Priya shop a $400,000 renewal and save $15,350 — plus an interactive calculator.</p>
+    <a class="card" href="tools/white-noise.html">
+      <h3>Sleep Sounds</h3>
+      <p>White, pink and brown noise, rain, ocean, thunderstorm, fan and night crickets — plus womb, shushing and lullaby sounds for babies. Sleep timer included.</p>
     </a>
-    <a class="card" href="lemonade-stand.html">
-      <div class="date">October 2026</div>
-      <h3>Maya's Lemonade Stand: Teaching Kids About Money Before the World Does</h3>
-      <p>The kids' arc begins: three jars, family work vs paid work, and why a $5 mistake at 8 beats a $5,000 mistake at 28.</p>
+  </div>
+  <p class="tools-link" style="margin-top: 1.25rem;">Looking for more? <a href="tools/">Browse all 20 tools and calculators &rarr;</a></p>
+  <h2 style="margin-top: 2.5rem;">The family scoreboard</h2>
+  <p class="section-intro">Five households, real starting numbers, every decision tracked in public. Latest entry: October 2026 — The scoreboard opens.</p>
+  <div class="cards">
+    <a class="card" href="family-jasmine.html">
+      <h3>Jasmine, 24 — the climb out</h3>
+      <p>Net worth: −$8,600. Her road: kill the $3,000 card first, then the student loan. First stop is zero — then her first $10,000.</p>
     </a>
-    <a class="card" href="mortgage-or-invest.html">
-      <div class="date">October 2026</div>
-      <h3>Pay Off the Mortgage or Invest?</h3>
-      <p>A guaranteed 5% vs a possible 6%: Rob and Priya run both paths on $500 a month for 10 years, then apply the sleep test.</p>
+    <a class="card" href="family-rob-priya.html">
+      <h3>Rob & Priya, 38 & 36 — the mortgage years</h3>
+      <p>Net worth: $246,500 (home equity: $92,000). Their road: the mortgage renewal, $2,500 a year into the RESP, and the standing argument — pay the house down faster, or invest?</p>
     </a>
-    <a class="card" href="lump-sum-vs-dca.html">
-      <div class="date">October 2026</div>
-      <h3>Lump Sum or Drip-Feed? The Investing Question With a Data Answer</h3>
-      <p>Vanguard measured it: investing a lump sum beat dripping it in 68% of the time. The honest catch — and the distinction everyone gets wrong.</p>
+    <a class="card" href="family-sam.html">
+      <h3>Sam, 45 — the rebuild</h3>
+      <p>Net worth: $102,500. His road: the card dies first — $500 a month, gone in 19 months — then the emergency fund gets rebuilt, then catch-up RRSP room.</p>
     </a>
-    <a class="card" href="oas-clawback.html">
-      <div class="date">October 2026</div>
-      <h3>The OAS Clawback: The Line That Shrinks Your Pension</h3>
-      <p>15 cents back per dollar over $95,323. Per person, not per household — and TFSA withdrawals don't count. Myth-busted, no products.</p>
+    <a class="card" href="family-nadia.html">
+      <h3>Nadia, 58 — is it enough?</h3>
+      <p>Net worth: $794,000. Her road: the last $42,000 of mortgage, the CPP timing decision, and learning to spend the pile she spent 30 years building.</p>
     </a>
-    <a class="card" href="safe-withdrawal.html">
-      <div class="date">October 2026</div>
-      <h3>The 3.9% Rule: How Much Can You Spend Without Running Out?</h3>
-      <p>Nadia's debut: the spend-down side of retirement. Morningstar's 2026 research says 3.9% a year has a 90% chance of lasting 30 years — plus an interactive calculator to test your own number.</p>
+    <a class="card" href="family-elena-frank.html">
+      <h3>Elena & Frank, 67 & 70 — the drawdown years</h3>
+      <p>Net worth: $582,000. Their road: which account to spend first, keeping OAS intact, and the estate basics done before they matter.</p>
     </a>
-    <a class="card" href="new-vs-used-car.html">
-      <div class="date">October 2026</div>
-      <h3>New Car vs Used Car: The $10,000 Question</h3>
-      <p>The sticker isn't the price — depreciation is. An 8-year total-cost comparison of a $35,000 new car vs the same car 3 years old.</p>
-    </a>
-    <a class="card" href="tfsa-myths.html">
-      <div class="date">October 2026</div>
-      <h3>Your TFSA Is Not a Savings Account</h3>
-      <p>It's a tax wrapper, not an account. The re-contribution trap, the stale CRA screen, and the $30-a-month mistake — myth-busted.</p>
-    </a>
-    <a class="card" href="wills.html">
-      <div class="date">October 2026</div>
-      <h3>The 45-Minute Document That Protects Everything</h3>
-      <p>Three decisions, two companions, one evening. What a will actually does, what happens without one, and why half of Canadians are tempting fate.</p>
-    </a>
-    <a class="card" href="life-insurance.html">
-      <div class="date">October 2026</div>
-      <h3>Life Insurance: The One You Need vs the One They Sell You</h3>
-      <p>Term is renting protection; whole life is an expensive bundle. The honest math on a $500,000 decision — and why the agent pushed the pricey one.</p>
-    </a>
-    <a class="card" href="cpp-timing.html">
-      <div class="date">October 2026</div>
-      <h3>Take CPP at 60 or Wait Until 70? The $700-a-Month Question</h3>
-      <p>Start at 60 and your cheque shrinks 36%. Wait to 70 and it grows 42%. The rules, the break-even ages, and when each choice wins.</p>
-    </a>
-    <a class="card" href="budget.html">
-      <div class="date">October 2026</div>
-      <h3>Your Paycheque Has a Leak</h3>
-      <p>The 50/30/20 rule, the leaks that eat it, and a one-hour exercise to find yours — plus an interactive budget calculator.</p>
-    </a>
-    <a class="card" href="resp.html">
-      <div class="date">October 2026</div>
-      <h3>Free Money for Your Kid's Education</h3>
-      <p>The RESP, explained: the government adds 20 cents to every dollar you save for your kid's education, up to $7,200 per child. Here's the whole deal.</p>
-    </a>
-    <a class="card" href="credit-score.html">
-      <div class="date">October 2026</div>
-      <h3>Your Credit Score, Decoded</h3>
-      <p>One number, 300 to 900, five ingredients. What actually moves your credit score up or down — and four myths that need busting.</p>
-    </a>
-    <a class="card" href="investing.html">
-      <div class="date">October 2026</div>
-      <h3>Investing, Without the Jargon</h3>
-      <p>A stock is a slice of a company. A bond is a loan you give. A fund is a basket of slices. Three building blocks, three rules — zero jargon.</p>
-    </a>
-    <a class="card" href="capital-gains.html">
-      <div class="date">October 2026</div>
-      <h3>The Capital Gains Tax Hike That Never Happened</h3>
-      <p>The 2024 budget proposed a 66.67% inclusion rate. It was delayed, then cancelled in March 2025 — and never became law. The rate is 50%. Here's the full story.</p>
-    </a>
-    <a class="card" href="emergency-fund.html">
-      <div class="date">October 2026</div>
-      <h3>The Emergency Fund: How Much Is Enough?</h3>
-      <p>The 3-to-6-month rule, decoded: which end of the range is yours, where to keep the money, what to do if you have debt too — plus an interactive calculator.</p>
-    </a>
-    <a class="card" href="retirement.html">
-      <div class="date">October 2026</div>
-      <h3>How Much Do You Need to Retire?</h3>
-      <p>Forget saving ‘as much as possible.’ The 25x rule turns your yearly gap into one clear number — plus an interactive calculator that shows whether you're on track.</p>
-    </a>
-    <a class="card" href="net-worth.html">
-      <div class="date">October 2026</div>
-      <h3>Net Worth: The One Number That Actually Matters</h3>
-      <p>Salary measures the river; net worth measures the lake. What you own minus what you owe, how to track it monthly, and what healthy looks like at every age — plus an interactive calculator.</p>
-    </a>
-    <a class="card" href="take-home-pay.html">
-      <div class="date">October 2026</div>
-      <h3>Where Does Your Paycheque Actually Go?</h3>
-      <p>Four bites come out of every Canadian paycheque before it reaches you — plus the bucket myth that makes everyone overestimate their tax rate. Worked with 2026 numbers, plus an interactive calculator.</p>
-    </a>
+  </div>
+  <p class="tools-link" style="margin-top: 1.25rem;"><a href="family-scoreboard.html">See the full scoreboard &rarr;</a></p>
+  <h2 id="latest" style="margin-top: 2.5rem;">Latest articles</h2>
+  <div class="cards">
     <a class="card" href="fhsa.html">
       <div class="date">October 2026</div>
       <h3>The FHSA: The Account That Pays You Twice (2026 Guide)</h3>
@@ -251,58 +219,7 @@
       <p>The whole TFSA-vs-RRSP decision is one math question: what will your tax rate be at both ends? Worked through with 2026 Canadian numbers, plus an interactive calculator.</p>
     </a>
   </div>
-  <h2 style="margin-top: 2.5rem;">Popular tools</h2>
-  <div class="cards">
-    <a class="card" href="tools/take-home-pay-calc.html">
-      <h3>Take-home pay calculator</h3>
-      <p>2026 Canadian taxes, CPP and EI for every province and territory — see what a salary is actually worth.</p>
-    </a>
-    <a class="card" href="tools/mortgage-calc.html">
-      <h3>Mortgage explorer</h3>
-      <p>Your payment, your amortization schedule, and what extra payments really do — with true Canadian semi-annual compounding.</p>
-    </a>
-    <a class="card" href="tools/compound-interest-calc.html">
-      <h3>Compound interest calculator</h3>
-      <p>See what $200 a month becomes over decades — and what waiting ten years costs you.</p>
-    </a>
-    <a class="card" href="tools/debt-payoff-calc.html">
-      <h3>Debt payoff planner</h3>
-      <p>Avalanche or snowball: pick your strategy, add an extra payment, and see your debt-free date.</p>
-    </a>
-    <a class="card" href="tools/net-worth-calc.html">
-      <h3>Net worth tracker</h3>
-      <p>The one number that tells the truth. Save monthly snapshots privately in your browser and watch the line move.</p>
-    </a>
-    <a class="card" href="tools/white-noise.html">
-      <h3>Sleep Sounds</h3>
-      <p>White, pink and brown noise, rain, ocean, thunderstorm, fan and night crickets — plus womb, shushing and lullaby sounds for babies. Sleep timer included.</p>
-    </a>
-  </div>
-  <p class="tools-link" style="margin-top: 1.25rem;">Looking for more? <a href="tools/">Browse all tools and calculators &rarr;</a></p>
-  <h2 style="margin-top: 2.5rem;">Trackers</h2>
-  <p class="tools-link">Numbers that move — bookmark these and check back around the big dates.</p>
-  <div class="cards">
-    <a class="card" href="boc-rate-decision.html">
-      <div class="date">Updated October 14, 2026</div>
-      <h3>Bank of Canada Rate Tracker</h3>
-      <p>The Bank of Canada's overnight rate at 2.25%, every recent decision in one table, and when the next one lands.</p>
-    </a>
-    <a class="card" href="inflation-tracker.html">
-      <div class="date">Updated October 19, 2026</div>
-      <h3>Canadian Inflation Tracker</h3>
-      <p>Inflation at 3.1% (September 2026), month by month for the past 24 months, and the Bank of Canada's 2% target — numbers from Statistics Canada.</p>
-    </a>
-    <a class="card" href="inflation-annual.html">
-      <div class="date">Updated October 19, 2026</div>
-      <h3>Canadian Inflation Tracker — Annual</h3>
-      <p>Annual inflation in Canada, year by year since 2016, from Statistics Canada.</p>
-    </a>
-    <a class="card" href="family-scoreboard.html">
-      <div class="date">Updated October 20, 2026</div>
-      <h3>The Family Scoreboard</h3>
-      <p>What the Open Book family owns, what they owe, and how every money decision moves their net worth — tracked in public, updated with every article.</p>
-    </a>
-  </div>
+  <p class="tools-link" style="margin-top: 1.25rem;"><a href="articles.html">Browse all 35 articles &rarr;</a></p>
   <section class="ob-signup" id="signup">
   <h2>Get the updates, not the noise</h2>
   <p class="ob-signup-sub">One email when a tracker is refreshed or a new tool ships.

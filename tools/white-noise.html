@@ -56,8 +56,10 @@
   .topbar .menu-btn { display: none; margin-left: auto; background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); font-size: 1.05rem; line-height: 1; padding: 0.3rem 0.6rem; cursor: pointer; font-family: -apple-system, 'Segoe UI', sans-serif; }
   .topbar .nav-links { display: contents; }
   @media (max-width: 760px) {
-    .topbar .inner { flex-wrap: wrap; }
+    .topbar .inner { flex-wrap: wrap; padding: 0.9rem 1rem; }
+    .topbar a.brand { font-size: 1rem; }
     .topbar .menu-btn { display: block; order: 3; }
+    .topbar a.subscribe { padding: 0.3rem 0.75rem !important; }
     .topbar a.subscribe { order: 2; }
     .topbar .nav-links { display: none; order: 4; flex-basis: 100%; flex-direction: column; gap: 0.15rem; padding: 0.55rem 0 0.3rem; }
     .topbar .inner.open .nav-links { display: flex; }
