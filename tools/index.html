@@ -15,14 +15,14 @@
 <meta name="twitter:title" content="Tools — Calculators &amp; Night Tools | The Open Book">
 <meta name="twitter:description" content="Every interactive tool from The Open Book, in one place: money calculators and sleep sounds.">
 <style>
-  :root { --ink: #1a1a2e; --paper: #faf9f7; --accent: #2a7f62; --muted: #6b7280; --line: #e5e1da; }
+  :root { --ink: #1a1a2e; --paper: #faf9f7; --accent: #2a7f62; --muted: #6b7280; --line: #e5e1da; --surface: #ffffff; --surface-2: #f1efe9; --ink-soft: #3a3a4a; color-scheme: light dark; }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Georgia, 'Times New Roman', serif; background: var(--paper); color: var(--ink); line-height: 1.7; }
-  .topbar { border-bottom: 1px solid var(--line); background: #fff; }
-  .topbar .inner { max-width: 640px; margin: 0 auto; padding: 0.9rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .topbar { border-bottom: 1px solid var(--line); background: var(--surface); }
+  .topbar .inner { max-width: 1080px; margin: 0 auto; padding: 0.9rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
   .topbar a.brand { text-decoration: none; color: var(--ink); font-size: 1.15rem; font-weight: bold; }
   .topbar a.home { margin-left: auto; text-decoration: none; color: var(--muted); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
-  .wrap { max-width: 640px; margin: 0 auto; padding: 3rem 1.5rem; }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 1.5rem; }
   header { text-align: center; margin-bottom: 2rem; }
   .mark { font-size: 3rem; margin-bottom: 0.5rem; }
   h1 { font-size: 2.2rem; letter-spacing: -0.02em; }
@@ -33,23 +33,39 @@
   .back a { color: var(--muted); text-decoration: none; }
   .back a:hover { color: var(--accent); }
   h2 { font-size: 1.15rem; margin: 2.25rem 0 1rem; font-family: -apple-system, 'Segoe UI', sans-serif; }
-  .cards { display: grid; gap: 1rem; }
-  .card { display: block; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem 1.5rem; text-decoration: none; color: inherit; transition: transform .15s, box-shadow .15s; }
+  .cards { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); }
+  .card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 1.25rem 1.5rem; text-decoration: none; color: inherit; transition: transform .15s, box-shadow .15s; }
   .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.08); }
   .card h3 { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 1.05rem; color: var(--accent); margin-bottom: 0.25rem; }
   .card p { font-size: 0.95rem; color: var(--muted); margin-top: 0.35rem; }
   footer { margin-top: 3rem; text-align: center; color: var(--muted); font-size: 0.85rem; }
   footer a { color: var(--accent); }
+
+  .topbar .menu-btn { display: none; margin-left: auto; background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); font-size: 1.05rem; line-height: 1; padding: 0.3rem 0.6rem; cursor: pointer; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  .topbar .nav-links { display: contents; }
+  @media (max-width: 760px) {
+    .topbar .inner { flex-wrap: wrap; }
+    .topbar .menu-btn { display: block; order: 3; }
+    .topbar a.subscribe { order: 2; }
+    .topbar .nav-links { display: none; order: 4; flex-basis: 100%; flex-direction: column; gap: 0.15rem; padding: 0.55rem 0 0.3rem; }
+    .topbar .inner.open .nav-links { display: flex; }
+    .topbar .nav-links a { margin-left: 0; padding: 0.4rem 0.2rem; }
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #0f0f1a; --surface: #1a1a2e; --surface-2: #23233a; --ink: #ece9e2; --muted: #9aa0ae; --line: #2e2e44; --accent: #5fc9a8; --ink-soft: #c9c4bb; }
+  }
 </style>
 </head>
 <body>
 <div class="topbar"><div class="inner">
   <a class="brand" href="../index.html">📖 The Open Book</a>
+  <button class="menu-btn" type="button" aria-label="Menu" onclick="this.closest('.inner').classList.toggle('open')">&#9776;</button>
+  <span class="nav-links">
   <a class="tools" href="../tools/">Tools</a>
   <a class="home" href="../articles.html">All articles</a>
   <a class="home" href="../family.html">The family</a>
   <a class="home" href="../family-scoreboard.html">Scoreboard</a>
-  <a class="subscribe" href="#signup" style="margin-left:1.2rem;background:#2a7f62;color:#fff;padding:0.35rem 0.95rem;border-radius:999px;font-weight:600;text-decoration:none;">Subscribe</a>
+  </span>
 </div></div>
 <div class="wrap">
   <header>
@@ -205,6 +221,12 @@
   .ob-signup-form input[type="submit"]:hover { background: #236e55; }
   .ob-signup-msg { font-size: 0.95rem; margin-top: 0.75rem; min-height: 1.4em; }
   .ob-signup-fine { color: #6b7280; font-size: 0.82rem; margin-top: 0.75rem; }
+  @media (prefers-color-scheme: dark) {
+    .ob-signup { background: #1a1a2e; border-color: #2e2e44; }
+    .ob-signup h2 { color: #ece9e2; }
+    .ob-signup-sub, .ob-signup-fine { color: #9aa0ae; }
+    .ob-signup-form input[type="email"] { background: #0f0f1a; color: #ece9e2; border-color: #2e2e44; }
+  }
 </style>
 <footer>The Open Book &middot; Educational content only, not financial advice.<br><a href="../index.html">theopenbookmoney.com</a></footer>
 </div>

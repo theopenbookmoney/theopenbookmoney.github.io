@@ -13,44 +13,56 @@
 <meta name="apple-mobile-web-app-title" content="Sleep Sounds">
 <meta name="theme-color" content="#0a0e14">
 <style>
-  :root { --bg: #0a0e14; --card: #141b27; --card2: #1a2333; --ink: #e9e6df; --muted: #8b94a5; --accent: #5fc9a8; --accent-dim: #2a6f58; }
+  :root { color-scheme: light dark; --bg: #faf9f7; --card: #ffffff; --card2: #f1efe9; --ink: #1a1a2e; --muted: #6b7280; --accent: #2a7f62; --accent-dim: #256e54; --line: #e5e1da; --accent-soft: #dcefe7; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0f0f1a; --card: #1a1a2e; --card2: #23233a; --ink: #ece9e2; --muted: #9aa0ae; --accent: #5fc9a8; --accent-dim: #2a6f58; --line: #2e2e44; --accent-soft: #173f31; } }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--ink); line-height: 1.6; min-height: 100vh; }
-  .topbar { border-bottom: 1px solid #1e2635; background: #0d1219; }
-  .topbar .inner { max-width: 720px; margin: 0 auto; padding: 0.85rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .topbar { border-bottom: 1px solid var(--line); background: var(--card); }
+  .topbar .inner { max-width: 880px; margin: 0 auto; padding: 0.85rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
   .topbar a.brand { text-decoration: none; color: var(--ink); font-size: 1.05rem; font-weight: 600; font-family: Georgia, 'Times New Roman', serif; }
   .topbar a.home { margin-left: 1.2rem; text-decoration: none; color: var(--muted); font-size: 0.85rem; }
   .topbar a.tools { margin-left: auto; text-decoration: none; color: var(--muted); font-size: 0.85rem; }
   .topbar a.home:hover, .topbar a.tools:hover { color: var(--accent); }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
   .kicker { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); margin-bottom: 0.6rem; }
   h1 { font-family: Georgia, 'Times New Roman', serif; font-size: 2rem; letter-spacing: -0.02em; margin-bottom: 0.4rem; }
   .sub { color: var(--muted); margin-bottom: 1.75rem; font-size: 1rem; }
   .group { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin: 0 0 0.9rem; font-weight: 600; }
   .sounds { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; margin-bottom: 2rem; }
-  .sound-btn { background: var(--card); border: 1px solid #232d42; border-radius: 14px; padding: 1.1rem 0.5rem; color: var(--ink); cursor: pointer; font-size: 0.95rem; display: flex; flex-direction: column; align-items: center; gap: 0.45rem; transition: border-color .15s, background .15s, transform .1s; }
+  .sound-btn { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 1.1rem 0.5rem; color: var(--ink); cursor: pointer; font-size: 0.95rem; display: flex; flex-direction: column; align-items: center; gap: 0.45rem; transition: border-color .15s, background .15s, transform .1s; }
   .sound-btn:hover { border-color: var(--accent-dim); background: var(--card2); }
   .sound-btn:active { transform: scale(0.97); }
   .sound-btn .emoji { font-size: 1.9rem; }
-  .sound-btn.active { border-color: var(--accent); background: #15251f; box-shadow: 0 0 0 1px var(--accent); }
+  .sound-btn.active { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent); }
   .sound-btn.active .emoji { animation: breathe 3.5s ease-in-out infinite; }
   @keyframes breathe { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.12); opacity: 0.75; } }
-  .panel { background: var(--card); border: 1px solid #232d42; border-radius: 14px; padding: 1.4rem 1.5rem; margin-bottom: 1.25rem; }
+  .panel { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 1.4rem 1.5rem; margin-bottom: 1.25rem; }
   .panel h2 { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 0.9rem; font-weight: 600; }
   input[type=range] { width: 100%; accent-color: var(--accent); height: 2rem; cursor: pointer; }
   .timers { display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .timer-btn { background: #0d1320; border: 1px solid #232d42; color: var(--ink); border-radius: 999px; padding: 0.55rem 1.1rem; font-size: 0.9rem; cursor: pointer; transition: border-color .15s, background .15s; }
+  .timer-btn { background: var(--card2); border: 1px solid var(--line); color: var(--ink); border-radius: 999px; padding: 0.55rem 1.1rem; font-size: 0.9rem; cursor: pointer; transition: border-color .15s, background .15s; }
   .timer-btn:hover { border-color: var(--accent-dim); }
-  .timer-btn.active { border-color: var(--accent); background: #15251f; color: var(--accent); font-weight: 600; }
+  .timer-btn.active { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
   .controls { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; }
   #stopbtn { flex: 1; background: var(--accent-dim); border: none; color: #fff; border-radius: 14px; padding: 1rem; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: background .15s; }
-  #stopbtn:hover { background: #35805f; }
-  #stopbtn:disabled { background: #1a2333; color: var(--muted); cursor: default; }
+  #stopbtn:hover { filter: brightness(1.15); }
+  #stopbtn:disabled { background: var(--card2); color: var(--muted); cursor: default; }
   #status { text-align: center; color: var(--muted); font-size: 0.95rem; min-height: 1.6rem; margin-bottom: 1rem; }
   #status strong { color: var(--accent); font-weight: 600; }
   .tip { color: var(--muted); font-size: 0.85rem; text-align: center; max-width: 520px; margin: 0 auto; }
-  footer { border-top: 1px solid #1e2635; margin-top: 3rem; padding: 1.8rem 1.5rem; text-align: center; color: var(--muted); font-size: 0.82rem; }
+  footer { border-top: 1px solid var(--line); margin-top: 3rem; padding: 1.8rem 1.5rem; text-align: center; color: var(--muted); font-size: 0.82rem; }
   footer a { color: var(--accent); text-decoration: none; }
+
+  .topbar .menu-btn { display: none; margin-left: auto; background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); font-size: 1.05rem; line-height: 1; padding: 0.3rem 0.6rem; cursor: pointer; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  .topbar .nav-links { display: contents; }
+  @media (max-width: 760px) {
+    .topbar .inner { flex-wrap: wrap; }
+    .topbar .menu-btn { display: block; order: 3; }
+    .topbar a.subscribe { order: 2; }
+    .topbar .nav-links { display: none; order: 4; flex-basis: 100%; flex-direction: column; gap: 0.15rem; padding: 0.55rem 0 0.3rem; }
+    .topbar .inner.open .nav-links { display: flex; }
+    .topbar .nav-links a { margin-left: 0; padding: 0.4rem 0.2rem; }
+  }
 </style>
 <link rel="canonical" href="https://theopenbookmoney.com/tools/white-noise.html">
 </head>
@@ -58,10 +70,13 @@
 <div id="wn-app">
 <div class="topbar"><div class="inner">
   <a class="brand" href="../index.html">📖 The Open Book</a>
+  <button class="menu-btn" type="button" aria-label="Menu" onclick="this.closest('.inner').classList.toggle('open')">&#9776;</button>
+  <span class="nav-links">
   <a class="tools" href="../tools/">Tools</a>
   <a class="home" href="../articles.html">All articles</a>
   <a class="home" href="../family.html">The family</a>
   <a class="home" href="../family-scoreboard.html">Scoreboard</a>
+  </span>
   <a class="subscribe" href="#signup" style="margin-left:1.2rem;background:#2a7f62;color:#fff;padding:0.35rem 0.95rem;border-radius:999px;font-weight:600;text-decoration:none;">Subscribe</a>
 </div></div>
 <div class="wrap">
@@ -173,6 +188,12 @@
   .ob-signup-form input[type="submit"]:hover { background: #236e55; }
   .ob-signup-msg { font-size: 0.95rem; margin-top: 0.75rem; min-height: 1.4em; }
   .ob-signup-fine { color: #6b7280; font-size: 0.82rem; margin-top: 0.75rem; }
+  @media (prefers-color-scheme: dark) {
+    .ob-signup { background: #1a1a2e; border-color: #2e2e44; }
+    .ob-signup h2 { color: #ece9e2; }
+    .ob-signup-sub, .ob-signup-fine { color: #9aa0ae; }
+    .ob-signup-form input[type="email"] { background: #0f0f1a; color: #ece9e2; border-color: #2e2e44; }
+  }
 </style>
 <footer>The Open Book &middot; Sleep sounds are synthesized live in your browser.<br><a href="../index.html">theopenbookmoney.com</a></footer>
 </div>

@@ -180,6 +180,15 @@
     }
     @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; transition: none !important; } }
   </style>
+<style>
+/* The Open Book canonical palette (light + dark), laid over each
+   calculator's own styles so every tool matches the site. Per-tool
+   data colors (interest vs principal, TFSA vs RRSP, ...) keep their
+   own hues — only the shared chrome tokens are unified. */
+:root { --paper: #faf9f7; --surface: #ffffff; --surface-2: #f1efe9; --ink: #1a1a2e; --muted: #6b7280; --line: #e5e1da; --green: #2a7f62; --acc: #2a7f62; --accent: #2a7f62; --green-soft: #dcefe7; --track: #e5e1da; --focus: #2a7f62; --radius: 12px; --radius-lg: 12px; --shadow: 0 14px 40px rgba(26, 26, 46, 0.08); }
+@media (prefers-color-scheme: dark) { :root { --paper: #0f0f1a; --surface: #1a1a2e; --surface-2: #23233a; --ink: #ece9e2; --muted: #9aa0ae; --line: #2e2e44; --green: #5fc9a8; --acc: #5fc9a8; --accent: #5fc9a8; --green-soft: #173f31; --track: #2e2e44; --focus: #5fc9a8; --shadow: 0 14px 40px rgba(0, 0, 0, 0.4); } }
+body { font-family: -apple-system, 'Segoe UI', sans-serif; }
+</style>
 <link rel="canonical" href="https://theopenbookmoney.com/tools/mortgage-renewal-calc.html">
 <link rel="apple-touch-icon" href="/tools/mortgage-renewal-calc-icon-180.png">
 <link rel="manifest" href="/tools/mortgage-renewal-calc-manifest.json">
@@ -195,7 +204,6 @@
     <a class="brand" href="../index.html" target="_top" style="font-weight:700;color:var(--ink);text-decoration:none;">📖 The Open Book</a>
     <span class="sep">&middot;</span>
     <a href="index.html" target="_top" style="color:var(--muted);">All tools</a>
-    <a href="#signup" style="margin-left:auto;background:#2a7f62;color:#fff;padding:0.3rem 0.85rem;border-radius:999px;font-weight:600;text-decoration:none;">Subscribe</a>
   </div>
 
   <main class="wrap">
@@ -501,6 +509,12 @@
   .ob-signup-form input[type="submit"]:hover { background: #236e55; }
   .ob-signup-msg { font-size: 0.95rem; margin-top: 0.75rem; min-height: 1.4em; }
   .ob-signup-fine { color: #6b7280; font-size: 0.82rem; margin-top: 0.75rem; }
+  @media (prefers-color-scheme: dark) {
+    .ob-signup { background: #1a1a2e; border-color: #2e2e44; }
+    .ob-signup h2 { color: #ece9e2; }
+    .ob-signup-sub, .ob-signup-fine { color: #9aa0ae; }
+    .ob-signup-form input[type="email"] { background: #0f0f1a; color: #ece9e2; border-color: #2e2e44; }
+  }
 </style>
 </body>
 
