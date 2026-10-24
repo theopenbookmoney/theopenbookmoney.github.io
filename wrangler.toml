@@ -1,0 +1,19 @@
+name = "open-book-newsletter"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "open-book-subscribers"
+database_id = "REPLACE_AFTER_CREATING_D1"  # wrangler d1 create prints this
+
+# Secrets are set in the Cloudflare dashboard (Workers & Pages -> Settings ->
+# Variables), NOT here and NOT in chat:
+#   RESEND_API_KEY   — from resend.com, after the free account + domain setup
+#   FROM_EMAIL       — e.g. updates@theopenbookmoney.com (must be on the
+#                      domain you verify in Resend)
+#   ADMIN_KEY        — any long random string you invent; it's the password
+#                      for the /api/admin send page
+#   PUBLIC_URL       — this worker's public URL, e.g.
+#                      https://open-book-newsletter.<your-account>.workers.dev
+#                      (or the custom domain, if you route one)
