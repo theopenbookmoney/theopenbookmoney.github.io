@@ -43,6 +43,21 @@ function isValidEmail(e) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);
 }
 
+function plainTextFromHtml(html) {
+  // A plain-text version of the email body. Links keep their address
+  // visible ("Yes, notify me (https://...)") so the email still works in
+  // clients that strip or disable clickable links, like Yahoo Mail does
+  // for messages it distrusts.
+  return html
+    .replace(/<a[^>]+href="([^"]+)"[^>]*>(.*?)<\/a>/gi, "$2 ($1)")
+    .replace(/<\/p>\s*/gi, "\n\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 async function sendEmail(env, to, subject, htmlBody, listUnsub) {
   const headers = {
     Authorization: `Bearer ${env.RESEND_API_KEY}`,
@@ -53,6 +68,7 @@ async function sendEmail(env, to, subject, htmlBody, listUnsub) {
     to: [to],
     subject,
     html: htmlBody,
+    text: plainTextFromHtml(htmlBody),
   };
   if (listUnsub) payload.headers = { "List-Unsubscribe": `<${listUnsub}>` };
   const r = await fetch(RESEND_API, {
@@ -111,6 +127,7 @@ export default {
         "Confirm your Open Book updates",
         `<p>You're one click away from getting notified when The Open Book refreshes a tracker or ships a new tool.</p>` +
           `<p><a href="${confirmUrl}">Yes, notify me</a></p>` +
+          `<p style="color:#6b7280;font-size:0.9rem;">Button not working? Copy and paste this link into your browser:<br>${confirmUrl}</p>` +
           `<p style="color:#6b7280;font-size:0.9rem;">Didn't ask for this? Ignore this email — nothing happens until you click.</p>`
       );
       return response({ ok: true });
