@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breaking Your Mortgage Could Cost $20,000 | The Open Book</title>
+<meta name="description" content="Breaking a fixed mortgage early means paying the greater of two penalties: the interest rate differential or three months' interest. Worked with real numbers, plus an interactive penalty estimator.">
+<link rel="canonical" href="https://theopenbookmoney.com/mortgage-penalty.html">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://theopenbookmoney.com/mortgage-penalty.html">
+<meta property="og:title" content="Breaking Your Mortgage Could Cost $20,000 | The Open Book">
+<meta property="og:description" content="Breaking a fixed mortgage early means paying the greater of two penalties: the interest rate differential or three months&#x27; interest. Worked with real numbers, plus an interactive penalty estimator.">
+<meta property="og:site_name" content="The Open Book">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Breaking Your Mortgage Could Cost $20,000 | The Open Book">
+<meta name="twitter:description" content="Breaking a fixed mortgage early means paying the greater of two penalties: the interest rate differential or three months&#x27; interest. Worked with real numbers, plus an interactive penalty estimator.">
+<style>
+  :root { --ink: #1a1a2e; --paper: #faf9f7; --accent: #2a7f62; --muted: #6b7280; --line: #e5e1da; --surface: #ffffff; --surface-2: #f1efe9; --ink-soft: #3a3a4a; color-scheme: light dark; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: var(--paper); color: var(--ink); line-height: 1.75; }
+  .topbar { border-bottom: 1px solid var(--line); background: var(--surface); }
+  .topbar .inner { max-width: 880px; margin: 0 auto; padding: 0.9rem 1.5rem; display: flex; align-items: center; gap: 0.6rem; }
+  .topbar a.brand { text-decoration: none; color: var(--ink); font-size: 1.15rem; font-weight: bold; }
+  .topbar a.tools { margin-left: auto; text-decoration: none; color: var(--muted); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
+  .topbar a.home { margin-left: 1.2rem; text-decoration: none; color: var(--muted); font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.9rem; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  .kicker { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); margin-bottom: 0.75rem; }
+  h1 { font-size: 2rem; line-height: 1.25; letter-spacing: -0.02em; margin-bottom: 0.5rem; }
+  .dateline { color: var(--muted); font-size: 0.9rem; margin-bottom: 2rem; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  article p { margin-bottom: 1.25rem; }
+  article h2 { font-size: 1.4rem; margin: 2.25rem 0 1rem; line-height: 1.35; }
+  article ul, article ol { margin: 0 0 1.25rem 1.5rem; }
+  article li { margin-bottom: 0.6rem; }
+  article table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.92rem; }
+  article th, article td { border: 1px solid var(--line); padding: 0.6rem 0.75rem; text-align: left; vertical-align: top; }
+  article th { background: var(--surface-2); font-family: -apple-system, 'Segoe UI', sans-serif; }
+  article hr { border: none; border-top: 1px solid var(--line); margin: 2.5rem 0; }
+  article em { color: var(--ink-soft); }
+  .calc-wrap { margin: 2rem 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--surface); }
+  .calc-wrap iframe { width: 100%; border: 0; display: block; min-height: 600px; }
+  .calc-label { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0.8rem 1.2rem 0; }
+  footer { border-top: 1px solid var(--line); margin-top: 1rem; padding: 2rem 1.5rem; text-align: center; color: var(--muted); font-size: 0.85rem; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  footer a { color: var(--accent); }
+
+  .topbar .menu-btn { display: none; margin-left: auto; background: none; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); font-size: 1.05rem; line-height: 1; padding: 0.3rem 0.6rem; cursor: pointer; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  .topbar .nav-links { display: contents; }
+  @media (max-width: 760px) {
+    .topbar .inner { flex-wrap: wrap; padding: 0.9rem 1rem; }
+    .topbar a.brand { font-size: 1rem; }
+    .topbar .menu-btn { display: block; order: 3; }
+    .topbar a.subscribe { padding: 0.3rem 0.75rem !important; }
+    .topbar a.subscribe { order: 2; }
+    .topbar .nav-links { display: none; order: 4; flex-basis: 100%; flex-direction: column; gap: 0.15rem; padding: 0.55rem 0 0.3rem; }
+    .topbar .inner.open .nav-links { display: flex; }
+    .topbar .nav-links a { margin-left: 0; padding: 0.4rem 0.2rem; }
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper: #0f0f1a; --surface: #1a1a2e; --surface-2: #23233a; --ink: #ece9e2; --muted: #9aa0ae; --line: #2e2e44; --accent: #5fc9a8; --ink-soft: #c9c4bb; }
+  }
+</style>
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html">📖 The Open Book</a>
+  <button class="menu-btn" type="button" aria-label="Menu" onclick="this.closest('.inner').classList.toggle('open')">&#9776;</button>
+  <span class="nav-links">
+  <a class="tools" href="tools/">Tools</a>
+  <a class="home" href="articles.html">All articles</a>
+  <a class="home" href="family.html">The family</a>
+  <a class="home" href="family-scoreboard.html">Scoreboard</a>
+  </span>
+  <a class="subscribe" href="#signup" style="margin-left:1.2rem;background:#2a7f62;color:#fff;padding:0.35rem 0.95rem;border-radius:999px;font-weight:600;text-decoration:none;">Subscribe</a>
+</div></div>
+<div class="wrap">
+  <div class="kicker">The Open Book · Money, explained</div>
+  <h1>Breaking Your Mortgage Could Cost $20,000</h1>
+  <div class="dateline">October 2026</div>
+  <article>
+<p><em>Rob and Priya are inspired by real people — names and details changed so the story can be told honestly. Every number in this article is a hypothetical example with its assumptions shown, so you can check the math — plug your own numbers into the calculator below and the answer updates.</em></p>
+<p>Rob is 38, a night-shift supervisor at a distribution warehouse in Saskatoon. Priya is 36, a nurse, and the one who actually opens the mortgage statements and keeps the household spreadsheet.</p>
+<p>Last month, a coworker told Rob he had just broken his fixed mortgage two years early to grab a lower rate. "Best move I ever made," the coworker said. "I'm saving a fortune."</p>
+<p>Rob came home with a question Priya hears a lot in this house: "If we ever had to do that — say a job moved us, or rates dropped a lot — what would it actually cost us?"</p>
+<p>Priya's answer surprised him. So let's walk through it, because the number is bigger than most people expect, and the way the bank calculates it is the whole story.</p>
+<h2>The penalty is two numbers. The bank picks the bigger one.</h2>
+<p>When you break a fixed mortgage early, the lender doesn't charge you one penalty. It calculates two different penalties — and charges you whichever is <strong>greater</strong>.</p>
+<p><strong>Penalty 1: the interest rate differential, or IRD.</strong> Think of it this way: the bank lent you money expecting years of interest payments. If you leave early, it wants to be made whole for the interest it will no longer collect. The IRD is roughly the gap between your mortgage rate and today's comparable rate, times your remaining balance, times the years left on your term.</p>
+<p><strong>Penalty 2: three months' interest.</strong> Much simpler. Three months of interest on the balance you still owe. No gap, no term — just a quarter of a year's interest.</p>
+<p>That's it. Two numbers. The bank takes the bigger one. Every surprise in this article comes from which one wins, and by how much.</p>
+<h2>The worked example: a $500,000 mortgage</h2>
+<p>Let's use a round hypothetical. Imagine a $500,000 fixed mortgage at 5.5%, with 2 years left on the term. Rates have fallen, and the comparable rate today is 3.5%. That's a 2% gap.</p>
+<p><strong>The IRD:</strong></p>
+<p>$500,000 × 2% × 2 years = <strong>$20,000</strong></p>
+<p><strong>Three months' interest:</strong></p>
+<p>$500,000 × 5.5% × 3 ÷ 12 = <strong>$6,875</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Interest rate differential</th>
+<th>Three months' interest</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The math</td>
+<td>$500,000 × 2% × 2 years</td>
+<td>$500,000 × 5.5% × 3 ÷ 12</td>
+</tr>
+<tr>
+<td>The penalty</td>
+<td>$20,000</td>
+<td>$6,875</td>
+</tr>
+<tr>
+<td><strong>What the bank charges</strong></td>
+<td><strong>$20,000 — the greater</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Read that again. Breaking this mortgage costs <strong>$20,000</strong> — not because of a fee anyone mentioned at signing, but because the rate gap is wide and there are still two full years left. The IRD is nearly three times the three-months'-interest figure, so the IRD is the number that counts.</p>
+<p>This is why "I'm saving a fortune by breaking" needs a second sentence: saving a fortune <em>compared to what?</em> A lower rate saves money month by month, but the penalty is due on day one. If the savings over the remaining term don't beat the penalty, breaking loses money — even at a lower rate.</p>
+<h2>The same idea, smaller numbers</h2>
+<p>The $20,000 figure isn't magic. It's just what happens when the balance is big, the gap is wide, and the term has a long way to run. Change any of those three and the penalty shrinks.</p>
+<p>Take a smaller hypothetical: a $300,000 mortgage at 4.79%, with 2 years left, and rates down only 1% to 3.79%.</p>
+<ul>
+<li>IRD: $300,000 × 1% × 2 years = <strong>$6,000</strong></li>
+<li>Three months' interest: $300,000 × 4.79% × 3 ÷ 12 = <strong>$3,593</strong></li>
+<li>The bank charges the greater: <strong>$6,000</strong></li>
+</ul>
+<p>Still the IRD — but a much smaller bill, because the balance is smaller and the gap is narrower.</p>
+<p>Now flip it the other way. Same $500,000 mortgage at 5.5% with 2 years left, but rates have barely moved — the comparable rate is 5.25%, a gap of only 0.25%.</p>
+<ul>
+<li>IRD: $500,000 × 0.25% × 2 years = <strong>$2,500</strong></li>
+<li>Three months' interest: <strong>$6,875</strong></li>
+<li>The bank charges the greater: <strong>$6,875</strong></li>
+</ul>
+<p>This time three months' interest wins. The lesson is the same in all three examples: <strong>the penalty is whichever number is bigger, and the gap between your rate and today's rate usually decides which one that is.</strong> Wide gap, long time left, big balance — the IRD dominates. Narrow gap or short time left — three months' interest takes over.</p>
+<p>Want to run your own numbers instead of taking this example's word for it? Plug your balance, your contract rate, the comparable rate today, and the months left in your term into the interactive calculator below, and see which penalty your lender would charge — the interest rate differential or three months' interest. That's the whole decision, on one screen.</p>
+<div class="calc-wrap"><div class="calc-label">Interactive calculator</div><iframe src="tools/mortgage-penalty-calc.html" title="Interactive calculator" loading="lazy"></iframe></div>
+<h2>Fixed vs variable: this is mostly a fixed-mortgage problem</h2>
+<p>Variable mortgages work differently. If you break a variable mortgage early, the lender usually charges only three months' interest — no IRD at all. That's why variable penalties are usually much smaller, often a few thousand dollars instead of tens of thousands.</p>
+<p>That doesn't make variable "better" — variable rates move, and that's its own risk. But it does mean the $20,000 surprise in this article belongs almost entirely to fixed mortgages. If you're choosing between fixed and variable at renewal time, the size of the break penalty is one of the real differences between them, and it's worth weighing alongside the rate itself.</p>
+<h2>The fine print that changes the answer</h2>
+<p>Everything above is simplified on purpose, so you can follow the math. The real calculation has two wrinkles you should know about before you act on any of this:</p>
+<p><strong>Lenders calculate the real IRD their own way.</strong> Many use their posted rate — the rate on the sign in the window, not the discounted rate you actually pay — as one side of the gap. That can make the gap look bigger, which makes the IRD bigger. And every lender's formula is a little different. Two lenders given the same mortgage can produce two different penalty numbers.</p>
+<p><strong>So the lender's number governs, not this article's.</strong> Treat every number above as an estimate for understanding the idea, not as a quote. Before breaking a mortgage, ask your lender for the penalty <strong>in writing</strong>. That written number — not a calculator, not a rule of thumb, not this article — is the number your decision should use.</p>
+<h2>The free move most people forget: prepayment privileges</h2>
+<p>There is one way to shrink a future penalty without paying anything, and most mortgage holders never use it. Most lenders let you pay down <strong>10% to 20% of your original mortgage balance each year</strong>, on top of your regular payments, without any penalty at all.</p>
+<p>That matters twice over. First, every extra dollar you prepay is a dollar that no longer collects interest. Second, if you ever do break the mortgage later, the penalty is calculated on a smaller balance — so the penalty itself is smaller. If you're years away from a possible move and your lender allows it, using the prepayment privilege is the rare financial move with no downside to check first: read your mortgage terms or ask your lender what your annual prepayment allowance is.</p>
+<h2>The verdict: get the number before you decide</h2>
+<p>Breaking a fixed mortgage isn't good or bad. It's arithmetic. The penalty is the greater of the interest rate differential and three months' interest — and when rates have fallen a long way with years left on the term, that number can be $20,000 on an ordinary mortgage, due immediately, before a single dollar of savings arrives.</p>
+<p>So the rule Priya gave Rob is simple: <strong>never decide to break a mortgage on the rate alone. Get the penalty in writing, compare it against what the lower rate actually saves over the time you have left, and then decide.</strong> If the savings beat the penalty, breaking can still win. If they don't, staying put was the better deal all along — and now you know why.</p>
+<p>Don't take our word for it. Plug your own balance, your rate, and how many years are left on your term into the penalty estimator below, and watch which of the two numbers wins for you. Change the rate gap and see the penalty move — that's the whole idea, on one screen.</p>
+<hr />
+<p><em>The Open Book is educational content, not financial advice. The examples above are hypotheticals with their assumptions shown — your lender's written penalty figure is the number that governs your decision.</em></p>
+  <section class="ob-signup" id="signup">
+  <h2>Get the updates, not the noise</h2>
+  <p class="ob-signup-sub">One email when a tracker is refreshed or a new tool ships.
+     No spam, no selling your address, unsubscribe anytime with one click.</p>
+  <form class="ob-signup-form" id="ob-signup-form">
+    <label class="ob-signup-label" for="ob-signup-email">Email address</label>
+    <input id="ob-signup-email" type="email" name="email" required
+           placeholder="you@example.com" autocomplete="email">
+    <input type="submit" value="Subscribe">
+  </form>
+  <p class="ob-signup-msg" id="ob-signup-msg" aria-live="polite"></p>
+  <p class="ob-signup-fine">We use your email only for these updates, and only after you
+     confirm. Unsubscribe anytime with one click.</p>
+</section>
+<script>
+(function () {
+  var FORM_ACTION = "https://open-book-newsletter.theopenbookmoney.workers.dev/api/subscribe"; // e.g. https://signup.theopenbookmoney.com/api/subscribe
+  var form = document.getElementById("ob-signup-form");
+  var msg = document.getElementById("ob-signup-msg");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = document.getElementById("ob-signup-email").value.trim();
+    msg.textContent = "Sending…";
+    fetch(FORM_ACTION, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: email, source: location.pathname }),
+    })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (res.ok) {
+          msg.textContent = res.j.already
+            ? "You're already on the list — nothing more to do."
+            : "Check your inbox — click the confirmation link and you're in.";
+          form.reset();
+        } else {
+          msg.textContent = res.j.error === "invalid email"
+            ? "That email doesn't look right — try again."
+            : "Something went wrong — please try again in a bit.";
+        }
+      })
+      .catch(function () { msg.textContent = "Something went wrong — please try again in a bit."; });
+  });
+})();
+</script>
+<style>
+  .ob-signup { background: #fff; border: 1px solid #e5e1da; border-radius: 12px;
+               padding: 1.75rem 1.5rem; margin: 2.5rem 0; }
+  .ob-signup h2 { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 1.2rem;
+                  color: #1a1a2e; margin-bottom: 0.35rem; }
+  .ob-signup-sub { color: #6b7280; font-size: 0.98rem; margin-bottom: 1rem; }
+  .ob-signup-form { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .ob-signup-label { position: absolute; left: -9999px; }
+  .ob-signup-form input[type="email"] { flex: 1 1 220px; font-size: 1rem; padding: 0.65rem 0.8rem;
+      border: 1px solid #e5e1da; border-radius: 8px; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  .ob-signup-form input[type="submit"] { font-size: 1rem; font-weight: 600; color: #fff;
+      background: #2a7f62; border: none; border-radius: 8px; padding: 0.65rem 1.25rem; cursor: pointer;
+      font-family: -apple-system, 'Segoe UI', sans-serif; }
+  .ob-signup-form input[type="submit"]:hover { background: #236e55; }
+  .ob-signup-msg { font-size: 0.95rem; margin-top: 0.75rem; min-height: 1.4em; }
+  .ob-signup-fine { color: #6b7280; font-size: 0.82rem; margin-top: 0.75rem; }
+  @media (prefers-color-scheme: dark) {
+    .ob-signup { background: #1a1a2e; border-color: #2e2e44; }
+    .ob-signup h2 { color: #ece9e2; }
+    .ob-signup-sub, .ob-signup-fine { color: #9aa0ae; }
+    .ob-signup-form input[type="email"] { background: #0f0f1a; color: #ece9e2; border-color: #2e2e44; }
+  }
+</style>
+</article>
+</div>
+<footer>The Open Book · Educational content only, not financial advice.<br><a href="index.html">theopenbookmoney.com</a></footer>
+<script>
+window.addEventListener('message', function (e) {
+  if (e.data && e.data.obmCalcHeight) {
+    var f = document.querySelector('.calc-wrap iframe');
+    if (f) f.style.height = e.data.obmCalcHeight + 'px';
+  }
+});
+</script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "084b6179e16449d4ab3fce3209ef1274"}'></script><!-- End Cloudflare Web Analytics --></body>
+</html>
