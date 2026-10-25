@@ -228,7 +228,8 @@ body { font-family: -apple-system, 'Segoe UI', sans-serif; }
 
         <div class="field">
           <div class="field-top">
-            <label for="balance">Mortgage balance</label>
+            <span class="label-line"><label for="balance">Mortgage balance</label>
+              <button type="button" class="info-btn" data-info="info-balance" aria-expanded="false" aria-label="About the mortgage balance">i</button></span>
             <div class="number-wrap"><span class="prefix currency-symbol">$</span><input id="balance" type="number" min="0" max="10000000" step="1000" value="500000" inputmode="decimal" /></div>
           </div>
           <input id="balanceRange" type="range" min="50000" max="1500000" step="5000" value="500000" aria-label="Balance slider" />
