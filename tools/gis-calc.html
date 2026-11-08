@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light dark" />
+  <link rel="icon" href="data:," />
+  <title>GIS Estimator · The Open Book</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light dark;
+      --paper: #f5f7f4; --surface: #ffffff; --surface-2: #e9eeea;
+      --ink: #17231d; --muted: #506158; --line: #c8d2cb;
+      --acc: #19704e;
+      --shadow: 0 14px 40px rgba(24, 46, 35, 0.08);
+      --focus: #0b6fdb; --radius: 14px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --paper: #101713; --surface: #17201b; --surface-2: #202c25;
+        --ink: #edf5ef; --muted: #b5c3ba; --line: #3a4a40;
+        --acc: #6ed2a1;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.28); --focus: #69b5ff;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 16px/1.55 "IBM Plex Sans", sans-serif; }
+    button, input, select { font: inherit; }
+    button:focus-visible, input:focus-visible, a:focus-visible, summary:focus-visible, select:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+    .topbar { display: flex; align-items: center; gap: 10px; max-width: 1060px; margin: 0 auto; padding: 14px 22px; border-bottom: 1px solid var(--line); font-size: 0.85rem; color: var(--muted); }
+    .topbar .brand { font-weight: 700; color: var(--ink); text-decoration: none; }
+    .topbar .sep { opacity: 0.5; }
+    .tool-page { max-width: 1060px; margin: 0 auto; padding: 30px 22px 60px; }
+    .tool-head { max-width: 720px; margin-bottom: 26px; }
+    .tool-head h1 { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(1.7rem, 4vw, 2.4rem); letter-spacing: -0.03em; line-height: 1.1; margin: 0 0 10px; }
+    .tool-head .lede { color: var(--muted); font-size: 1.05rem; margin: 0; }
+    .tool-grid { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 22px; align-items: start; }
+    @media (max-width: 900px) { .tool-grid { grid-template-columns: 1fr; } }
+    .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .inputs { padding: 22px; }
+    .field { margin-bottom: 20px; } .field:last-child { margin-bottom: 0; }
+    .field-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; margin-bottom: 8px; }
+    .label-line { display: inline-flex; align-items: center; gap: 7px; }
+    label { font-weight: 600; font-size: 0.93rem; }
+    .number-wrap { position: relative; width: 118px; flex: 0 0 auto; }
+    .number-wrap .suffix { position: absolute; top: 50%; transform: translateY(-50%); right: 11px; color: var(--muted); pointer-events: none; font-size: 0.88rem; }
+    input[type="number"] { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); padding: 8px 30px 8px 12px; text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+    input[type="number"]:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(25,112,78,0.15); outline: none; }
+    input[type="range"] { width: 100%; height: 5px; margin: 2px 0 0; appearance: none; background: var(--surface-2); border-radius: 999px; accent-color: var(--acc); cursor: pointer; }
+    input[type="range"]::-webkit-slider-thumb { appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--acc); border: 3px solid var(--surface); box-shadow: 0 0 0 1px var(--acc); }
+    select { width: 100%; min-height: 42px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); padding: 8px 12px; font-weight: 600; }
+    select:focus { border-color: var(--acc); box-shadow: 0 0 0 3px rgba(25,112,78,0.15); outline: none; }
+    .info-btn { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line); background: none; color: var(--muted); font-family: Georgia, serif; font-style: italic; font-size: 0.78rem; line-height: 1; cursor: pointer; padding: 0; flex: 0 0 auto; }
+    .info-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .info-btn[aria-expanded="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+    .info-text { margin: 10px 0 0; padding: 10px 12px; border-radius: 8px; background: var(--surface-2); color: var(--muted); font-size: 0.87rem; font-weight: 400; }
+    .results { overflow: hidden; }
+    .result-head { padding: 24px 26px 20px; border-bottom: 1px solid var(--line); }
+    .eyebrow { color: var(--muted); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin: 0 0 8px; }
+    .bignum { font-family: "Source Serif 4", Georgia, serif; font-size: clamp(2.2rem, 5vw, 3rem); letter-spacing: -0.02em; margin: 0; color: var(--acc); font-variant-numeric: tabular-nums; }
+    .sub { color: var(--muted); margin: 6px 0 0; font-size: 0.95rem; }
+    .stat-row { display: flex; gap: 14px; margin-top: 16px; flex-wrap: wrap; }
+    .stat { background: var(--surface-2); border-radius: 10px; padding: 10px 14px; flex: 1 1 140px; }
+    .stat .k { font-size: 0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .stat .v { font-size: 1.2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .rules { padding: 22px 26px; }
+    .rules h3 { font-size: 1rem; margin: 0 0 12px; }
+    .rules ul { margin: 0 0 0 1.2rem; padding: 0; color: var(--muted); font-size: 0.93rem; }
+    .rules li { margin-bottom: 8px; }
+    .rules li strong { color: var(--ink); }
+    details.assumptions { border-top: 1px solid var(--line); padding: 18px 26px 22px; color: var(--muted); font-size: 0.9rem; }
+    details.assumptions summary { cursor: pointer; font-weight: 700; color: var(--ink); font-size: 0.95rem; }
+    details.assumptions ul { margin: 10px 0 0 1.2rem; padding: 0; } details.assumptions li { margin-bottom: 6px; }
+    .fineprint { max-width: 1060px; margin: 0 auto; padding: 0 22px 40px; color: var(--muted); font-size: 0.85rem; }
+  </style>
+<style>
+/* The Open Book canonical palette (light + dark), laid over each
+   calculator's own styles so every tool matches the site. Per-tool
+   data colors (interest vs principal, TFSA vs RRSP, ...) keep their
+   own hues — only the shared chrome tokens are unified. */
+:root { --paper: #faf9f7; --surface: #ffffff; --surface-2: #f1efe9; --ink: #1a1a2e; --muted: #6b7280; --line: #e5e1da; --green: #2a7f62; --acc: #2a7f62; --accent: #2a7f62; --green-soft: #dcefe7; --track: #e5e1da; --focus: #2a7f62; --radius: 12px; --radius-lg: 12px; --shadow: 0 14px 40px rgba(26, 26, 46, 0.08); }
+@media (prefers-color-scheme: dark) { :root { --paper: #0f0f1a; --surface: #1a1a2e; --surface-2: #23233a; --ink: #ece9e2; --muted: #9aa0ae; --line: #2e2e44; --green: #5fc9a8; --acc: #5fc9a8; --accent: #5fc9a8; --green-soft: #173f31; --track: #2e2e44; --focus: #5fc9a8; --shadow: 0 14px 40px rgba(0, 0, 0, 0.4); } }
+body { font-family: -apple-system, 'Segoe UI', sans-serif; }
+</style>
+<link rel="canonical" href="https://theopenbookmoney.com/tools/gis-calc.html">
+<link rel="apple-touch-icon" href="/tools/gis-calc-icon-180.png">
+<link rel="manifest" href="/tools/gis-calc-manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="GIS Estimator">
+<meta name="theme-color" content="#faf9f7">
+<script>if ('serviceWorker' in navigator) {window.addEventListener('load', function () {navigator.serviceWorker.register('/sw.js').catch(function () {});});}</script>
+</head>
+<body>
+  <div class="topbar" style="display:flex;align-items:center;gap:10px;max-width:1060px;margin:0 auto;padding:14px 22px;">
+    <a class="brand" href="../index.html" target="_top" style="font-weight:700;color:var(--ink);text-decoration:none;">📖 The Open Book</a>
+    <span class="sep">&middot;</span>
+    <a href="index.html" target="_top" style="color:var(--muted);">All tools</a>
+  </div>
+  <div class="tool-page">
+    <div class="tool-head">
+      <h1>GIS Estimator</h1>
+      <p class="lede">The Guaranteed Income Supplement can add up to $1,138.90 a month, tax-free, on top of Old Age Security — if your income is low enough. See roughly what it would pay.</p>
+    </div>
+    <div class="tool-grid">
+      <div class="card inputs">
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-situation">Your situation</label></span></div>
+          <select id="in-situation">
+            <option value="single" selected>Single, widowed or divorced</option>
+            <option value="couple-oas">Couple — spouse also receives a full OAS pension</option>
+            <option value="couple-allowance">Couple — spouse receives the Allowance</option>
+            <option value="couple-no-oas">Couple — spouse receives neither OAS nor the Allowance</option>
+          </select>
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-other">Other income besides OAS</label>
+            <button class="info-btn" aria-expanded="false" data-info="info-o">i</button></span>
+            <span class="number-wrap"><input type="number" id="in-other" value="4800" min="0" max="60000" step="100"><span class="suffix">$/yr</span></span></div>
+          <p class="info-text" id="info-o" hidden>Everything except your OAS pension: CPP, workplace pensions, RRIF withdrawals, investment income. Your OAS itself does not count. TFSA withdrawals do not count either.</p>
+          <input type="range" id="rg-other" min="0" max="60000" step="100" value="4800" aria-label="Other income slider">
+        </div>
+        <div class="field">
+          <div class="field-top"><span class="label-line"><label for="in-work">Employment income</label>
+            <button class="info-btn" aria-expanded="false" data-info="info-w">i</button></span>
+            <span class="number-wrap"><input type="number" id="in-work" value="0" min="0" max="30000" step="100"><span class="suffix">$/yr</span></span></div>
+          <p class="info-text" id="info-w" hidden>Work is treated gently: the first $5,000 of employment or self-employment income is ignored entirely, and half of the next $10,000 is ignored too. Only the rest counts against your GIS.</p>
+          <input type="range" id="rg-work" min="0" max="30000" step="100" value="0" aria-label="Employment income slider">
+        </div>
+      </div>
+      <div class="card results">
+        <div class="result-head">
+          <p class="eyebrow">Your estimated GIS</p>
+          <p class="bignum" id="r-value">$…</p>
+          <p class="sub" id="r-sub">…</p>
+          <div class="stat-row">
+            <div class="stat"><div class="k">Per year</div><div class="v" id="r-year">$…</div></div>
+            <div class="stat"><div class="k">Maximum for you</div><div class="v" id="r-max">$…</div></div>
+            <div class="stat"><div class="k">Income counted</div><div class="v" id="r-counted">$…</div></div>
+          </div>
+        </div>
+        <div class="rules">
+          <h3>The rules that matter</h3>
+          <ul>
+            <li><strong>You must already receive OAS.</strong> Even a partial OAS pension counts — but if you delayed OAS, there is no GIS until OAS starts.</li>
+            <li><strong>For every $2 of other income, GIS drops by about $1.</strong> A little income costs a little GIS; a lot costs all of it. Work is treated gently — see the employment note above.</li>
+            <li><strong>File taxes every year, even with no income.</strong> Service Canada reviews GIS each July from last year's return. No return, no renewal.</li>
+            <li><strong>It is tax-free and never repaid.</strong> GIS arrives in the same monthly deposit as OAS, for as long as you keep qualifying.</li>
+          </ul>
+        </div>
+        <details class="assumptions">
+          <summary>Assumptions</summary>
+          <ul>
+            <li>Figures are October–December 2026 Government of Canada maximums and income limits. Amounts change every quarter — the next update comes in January 2027.</li>
+            <li>This is an estimate using the simplified rule (about $1 of GIS lost per $2 of other income). The exact reduction rates vary by income bracket and situation, so your real amount comes from Service Canada's OAS estimator.</li>
+            <li>Income counted is last year's net income besides OAS, after the employment exemption. OAS itself never counts. TFSA withdrawals never count; RRSP and RRIF withdrawals count in full.</li>
+            <li>Assumes a full OAS pension. A partial OAS pension changes the numbers — contact Service Canada for your exact amount.</li>
+          </ul>
+        </details>
+      </div>
+    </div>
+  </div>
+  <p class="fineprint">Educational tool only, not financial advice. Verify current GIS rules and your exact amount with Service Canada before acting.</p>
+<script>
+(function () {
+  'use strict';
+  // October–December 2026 Government of Canada figures, verified against Canada.ca.
+  var SITUATIONS = {
+    'single':          { maxMonthly: 1138.90, incomeLimit: 23112, label: 'single, widowed or divorced' },
+    'couple-oas':      { maxMonthly: 685.56,  incomeLimit: 30528, label: 'couple, both on a full OAS pension', perPerson: true },
+    'couple-allowance':{ maxMonthly: 685.56,  incomeLimit: 42768, label: 'couple, spouse receives the Allowance' },
+    'couple-no-oas':   { maxMonthly: 1138.90, incomeLimit: 55392, label: 'couple, spouse receives neither OAS nor the Allowance' }
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  function formatDollars(n) { var s = Math.abs(Math.round(n)).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); return (n < 0 ? '−$' : '$') + s; }
+  function formatDollarsAndCents(n) { var s = Math.abs(n).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ','); return (n < 0 ? '−$' : '$') + s; }
+  // Employment income counted after the exemption: first $5,000 ignored,
+  // half of the next $10,000 ignored, the rest counts in full.
+  function countableEmploymentIncome(employmentIncome) {
+    var afterFirstExemption = Math.max(employmentIncome - 5000, 0);
+    var secondExemption = 0.5 * Math.min(afterFirstExemption, 10000);
+    return Math.max(employmentIncome - 5000 - secondExemption, 0);
+  }
+  // Monthly GIS estimate for one situation and one countable annual income.
+  // Rule: about $1 of GIS lost per $2 of other income, floored at $0,
+  // and $0 once income reaches the situation's official limit.
+  function estimateMonthlyGis(situation, countableAnnualIncome) {
+    if (countableAnnualIncome >= situation.incomeLimit) return 0;
+    var maxAnnual = situation.maxMonthly * 12;
+    var combined = situation.perPerson ? maxAnnual * 2 : maxAnnual;
+    var estimated = combined - 0.5 * countableAnnualIncome;
+    return Math.max(estimated, 0) / 12 / (situation.perPerson ? 2 : 1);
+  }
+  function compute() {
+    var situation = SITUATIONS[$('in-situation').value];
+    var otherIncome = Math.max(parseFloat($('in-other').value) || 0, 0);
+    var workIncome = Math.max(parseFloat($('in-work').value) || 0, 0);
+    var countable = otherIncome + countableEmploymentIncome(workIncome);
+    var monthly = estimateMonthlyGis(situation, countable);
+    var eligible = countable < situation.incomeLimit;
+    $('r-value').textContent = formatDollarsAndCents(monthly) + '/mo';
+    if (!eligible) {
+      $('r-sub').textContent = 'Likely not eligible — income is at or above the ' + formatDollars(situation.incomeLimit) + ' line for a ' + situation.label + '. Your exact answer still comes from Service Canada.';
+    } else if (situation.perPerson) {
+      $('r-sub').textContent = 'Per person, per month — combined ' + formatDollarsAndCents(monthly * 2) + '/mo for the two of you. Tax-free, on top of OAS. Your exact amount comes from Service Canada\u2019s OAS estimator.';
+    } else {
+      $('r-sub').textContent = 'Tax-free, on top of OAS. Your exact amount comes from Service Canada\u2019s OAS estimator.';
+    }
+    $('r-year').textContent = formatDollars(monthly * 12);
+    $('r-max').textContent = formatDollarsAndCents(situation.maxMonthly) + '/mo';
+    $('r-counted').textContent = formatDollars(countable) + '/yr';
+  }
+  [['in-other', 'rg-other'], ['in-work', 'rg-work']].forEach(function (pair) {
+    $(pair[0]).addEventListener('input', function () { $(pair[1]).value = $(pair[0]).value; compute(); });
+    $(pair[1]).addEventListener('input', function () { $(pair[0]).value = $(pair[1]).value; compute(); });
+  });
+  $('in-situation').addEventListener('change', compute);
+  document.querySelectorAll('.info-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var t = document.getElementById(btn.getAttribute('data-info'));
+      var open = t.hidden; t.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+  compute();
+})();
+</script>
+
+<script>
+(function () {
+  var last = 0, t = null;
+  function post() {
+    var h = document.documentElement.scrollHeight;
+    if (h !== last) { last = h; parent.postMessage({ obmCalcHeight: h }, '*'); }
+  }
+  function schedule() { clearTimeout(t); t = setTimeout(post, 120); }
+  window.addEventListener('load', schedule);
+  if ('ResizeObserver' in window) new ResizeObserver(schedule).observe(document.documentElement);
+  document.addEventListener('input', schedule);
+  setTimeout(post, 600);
+})();
+</script>
+<!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "084b6179e16449d4ab3fce3209ef1274"}'></script><!-- End Cloudflare Web Analytics --><section class="ob-signup" id="signup">
+  <h2>Get the updates, not the noise</h2>
+  <p class="ob-signup-sub">One email when a tracker is refreshed or a new tool ships.
+     No spam, no selling your address, unsubscribe anytime with one click.</p>
+  <form class="ob-signup-form" id="ob-signup-form">
+    <label class="ob-signup-label" for="ob-signup-email">Email address</label>
+    <input id="ob-signup-email" type="email" name="email" required
+           placeholder="you@example.com" autocomplete="email">
+    <input type="submit" value="Subscribe">
+  </form>
+  <p class="ob-signup-msg" id="ob-signup-msg" aria-live="polite"></p>
+  <p class="ob-signup-fine">We use your email only for these updates, and only after you
+     confirm. Unsubscribe anytime with one click.</p>
+</section>
+<script>
+(function () {
+  var FORM_ACTION = "https://open-book-newsletter.theopenbookmoney.workers.dev/api/subscribe"; // e.g. https://signup.theopenbookmoney.com/api/subscribe
+  var form = document.getElementById("ob-signup-form");
+  var msg = document.getElementById("ob-signup-msg");
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = document.getElementById("ob-signup-email").value.trim();
+    msg.textContent = "Sending…";
+    fetch(FORM_ACTION, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ email: email, source: location.pathname }),
+    })
+      .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (res) {
+        if (res.ok) {
+          msg.textContent = res.j.already
+            ? "You're already on the list — nothing more to do."
+            : "Check your inbox — click the confirmation link and you're in.";
+          form.reset();
+        } else {
+          msg.textContent = res.j.error === "invalid email"
+            ? "That email doesn't look right — try again."
+            : "Something went wrong — please try again in a bit.";
+        }
+      })
+      .catch(function () { msg.textContent = "Something went wrong — please try again in a bit."; });
+  });
+})();
+</script>
+<style>
+  .ob-signup { background: #fff; border: 1px solid #e5e1da; border-radius: 12px;
+               padding: 1.75rem 1.5rem; margin: 2.5rem 0; }
+  .ob-signup h2 { font-family: -apple-system, 'Segoe UI', sans-serif; font-size: 1.2rem;
+                  color: #1a1a2e; margin-bottom: 0.35rem; }
+  .ob-signup-sub { color: #6b7280; font-size: 0.98rem; margin-bottom: 1rem; }
+  .ob-signup-form { display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center; }
+  .ob-signup-label { position: absolute; left: -9999px; }
+  .ob-signup-form input[type="email"] { flex: 1 1 220px; font-size: 1rem; padding: 0.65rem 0.8rem;
+      border: 1px solid #e5e1da; border-radius: 8px; font-family: -apple-system, 'Segoe UI', sans-serif; }
+  .ob-signup-form input[type="submit"] { font-size: 1rem; font-weight: 600; color: #fff;
+      background: #2a7f62; border: none; border-radius: 8px; padding: 0.65rem 1.25rem; cursor: pointer;
+      font-family: -apple-system, 'Segoe UI', sans-serif; }
+  .ob-signup-form input[type="submit"]:hover { background: #236e55; }
+  .ob-signup-msg { font-size: 0.95rem; margin-top: 0.75rem; min-height: 1.4em; }
+  .ob-signup-fine { color: #6b7280; font-size: 0.82rem; margin-top: 0.75rem; }
+  @media (prefers-color-scheme: dark) {
+    .ob-signup { background: #1a1a2e; border-color: #2e2e44; }
+    .ob-signup h2 { color: #ece9e2; }
+    .ob-signup-sub, .ob-signup-fine { color: #9aa0ae; }
+    .ob-signup-form input[type="email"] { background: #0f0f1a; color: #ece9e2; border-color: #2e2e44; }
+  }
+</style>
+</body>
+
+</html>
